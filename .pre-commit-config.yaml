@@ -1,0 +1,21 @@
+# pre-commit, once installed, runs these specified tools to format/lint/check our code for a consistent standard.
+# see https://pre-commit.com/ for more
+repos:
+# isort re-formats import orders to a standard, see https://pycqa.github.io/isort/index.html for more
+-   repo: https://github.com/pycqa/isort
+    rev: 5.10.1
+    hooks:
+    - id: isort
+      name: isort (python)
+# black re-formats code to an opinionated standard, see https://black.readthedocs.io/en/stable/index.html for more
+-   repo: https://github.com/psf/black
+    rev: 22.3.0
+    hooks:
+    - id: black
+      language_version: python3.10
+# flake8 checks code to make sure it conforms to pep8 (we specify things to ignore in tox.ini)
+# see https://flake8.pycqa.org/en/latest/ for more
+-   repo: https://gitlab.com/pycqa/flake8
+    rev: 3.7.9
+    hooks:
+    - id: flake8

@@ -1,0 +1,28 @@
+name: run checks
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '**.py'
+
+jobs:
+  run-checks:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        # change this python version if the python version is changed in pyproject.toml and the Dockerfile
+        python-version: '3.11.0'
+    - name: Set up Poetry
+      uses: abatilo/actions-poetry@v2.0.0
+      with:
+        poetry-version: 1.1.13
+    - name: Install dependencies
+      run: poetry config virtualenvs.create false && poetry install --no-interaction
+    - name: run mypy
+      run: mypy
+    - name: run tests
+      run: pytest tests
