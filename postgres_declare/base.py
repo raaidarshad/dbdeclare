@@ -8,7 +8,12 @@ class Base(ABC):
     entities: list["Base"] = []
     error_if_any_exist: bool = False
 
-    def __init__(self, name: str, depends_on: list["Base"] | None = None, error_if_exists: bool | None = None):
+    def __init__(
+        self,
+        name: str,
+        depends_on: list["Base"] | None = None,
+        error_if_exists: bool | None = None,
+    ):
         # TODO have "name" be a str class that validates via regex for valid postgres names
         self.name = name
         if not depends_on:
