@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "postgres_declare"
+name = "postgres-declare"
 version = "0.0.1"
 description = "Declarative layer for everything Postgres."
 authors = ["Raaid Arshad <raaid@protonmail.com>"]
@@ -8,6 +8,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "3.11.0"
+psycopg = "3.1.4"
 
 
 [tool.poetry.dev-dependencies]
@@ -39,7 +40,7 @@ profile = "black"
 
 [tool.mypy]
 strict = "True"
-files = "src/main.py"
+files = "."
 exclude = [
     '\.venv',
     'tests'
