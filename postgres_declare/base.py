@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Sequence
 
 import psycopg
 
@@ -11,7 +11,7 @@ class Base(ABC):
     def __init__(
         self,
         name: str,
-        depends_on: list["Base"] | None = None,
+        depends_on: Sequence["Base"] | None = None,
         error_if_exists: bool | None = None,
     ):
         # TODO have "name" be a str class that validates via regex for valid postgres names
