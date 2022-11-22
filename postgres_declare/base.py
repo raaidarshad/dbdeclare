@@ -2,11 +2,13 @@ from abc import ABC, abstractmethod
 from typing import Any, Sequence
 
 import psycopg
+from sqlalchemy import Engine, Row, TextClause
 
 
 class Base(ABC):
     entities: list["Base"] = []
     error_if_any_exist: bool = False
+    engine: Engine | None = None
 
     def __init__(
         self,
@@ -26,15 +28,14 @@ class Base(ABC):
         self.depends_on = depends_on
 
         self.__class__._register(self)
-        # TODO tbh can't remember if I need to return self; also does a type annotation help??
 
     @classmethod
     def _register(cls, entity: "Base") -> None:
         cls.entities.append(entity)
 
     @classmethod
-    def _create_all(cls) -> None:
-        # TODO set connection string/engine
+    def _create_all(cls, engine: Engine) -> None:
+        cls.engine = engine
         for entity in cls.entities:
             entity.create()
 
@@ -42,21 +43,23 @@ class Base(ABC):
     def connection() -> psycopg.Connection[Any]:
         return psycopg.connect("todo conn string")
 
-    def commit_sql(self, statement: str) -> None:
-        # TODO regex/validate statement
-        with self.connection() as conn:
-            with conn.cursor() as cur:
-                # TODO see if we can configure it to auto-commit
-                cur.execute(statement)
+    def commit_sql(self, statement: TextClause) -> None:
+        if self.engine:
+            with self.engine.connect() as conn:
+                conn.execution_options(isolation_level="AUTOCOMMIT").execute(statement)
                 conn.commit()
+        else:
+            # TODO raise specific exception
+            raise Exception
 
-    def fetch_sql(self, statement: str) -> list[tuple[int]]:
-        # TODO make the return type here more precise, ideally derived from psycopg
-        with self.connection() as conn:
-            with conn.cursor() as cur:
-                cur.execute(statement)
-                # TODO not sure of the behavior here if no rows are returned
-                return cur.fetchall()
+    def fetch_sql(self, statement: TextClause) -> Sequence[Row[Any]]:
+        if self.engine:
+            with self.engine.connect() as conn:
+                result = conn.execute(statement)
+                return result.all()
+        else:
+            # TODO raise specific exception
+            raise Exception
 
     def create(self) -> None:
         if not self.exists():
@@ -70,8 +73,7 @@ class Base(ABC):
                 pass
 
     @abstractmethod
-    def create_statement(self) -> str:
-        # TODO all the statement stuff should maybe have output type of a regex-ed validated SQL statement
+    def create_statement(self) -> TextClause:
         pass
 
     def exists(self) -> bool:
@@ -87,5 +89,5 @@ class Base(ABC):
             return False
 
     @abstractmethod
-    def exists_statement(self) -> str:
+    def exists_statement(self) -> TextClause:
         pass
