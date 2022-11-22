@@ -2,6 +2,7 @@ import pytest
 from sqlalchemy import create_engine
 
 from postgres_declare.entities import Base, Database
+from postgres_declare.exceptions import EntityExistsError, NoEngineError
 
 
 @pytest.fixture(autouse=True)
@@ -38,9 +39,14 @@ def test_register_order(test_db):
     assert Base.entities[1] == prod_db
 
 
+def test_no_engine(test_db, engine):
+    with pytest.raises(NoEngineError):
+        test_db.create()
+
+
 # tests that interact with postgres
 def test_database_does_not_exist(test_db, engine):
-    Base.engine = engine
+    Base._engine = engine
     assert not test_db.exists()
 
 
@@ -59,5 +65,5 @@ def test_database_create_if_exists_no_error_flag(test_db, engine):
 @pytest.mark.order(after="test_database_create_if_exists_no_error_flag")
 def test_database_create_if_exists_yes_error_flag(test_db, engine):
     test_db.error_if_exists = True
-    with pytest.raises(Exception):
+    with pytest.raises(EntityExistsError):
         Base._create_all(engine)
