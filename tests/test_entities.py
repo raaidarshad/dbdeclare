@@ -42,6 +42,8 @@ def test_register_order(test_db):
 def test_no_engine(test_db, engine):
     with pytest.raises(NoEngineError):
         test_db.create()
+    with pytest.raises(NoEngineError):
+        test_db.exists()
 
 
 # tests that interact with postgres
@@ -52,13 +54,13 @@ def test_database_does_not_exist(test_db, engine):
 
 @pytest.mark.order(after="test_database_does_not_exist")
 def test_database_create_if_not_exist(test_db, engine):
-    Base._create_all(engine)
+    Base.create_all(engine)
     assert test_db.exists()
 
 
 @pytest.mark.order(after="test_database_create_if_not_exist")
 def test_database_create_if_exists_no_error_flag(test_db, engine):
-    Base._create_all(engine)
+    Base.create_all(engine)
     # should simply no op, nothing to assert really
 
 
@@ -66,4 +68,4 @@ def test_database_create_if_exists_no_error_flag(test_db, engine):
 def test_database_create_if_exists_yes_error_flag(test_db, engine):
     test_db.error_if_exists = True
     with pytest.raises(EntityExistsError):
-        Base._create_all(engine)
+        Base.create_all(engine)

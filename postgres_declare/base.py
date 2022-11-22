@@ -35,7 +35,7 @@ class Base(ABC):
         cls.entities.append(entity)
 
     @classmethod
-    def _create_all(cls, engine: Engine) -> None:
+    def create_all(cls, engine: Engine) -> None:
         cls._engine = engine
         for entity in cls.entities:
             entity.create()
@@ -51,20 +51,20 @@ class Base(ABC):
             )
 
     @classmethod
-    def commit_sql(cls, statement: TextClause) -> None:
+    def _commit_sql(cls, statement: TextClause) -> None:
         with cls.engine().connect() as conn:
             conn.execution_options(isolation_level="AUTOCOMMIT").execute(statement)
             conn.commit()
 
     @classmethod
-    def fetch_sql(cls, statement: TextClause) -> Sequence[Row[Any]]:
+    def _fetch_sql(cls, statement: TextClause) -> Sequence[Row[Any]]:
         with cls.engine().connect() as conn:
             result = conn.execute(statement)
             return result.all()
 
     def create(self) -> None:
         if not self.exists():
-            self.__class__.commit_sql(self.create_statement())
+            self.__class__._commit_sql(self.create_statement())
         else:
             if self.error_if_exists:
                 raise EntityExistsError(
@@ -84,7 +84,7 @@ class Base(ABC):
     def exists(self) -> bool:
         # this expects to receive either 0 rows or 1 row
         # if 0 rows, does not exist; if 1 row, exists; if more, something went wrong
-        rows = self.__class__.fetch_sql(self.exists_statement())
+        rows = self.__class__._fetch_sql(self.exists_statement())
         if not rows:
             return False
         if len(rows) == 1:
