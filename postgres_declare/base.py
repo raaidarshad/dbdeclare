@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import Any, Sequence
+from typing import Any, Sequence, Type
 
-from sqlalchemy import Engine, Row, TextClause, create_engine, text
+from sqlalchemy import Engine, Inspector, Row, TextClause, create_engine, inspect, text
 from sqlalchemy.orm import DeclarativeBase
 
 from postgres_declare.exceptions import EntityExistsError, NoEngineError
@@ -91,16 +91,8 @@ class ClusterWideEntity(Entity):
         pass
 
     def exists(self) -> bool:
-        # this expects to receive either 0 rows or 1 row
-        # if 0 rows, does not exist; if 1 row, exists; if more, something went wrong
         rows = self.__class__._fetch_sql(self.exists_statement())
-        if not rows:
-            return False
-        if len(rows) == 1:
-            return True
-        else:
-            # TODO probably raise some error or warning?
-            return False
+        return rows[0][0]
 
     @abstractmethod
     def exists_statement(self) -> TextClause:
@@ -115,9 +107,9 @@ class Database(ClusterWideEntity):
         return text(f"CREATE DATABASE {self.name}")
 
     def exists_statement(self) -> TextClause:
-        return text("SELECT 1 AS result FROM pg_database WHERE datname=:db").bindparams(
-            db=self.name
-        )
+        return text(
+            "SELECT EXISTS(SELECT 1 FROM pg_database WHERE datname=:db)"
+        ).bindparams(db=self.name)
 
     def db_engine(self) -> Engine:
         # database entities will reference this as the engine to use
@@ -153,15 +145,47 @@ class DatabaseEntity(Entity):
 
 
 class DatabaseContent(DatabaseEntity):
-    def __init__(self, sqlalchemy_base: DeclarativeBase, **kwargs: Any):
+    def __init__(
+        self,
+        name: str,
+        sqlalchemy_base: Type[DeclarativeBase],
+        databases: Sequence[Database] | None = None,
+        error_if_exists: bool | None = None,
+    ):
+        super().__init__(
+            name=name, databases=databases, error_if_exists=error_if_exists
+        )
         self.base = sqlalchemy_base
-        super().__init__(**kwargs)
 
     def create(self) -> None:
+        if not self.all_exist():
+            for db in self.databases:
+                self.base.metadata.create_all(db.db_engine())
+        else:
+            if self.error_if_exists:
+                raise EntityExistsError(
+                    f"There is already a {self.__class__.__name__} with the "
+                    f"name {self.name}. If you want to proceed anyway, set "
+                    f"the `error_if_exists` parameter to False. This will "
+                    f"simply skip over the existing entity."
+                )
+            else:
+                # TODO log that we no-op?
+                pass
+
+    def all_exist(self) -> bool:
+        tables_in_db = []
         for db in self.databases:
-            self.base.metadata.create_all(
-                db.db_engine(), checkfirst=(not self.error_if_exists)
+            inspector: Inspector = inspect(db.db_engine())
+            tables_in_db.append(
+                all(
+                    [
+                        inspector.has_table(table.name)
+                        for table in self.base.metadata.tables.values()
+                    ]
+                )
             )
+        return all(tables_in_db)
 
 
 class Grant(DatabaseEntity):
