@@ -98,13 +98,13 @@ def test_database_create_if_exists_yes_error_flag(test_db, engine):
 @pytest.mark.order(after="test_database_create_if_not_exist")
 def test_database_content_does_not_all_exist(test_db, test_tables, engine):
     Entity._engine = engine
-    assert not test_tables.all_exist()
+    assert not test_tables.exists()
 
 
 @pytest.mark.order(after="test_database_content_does_not_all_exist")
 def test_database_content_create_if_not_exist(test_tables, engine):
     Entity.create_all(engine)
-    assert test_tables.all_exist()
+    assert test_tables.exists()
 
 
 @pytest.mark.order(after="test_database_content_create_if_not_exist")

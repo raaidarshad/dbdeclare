@@ -47,6 +47,21 @@ class Entity(ABC):
                 "a valid engine. This should be passed via the `_create_all` method."
             )
 
+    def safe_create(self):
+        if not self.exists():
+            self.create()
+        else:
+            if self.error_if_exists:
+                raise EntityExistsError(
+                    f"There is already a {self.__class__.__name__} with the "
+                    f"name {self.name}. If you want to proceed anyway, set "
+                    f"the `error_if_exists` parameter to False. This will "
+                    f"simply skip over the existing entity."
+                )
+            else:
+                # TODO log that we no-op?
+                pass
+
     @abstractmethod
     def create(self) -> None:
         pass
@@ -55,7 +70,11 @@ class Entity(ABC):
     def create_all(cls, engine: Engine) -> None:
         cls._engine = engine
         for entity in cls.entities:
-            entity.create()
+            entity.safe_create()
+
+    @abstractmethod
+    def exists(self) -> bool:
+        pass
 
 
 class ClusterWideEntity(Entity):
@@ -72,19 +91,7 @@ class ClusterWideEntity(Entity):
             return result.all()
 
     def create(self) -> None:
-        if not self.exists():
-            self.__class__._commit_sql(self.create_statement())
-        else:
-            if self.error_if_exists:
-                raise EntityExistsError(
-                    f"There is already a {self.__class__.__name__} with the "
-                    f"name {self.name}. If you want to proceed anyway, set "
-                    f"the `error_if_exists` parameter to False. This will "
-                    f"simply skip over the existing entity."
-                )
-            else:
-                # TODO log that we no-op?
-                pass
+        self.__class__._commit_sql(self.create_statement())
 
     @abstractmethod
     def create_statement(self) -> TextClause:
@@ -158,22 +165,10 @@ class DatabaseContent(DatabaseEntity):
         self.base = sqlalchemy_base
 
     def create(self) -> None:
-        if not self.all_exist():
-            for db in self.databases:
-                self.base.metadata.create_all(db.db_engine())
-        else:
-            if self.error_if_exists:
-                raise EntityExistsError(
-                    f"There is already a {self.__class__.__name__} with the "
-                    f"name {self.name}. If you want to proceed anyway, set "
-                    f"the `error_if_exists` parameter to False. This will "
-                    f"simply skip over the existing entity."
-                )
-            else:
-                # TODO log that we no-op?
-                pass
+        for db in self.databases:
+            self.base.metadata.create_all(db.db_engine())
 
-    def all_exist(self) -> bool:
+    def exists(self) -> bool:
         tables_in_db = []
         for db in self.databases:
             inspector: Inspector = inspect(db.db_engine())
