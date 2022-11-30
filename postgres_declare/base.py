@@ -109,6 +109,46 @@ class ClusterWideEntity(Entity):
 class Database(ClusterWideEntity):
     _db_engine: Engine | None = None
 
+    def __init__(
+        self,
+        name: str,
+        depends_on: Sequence["Entity"] | None = None,
+        error_if_exists: bool | None = None,
+        owner: str | None = None,  # no quotes
+        template: str | None = None,  # no quotes
+        encoding: str | None = None,  # no quotes? I think it can be either hmm tough
+        strategy: str | None = None,
+        locale: str | None = None,
+        lc_collate: str | None = None,
+        lc_ctype: str | None = None,
+        icu_locale: str | None = None,
+        locale_provide: str | None = None,
+        collation_version: str | None = None,
+        tablespace: str | None = None,  # no quotes
+        allow_connections: bool | None = None,  # no quotes
+        connection_limit: int | None = None,  # no quotes?
+        is_template: bool | None = None,  # no quotes
+        oid: str | None = None,
+    ):
+        self.owner = owner
+        self.template = template
+        self.encoding = encoding
+        self.strategy = strategy
+        self.locale = locale
+        self.lc_collate = lc_collate
+        self.l_lctype = lc_ctype
+        self.icu_locale = icu_locale
+        self.locale_provide = locale_provide
+        self.collation_version = collation_version
+        self.tablespace = tablespace
+        self.allow_connections = allow_connections
+        self.connection_limit = connection_limit
+        self.is_template = is_template
+        self.oid = oid
+        super().__init__(
+            name=name, depends_on=depends_on, error_if_exists=error_if_exists
+        )
+
     def create_statement(self) -> TextClause:
         # TODO add options from init to customize this
         return text(f"CREATE DATABASE {self.name}")
