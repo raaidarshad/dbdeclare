@@ -37,7 +37,15 @@ def engine():
 
 @pytest.fixture
 def test_db():
-    return Database("test")
+    return Database(
+        "test",
+        allow_connections=True,
+        strategy="WAL_LOG",
+        template="template1",
+        connection_limit=4,
+        encoding="UTF8",
+        locale_provider="libc",
+    )
 
 
 @pytest.fixture
