@@ -32,7 +32,7 @@ This can be run [manually](#run-tests) and the CI runs it on PRs to the `main` b
 ### Setup
 
 1. [Install Poetry](https://python-poetry.org/docs/#installation).
-2. Run `poetry install --no-root`
+2. Run `poetry install`
 3. Run `source $(poetry env list --full-path)/bin/activate && pre-commit install && deactivate` to set up `pre-commit`
 
 You're all set up! Your local environment should include all dependencies, including dev dependencies like `black`.
@@ -40,13 +40,13 @@ This is done with Poetry via the `poetry.lock` file.
 
 ### Run Code Format and Linting
 
-To manually run isort, black, and flake8 all in one go, simply run `pre-commit run --all-files`. Explore the `pre-commit` docs (linked above)
-to see more options.
+To manually run isort, black, and flake8 all in one go, simply run `pre-commit run --all-files`. Explore the 
+[pre-commit](https://pre-commit.com/) docs to see more options.
 
 ### Run Static Type Checking
 
-To manually run mypy, simply run `mypy .` from the root directory of the project. It will use the default configuration
-specified in `pyproject.toml`.
+To manually run mypy, simply run `mypy` from the root directory of the project. It will use the default configuration
+specified in `pyproject.toml`. Explore the [mypy](https://mypy.readthedocs.io/en/stable/index.html) docs to see more options.
 
 ### Update Dependencies
 
@@ -54,5 +54,14 @@ To update dependencies in your local environment, make changes to the `pyproject
 
 ### Run Tests
 
-To manually run rests, simply run `pytest tests` from the root directory of the project. Explore the `pytest` docs (linked above)
-to see more options.
+To manually run rests, simply run `pytest tests` from the root directory of the project. Explore the 
+[pytest](https://docs.pytest.org/en/7.2.x/) docs to see more options.
+
+Many of the tests expect a postgres instance to be available with certain credentials. A quick and easy
+way to set this up locally is to use Docker:
+
+1. `docker pull postgres`
+2. `docker run --rm --name postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_HOST_AUTH_METHOD=trust -p 127.0.0.1:5432:5432/tcp postgres`
+
+You will need to clear the instance before a new run of tests. A simple way to do this is to stop the container (you
+can do so by pressing ctrl-C on most machines) then running the command again.
