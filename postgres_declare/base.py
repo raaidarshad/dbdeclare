@@ -48,7 +48,7 @@ class Entity(ABC):
                 "a valid engine. This should be passed via the `_create_all` method."
             )
 
-    def safe_create(self):
+    def safe_create(self) -> None:
         if not self.exists():
             self.create()
         else:
@@ -100,7 +100,7 @@ class ClusterWideEntity(Entity):
 
     def exists(self) -> bool:
         rows = self.__class__._fetch_sql(self.exists_statement())
-        return rows[0][0]
+        return rows[0][0]  # type: ignore
 
     @abstractmethod
     def exists_statement(self) -> TextClause:
