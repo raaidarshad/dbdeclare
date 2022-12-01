@@ -205,7 +205,13 @@ class Database(ClusterWideEntity):
 
 
 class Role(ClusterWideEntity):
-    pass
+    def create_statement(self) -> TextClause:
+        pass
+
+    def exists_statement(self) -> TextClause:
+        return text(
+            "SELECT EXISTS(SELECT 1 FROM pg_authid WHERE rolname=:role)"
+        ).bindparams(role=self.name)
 
 
 class DatabaseEntity(Entity):
