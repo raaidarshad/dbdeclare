@@ -199,7 +199,11 @@ class Database(ClusterWideEntity):
 
 class Role(ClusterWideEntity):
     def create_statement(self) -> TextClause:
-        pass
+        statement = f"CREATE ROLE {self.name}"
+
+        # todo add options and bind params where needed
+
+        return text(statement)
 
     def exists_statement(self) -> TextClause:
         return text("SELECT EXISTS(SELECT 1 FROM pg_authid WHERE rolname=:role)").bindparams(role=self.name)
