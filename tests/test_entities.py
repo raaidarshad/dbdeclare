@@ -104,7 +104,7 @@ def test_database_create_if_exists_yes_error_flag(test_db: Database, engine: Eng
 
 
 @pytest.mark.order(after="test_database_create_if_not_exist")
-def test_database_content_does_not_all_exist(test_db: Database, test_tables: DatabaseContent, engine: Engine) -> None:
+def test_database_content_does_not_exist(test_db: Database, test_tables: DatabaseContent, engine: Engine) -> None:
     Entity._engine = engine
     assert not test_tables.exists()
 
