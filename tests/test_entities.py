@@ -143,3 +143,10 @@ def test_role_create_if_not_exist(test_role: Role, engine: Engine) -> None:
 def test_role_create_if_exists_no_error_flag(test_role: Role, engine: Engine) -> None:
     Entity.create_all(engine)
     # should simply no op, nothing to assert really
+
+
+@pytest.mark.order(after="test_role_create_if_exists_no_error_flag")
+def test_role_create_if_exists_yes_error_flag(test_role: Role, engine: Engine) -> None:
+    test_role.error_if_exists = True
+    with pytest.raises(EntityExistsError):
+        Entity.create_all(engine)
