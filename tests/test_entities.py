@@ -30,9 +30,7 @@ def engine() -> Engine:
     host = "127.0.0.1"
     port = 5432
     db_name = "postgres"
-    return create_engine(
-        f"postgresql+psycopg://{user}:{password}@{host}:{port}/{db_name}"
-    )
+    return create_engine(f"postgresql+psycopg://{user}:{password}@{host}:{port}/{db_name}")
 
 
 @pytest.fixture
@@ -50,9 +48,7 @@ def test_db() -> Database:
 
 @pytest.fixture
 def test_tables(test_db: Database) -> DatabaseContent:
-    content = DatabaseContent(
-        "test_tables", sqlalchemy_base=MyBase, databases=[test_db]
-    )
+    content = DatabaseContent("test_tables", sqlalchemy_base=MyBase, databases=[test_db])
     return content
 
 
@@ -91,50 +87,38 @@ def test_database_create_if_not_exist(test_db: Database, engine: Engine) -> None
 
 
 @pytest.mark.order(after="test_database_create_if_not_exist")
-def test_database_create_if_exists_no_error_flag(
-    test_db: Database, engine: Engine
-) -> None:
+def test_database_create_if_exists_no_error_flag(test_db: Database, engine: Engine) -> None:
     Entity.create_all(engine)
     # should simply no op, nothing to assert really
 
 
 @pytest.mark.order(after="test_database_create_if_exists_no_error_flag")
-def test_database_create_if_exists_yes_error_flag(
-    test_db: Database, engine: Engine
-) -> None:
+def test_database_create_if_exists_yes_error_flag(test_db: Database, engine: Engine) -> None:
     test_db.error_if_exists = True
     with pytest.raises(EntityExistsError):
         Entity.create_all(engine)
 
 
 @pytest.mark.order(after="test_database_create_if_not_exist")
-def test_database_content_does_not_all_exist(
-    test_db: Database, test_tables: DatabaseContent, engine: Engine
-) -> None:
+def test_database_content_does_not_all_exist(test_db: Database, test_tables: DatabaseContent, engine: Engine) -> None:
     Entity._engine = engine
     assert not test_tables.exists()
 
 
 @pytest.mark.order(after="test_database_content_does_not_all_exist")
-def test_database_content_create_if_not_exist(
-    test_tables: DatabaseContent, engine: Engine
-) -> None:
+def test_database_content_create_if_not_exist(test_tables: DatabaseContent, engine: Engine) -> None:
     Entity.create_all(engine)
     assert test_tables.exists()
 
 
 @pytest.mark.order(after="test_database_content_create_if_not_exist")
-def test_database_content_create_if_exists_no_error_flag(
-    test_tables: DatabaseContent, engine: Engine
-) -> None:
+def test_database_content_create_if_exists_no_error_flag(test_tables: DatabaseContent, engine: Engine) -> None:
     Entity.create_all(engine)
     # should simply no op, nothing to assert really
 
 
 @pytest.mark.order(after="test_database_content_create_if_exists_no_error_flag")
-def test_database_content_create_if_exists_yes_error_flag(
-    test_tables: DatabaseContent, engine: Engine
-) -> None:
+def test_database_content_create_if_exists_yes_error_flag(test_tables: DatabaseContent, engine: Engine) -> None:
     test_tables.error_if_exists = True
     with pytest.raises(EntityExistsError):
         Entity.create_all(engine)

@@ -155,9 +155,7 @@ class Database(ClusterWideEntity):
         self.connection_limit = connection_limit
         self.is_template = is_template
         self.oid = oid
-        super().__init__(
-            name=name, depends_on=depends_on, error_if_exists=error_if_exists
-        )
+        super().__init__(name=name, depends_on=depends_on, error_if_exists=error_if_exists)
 
     def create_statement(self) -> TextClause:
         statement = f"CREATE DATABASE {self.name}"
@@ -166,8 +164,7 @@ class Database(ClusterWideEntity):
         props = {
             k: v
             for k, v in vars(self).items()
-            if (k not in signature(ClusterWideEntity.__init__).parameters)
-            and (v is not None)
+            if (k not in signature(ClusterWideEntity.__init__).parameters) and (v is not None)
         }
 
         # append the arguments to the sql statement, "bind" aka quote the ones that need to be literal values
@@ -184,9 +181,7 @@ class Database(ClusterWideEntity):
         return text(statement).bindparams(**bound_props)
 
     def exists_statement(self) -> TextClause:
-        return text(
-            "SELECT EXISTS(SELECT 1 FROM pg_database WHERE datname=:db)"
-        ).bindparams(db=self.name)
+        return text("SELECT EXISTS(SELECT 1 FROM pg_database WHERE datname=:db)").bindparams(db=self.name)
 
     def db_engine(self) -> Engine:
         # database entities will reference this as the engine to use
@@ -198,9 +193,7 @@ class Database(ClusterWideEntity):
             pw = self.__class__.engine().url.password
 
             # then create a new engine
-            self.__class__._db_engine = create_engine(
-                f"postgresql+psycopg://{user}:{pw}@{host}:{port}/{self.name}"
-            )
+            self.__class__._db_engine = create_engine(f"postgresql+psycopg://{user}:{pw}@{host}:{port}/{self.name}")
         return self.__class__._db_engine
 
 
@@ -209,9 +202,7 @@ class Role(ClusterWideEntity):
         pass
 
     def exists_statement(self) -> TextClause:
-        return text(
-            "SELECT EXISTS(SELECT 1 FROM pg_authid WHERE rolname=:role)"
-        ).bindparams(role=self.name)
+        return text("SELECT EXISTS(SELECT 1 FROM pg_authid WHERE rolname=:role)").bindparams(role=self.name)
 
 
 class DatabaseEntity(Entity):
@@ -235,9 +226,7 @@ class DatabaseContent(DatabaseEntity):
         databases: Sequence[Database] | None = None,
         error_if_exists: bool | None = None,
     ):
-        super().__init__(
-            name=name, databases=databases, error_if_exists=error_if_exists
-        )
+        super().__init__(name=name, databases=databases, error_if_exists=error_if_exists)
         self.base = sqlalchemy_base
 
     def create(self) -> None:
@@ -248,14 +237,7 @@ class DatabaseContent(DatabaseEntity):
         tables_in_db = []
         for db in self.databases:
             inspector: Inspector = inspect(db.db_engine())
-            tables_in_db.append(
-                all(
-                    [
-                        inspector.has_table(table.name)
-                        for table in self.base.metadata.tables.values()
-                    ]
-                )
-            )
+            tables_in_db.append(all([inspector.has_table(table.name) for table in self.base.metadata.tables.values()]))
         return all(tables_in_db)
 
 
