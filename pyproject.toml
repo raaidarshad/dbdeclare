@@ -45,5 +45,4 @@ strict = "True"
 files = "."
 exclude = [
     '\.venv',
-    'tests'
 ]
