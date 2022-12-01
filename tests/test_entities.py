@@ -109,7 +109,7 @@ def test_database_content_does_not_exist(test_db: Database, test_tables: Databas
     assert not test_tables.exists()
 
 
-@pytest.mark.order(after="test_database_content_does_not_all_exist")
+@pytest.mark.order(after="test_database_content_does_not_exist")
 def test_database_content_create_if_not_exist(test_tables: DatabaseContent, engine: Engine) -> None:
     Entity.create_all(engine)
     assert test_tables.exists()
@@ -131,3 +131,9 @@ def test_database_content_create_if_exists_yes_error_flag(test_tables: DatabaseC
 def test_role_does_not_exist(test_role: Role, engine: Engine) -> None:
     Entity._engine = engine
     assert not test_role.exists()
+
+
+@pytest.mark.order(after="test_role_does_not_exist")
+def test_role_create_if_not_exist(test_role: Role, engine: Engine) -> None:
+    Entity.create_all(engine)
+    assert test_role.exists()
