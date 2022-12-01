@@ -2,7 +2,7 @@ import pytest
 from sqlalchemy import Engine, String, create_engine
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
-from postgres_declare.base import Database, DatabaseContent, Entity
+from postgres_declare.base import Database, DatabaseContent, Entity, Role
 from postgres_declare.exceptions import EntityExistsError, NoEngineError
 
 
@@ -48,8 +48,12 @@ def test_db() -> Database:
 
 @pytest.fixture
 def test_tables(test_db: Database) -> DatabaseContent:
-    content = DatabaseContent("test_tables", sqlalchemy_base=MyBase, databases=[test_db])
-    return content
+    return DatabaseContent("test_tables", sqlalchemy_base=MyBase, databases=[test_db])
+
+
+@pytest.fixture
+def test_role() -> Role:
+    return Role("test_role")
 
 
 def test_database_init(test_db: Database) -> None:
@@ -122,3 +126,8 @@ def test_database_content_create_if_exists_yes_error_flag(test_tables: DatabaseC
     test_tables.error_if_exists = True
     with pytest.raises(EntityExistsError):
         Entity.create_all(engine)
+
+
+def test_role_does_not_exist(test_role: Role, engine: Engine) -> None:
+    Entity._engine = engine
+    assert not test_role.exists()
