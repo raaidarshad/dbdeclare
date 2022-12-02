@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from datetime import datetime
 from inspect import signature
 from typing import Any, Sequence, Type
 
@@ -198,6 +199,42 @@ class Database(ClusterWideEntity):
 
 
 class Role(ClusterWideEntity):
+    def __init__(
+        self,
+        name: str,
+        depends_on: Sequence["Entity"] | None = None,
+        error_if_exists: bool | None = None,
+        superuser: bool | None = None,
+        createdb: bool | None = None,
+        createrole: bool | None = None,
+        inherit: bool | None = None,
+        login: bool | None = None,
+        replication: bool | None = None,
+        bypassrls: bool | None = None,
+        connection_limit: int | None = None,
+        password: str | None = None,
+        encrypted_password: bool | None = None,
+        valid_until: datetime | None = None,
+        in_role: Sequence["Role"] | None = None,
+        role: Sequence["Role"] | None = None,
+        admin: Sequence["Role"] | None = None,
+    ):
+        self.superuser = superuser
+        self.createdb = createdb
+        self.createrole = createrole
+        self.inherit = inherit
+        self.login = login
+        self.replication = replication
+        self.bypassrls = bypassrls
+        self.connection_limit = connection_limit
+        self.password = password
+        self.encrypted_password = encrypted_password
+        self.valid_until = valid_until
+        self.in_role = in_role
+        self.role = role
+        self.admin = admin
+        super().__init__(name=name, depends_on=depends_on, error_if_exists=error_if_exists)
+
     def create_statement(self) -> TextClause:
         statement = f"CREATE ROLE {self.name}"
 
