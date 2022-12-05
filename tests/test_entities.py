@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 import pytest
 from sqlalchemy import Engine, String, create_engine
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
@@ -57,7 +59,19 @@ def test_tables(test_db: Database) -> DatabaseContent:
 
 @pytest.fixture
 def test_role() -> Role:
-    return Role("test_role")
+    return Role("test_role", superuser=False, createdb=True, createrole=True, connection_limit=4)
+
+
+@pytest.fixture
+def test_user(test_role) -> Role:
+    return Role(
+        "test_user",
+        login=True,
+        password="fakepw123",
+        encrypted_password=True,
+        valid_until=datetime.today() + timedelta(days=180),
+        in_role=[test_role],
+    )
 
 
 #########
@@ -192,3 +206,10 @@ def test_role_create_if_exists_yes_error_flag(test_role: Role, engine: Engine) -
     test_role.error_if_exists = True
     with pytest.raises(EntityExistsError):
         Entity.create_all(engine)
+
+
+@pytest.mark.with_db
+@pytest.mark.order(after="test_role_create_if_not_exist")
+def test_role_create_with_password(test_user: Role, engine: Engine) -> None:
+    Entity.create_all(engine)
+    assert test_user.exists()

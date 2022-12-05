@@ -176,13 +176,13 @@ class Database(ClusterWideEntity):
             statement = f"{statement} {k.upper()}="
             if k in self.__class__.literals:
                 # bind param, "CREATE DATABASE dbname PROP=" + ":var_to_be_bound"
-                statement = f"{statement}:{k}"
+                # TODO switching to simple quotes, binding of params is not working
+                statement = f"{statement}'{k}'"
             else:
                 # don't bind, "CREATE DATABASE dbname PROP=" + "VALUE"
                 statement = f"{statement}{v}"
 
-        bound_props = {k: v for k, v in props.items() if k in self.__class__.literals}
-        return text(statement).bindparams(**bound_props)
+        return text(statement)
 
     def exists_statement(self) -> TextClause:
         return text("SELECT EXISTS(SELECT 1 FROM pg_database WHERE datname=:db)").bindparams(db=self.name)
@@ -202,6 +202,8 @@ class Database(ClusterWideEntity):
 
 
 class Role(ClusterWideEntity):
+    literals = ["password", "valid_until"]
+
     def __init__(
         self,
         name: str,
@@ -240,9 +242,35 @@ class Role(ClusterWideEntity):
 
     def create_statement(self) -> TextClause:
         statement = f"CREATE ROLE {self.name}"
+        props = self._get_passed_args()
 
-        # todo add options and bind params where needed
+        for k, v in props.items():
+            match k, v:
+                case "password", str(v):
+                    if "encrypted_password" in props:
+                        statement = f"{statement} ENCRYPTED"
+                    statement = f"{statement} PASSWORD '{v}'"
+                    if "valid_until" in props:
+                        timestamp = props.get("valid_until")
+                        statement = f"{statement} VALID UNTIL '{timestamp}'"
 
+                case k, bool(v) if k != "encrypted_password":
+                    flag = k.upper()
+                    if not v:
+                        flag = f"NO{flag}"
+                    statement = f"{statement} {flag}"
+
+                case "connection_limit", int(v):
+                    statement = f"{statement} CONNECTION LIMIT {v}"
+
+                # match a sequence with at least one element to filter out empty sequence
+                case k, [first, *roles]:
+                    option = k.upper().replace("_", " ")
+                    roles = [first] + roles
+                    formatted_roles = ", ".join([r.name for r in roles])
+                    statement = f"{statement} {option} {formatted_roles}"
+
+        # TODO binding isn't working, switching to simple quotes for now
         return text(statement)
 
     def exists_statement(self) -> TextClause:
