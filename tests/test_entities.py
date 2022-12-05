@@ -5,6 +5,10 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from postgres_declare.base import Database, DatabaseContent, Entity, Role
 from postgres_declare.exceptions import EntityExistsError, NoEngineError
 
+########################
+# FIXTURES AND CLASSES #
+########################
+
 
 class MyBase(DeclarativeBase):
     pass
@@ -56,6 +60,11 @@ def test_role() -> Role:
     return Role("test_role")
 
 
+#########
+# TESTS #
+#########
+
+
 def test_database_init(test_db: Database) -> None:
     assert test_db in Entity.entities
 
@@ -78,24 +87,49 @@ def test_database_content_present(test_tables: DatabaseContent) -> None:
     assert test_tables in Entity.entities
 
 
-# tests that interact with postgres
+def test_get_passed_args() -> None:
+    args = dict(
+        name="test",
+        allow_connections=True,
+        strategy="WAL_LOG",
+        template="template1",
+        connection_limit=4,
+        encoding="UTF8",
+        locale_provider="libc",
+    )
+    new_db = Database(**args)
+    check_args = new_db._get_passed_args()
+    # remove "name" before check because it isn't a child class argument, so it shouldn't be in the fn output
+    args.pop("name")
+    assert args == check_args
+
+
+############
+# DB TESTS #
+############
+
+
+@pytest.mark.with_db
 def test_database_does_not_exist(test_db: Database, engine: Engine) -> None:
     Entity._engine = engine
     assert not test_db.exists()
 
 
+@pytest.mark.with_db
 @pytest.mark.order(after="test_database_does_not_exist")
 def test_database_create_if_not_exist(test_db: Database, engine: Engine) -> None:
     Entity.create_all(engine)
     assert test_db.exists()
 
 
+@pytest.mark.with_db
 @pytest.mark.order(after="test_database_create_if_not_exist")
 def test_database_create_if_exists_no_error_flag(test_db: Database, engine: Engine) -> None:
     Entity.create_all(engine)
     # should simply no op, nothing to assert really
 
 
+@pytest.mark.with_db
 @pytest.mark.order(after="test_database_create_if_exists_no_error_flag")
 def test_database_create_if_exists_yes_error_flag(test_db: Database, engine: Engine) -> None:
     test_db.error_if_exists = True
@@ -103,24 +137,28 @@ def test_database_create_if_exists_yes_error_flag(test_db: Database, engine: Eng
         Entity.create_all(engine)
 
 
+@pytest.mark.with_db
 @pytest.mark.order(after="test_database_create_if_not_exist")
 def test_database_content_does_not_exist(test_db: Database, test_tables: DatabaseContent, engine: Engine) -> None:
     Entity._engine = engine
     assert not test_tables.exists()
 
 
+@pytest.mark.with_db
 @pytest.mark.order(after="test_database_content_does_not_exist")
 def test_database_content_create_if_not_exist(test_tables: DatabaseContent, engine: Engine) -> None:
     Entity.create_all(engine)
     assert test_tables.exists()
 
 
+@pytest.mark.with_db
 @pytest.mark.order(after="test_database_content_create_if_not_exist")
 def test_database_content_create_if_exists_no_error_flag(test_tables: DatabaseContent, engine: Engine) -> None:
     Entity.create_all(engine)
     # should simply no op, nothing to assert really
 
 
+@pytest.mark.with_db
 @pytest.mark.order(after="test_database_content_create_if_exists_no_error_flag")
 def test_database_content_create_if_exists_yes_error_flag(test_tables: DatabaseContent, engine: Engine) -> None:
     test_tables.error_if_exists = True
@@ -128,23 +166,27 @@ def test_database_content_create_if_exists_yes_error_flag(test_tables: DatabaseC
         Entity.create_all(engine)
 
 
+@pytest.mark.with_db
 def test_role_does_not_exist(test_role: Role, engine: Engine) -> None:
     Entity._engine = engine
     assert not test_role.exists()
 
 
+@pytest.mark.with_db
 @pytest.mark.order(after="test_role_does_not_exist")
 def test_role_create_if_not_exist(test_role: Role, engine: Engine) -> None:
     Entity.create_all(engine)
     assert test_role.exists()
 
 
+@pytest.mark.with_db
 @pytest.mark.order(after="test_role_create_if_not_exist")
 def test_role_create_if_exists_no_error_flag(test_role: Role, engine: Engine) -> None:
     Entity.create_all(engine)
     # should simply no op, nothing to assert really
 
 
+@pytest.mark.with_db
 @pytest.mark.order(after="test_role_create_if_exists_no_error_flag")
 def test_role_create_if_exists_yes_error_flag(test_role: Role, engine: Engine) -> None:
     test_role.error_if_exists = True

@@ -107,6 +107,14 @@ class ClusterWideEntity(Entity):
     def exists_statement(self) -> TextClause:
         pass
 
+    def _get_passed_args(self) -> dict[str, Any]:
+        # grab all the arguments to __init__ that aren't in the superclass and have a non-None value
+        return {
+            k: v
+            for k, v in vars(self).items()
+            if (k not in signature(ClusterWideEntity.__init__).parameters) and (v is not None)
+        }
+
 
 class Database(ClusterWideEntity):
     _db_engine: Engine | None = None
@@ -161,12 +169,7 @@ class Database(ClusterWideEntity):
     def create_statement(self) -> TextClause:
         statement = f"CREATE DATABASE {self.name}"
 
-        # grab all the arguments to __init__ that aren't in the superclass and have a non-None value
-        props = {
-            k: v
-            for k, v in vars(self).items()
-            if (k not in signature(ClusterWideEntity.__init__).parameters) and (v is not None)
-        }
+        props = self._get_passed_args()
 
         # append the arguments to the sql statement, "bind" aka quote the ones that need to be literal values
         for k, v in props.items():
