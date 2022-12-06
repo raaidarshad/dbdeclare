@@ -23,6 +23,7 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.black]
+line-length = 120
 include = '\.pyi?$'
 exclude = '''
 (
@@ -45,4 +46,9 @@ strict = "True"
 files = "."
 exclude = [
     '\.venv',
+]
+
+[tool.pytest.ini_options]
+markers = [
+    "with_db: marks tests as those that need a DB present to interact with (deselect with '-m \"not slow\"')"
 ]

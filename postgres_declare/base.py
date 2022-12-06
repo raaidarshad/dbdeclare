@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from datetime import datetime
 from inspect import signature
 from typing import Any, Sequence, Type
 
@@ -106,6 +107,14 @@ class ClusterWideEntity(Entity):
     def exists_statement(self) -> TextClause:
         pass
 
+    def _get_passed_args(self) -> dict[str, Any]:
+        # grab all the arguments to __init__ that aren't in the superclass and have a non-None value
+        return {
+            k: v
+            for k, v in vars(self).items()
+            if (k not in signature(ClusterWideEntity.__init__).parameters) and (v is not None)
+        }
+
 
 class Database(ClusterWideEntity):
     _db_engine: Engine | None = None
@@ -155,38 +164,28 @@ class Database(ClusterWideEntity):
         self.connection_limit = connection_limit
         self.is_template = is_template
         self.oid = oid
-        super().__init__(
-            name=name, depends_on=depends_on, error_if_exists=error_if_exists
-        )
+        super().__init__(name=name, depends_on=depends_on, error_if_exists=error_if_exists)
 
     def create_statement(self) -> TextClause:
         statement = f"CREATE DATABASE {self.name}"
 
-        # grab all the arguments to __init__ that aren't in the superclass and have a non-None value
-        props = {
-            k: v
-            for k, v in vars(self).items()
-            if (k not in signature(ClusterWideEntity.__init__).parameters)
-            and (v is not None)
-        }
+        props = self._get_passed_args()
 
         # append the arguments to the sql statement, "bind" aka quote the ones that need to be literal values
         for k, v in props.items():
             statement = f"{statement} {k.upper()}="
             if k in self.__class__.literals:
                 # bind param, "CREATE DATABASE dbname PROP=" + ":var_to_be_bound"
-                statement = f"{statement}:{k}"
+                # TODO switching to simple quotes, binding of params is not working
+                statement = f"{statement}'{k}'"
             else:
                 # don't bind, "CREATE DATABASE dbname PROP=" + "VALUE"
                 statement = f"{statement}{v}"
 
-        bound_props = {k: v for k, v in props.items() if k in self.__class__.literals}
-        return text(statement).bindparams(**bound_props)
+        return text(statement)
 
     def exists_statement(self) -> TextClause:
-        return text(
-            "SELECT EXISTS(SELECT 1 FROM pg_database WHERE datname=:db)"
-        ).bindparams(db=self.name)
+        return text("SELECT EXISTS(SELECT 1 FROM pg_database WHERE datname=:db)").bindparams(db=self.name)
 
     def db_engine(self) -> Engine:
         # database entities will reference this as the engine to use
@@ -198,14 +197,84 @@ class Database(ClusterWideEntity):
             pw = self.__class__.engine().url.password
 
             # then create a new engine
-            self.__class__._db_engine = create_engine(
-                f"postgresql+psycopg://{user}:{pw}@{host}:{port}/{self.name}"
-            )
+            self.__class__._db_engine = create_engine(f"postgresql+psycopg://{user}:{pw}@{host}:{port}/{self.name}")
         return self.__class__._db_engine
 
 
 class Role(ClusterWideEntity):
-    pass
+    literals = ["password", "valid_until"]
+
+    def __init__(
+        self,
+        name: str,
+        depends_on: Sequence["Entity"] | None = None,
+        error_if_exists: bool | None = None,
+        superuser: bool | None = None,
+        createdb: bool | None = None,
+        createrole: bool | None = None,
+        inherit: bool | None = None,
+        login: bool | None = None,
+        replication: bool | None = None,
+        bypassrls: bool | None = None,
+        connection_limit: int | None = None,
+        password: str | None = None,
+        encrypted_password: bool | None = None,
+        valid_until: datetime | None = None,
+        in_role: Sequence["Role"] | None = None,
+        role: Sequence["Role"] | None = None,
+        admin: Sequence["Role"] | None = None,
+    ):
+        self.superuser = superuser
+        self.createdb = createdb
+        self.createrole = createrole
+        self.inherit = inherit
+        self.login = login
+        self.replication = replication
+        self.bypassrls = bypassrls
+        self.connection_limit = connection_limit
+        self.password = password
+        self.encrypted_password = encrypted_password
+        self.valid_until = valid_until
+        self.in_role = in_role
+        self.role = role
+        self.admin = admin
+        super().__init__(name=name, depends_on=depends_on, error_if_exists=error_if_exists)
+
+    def create_statement(self) -> TextClause:
+        statement = f"CREATE ROLE {self.name}"
+        props = self._get_passed_args()
+
+        for k, v in props.items():
+            match k, v:
+                case "password", str(v):
+                    if "encrypted_password" in props:
+                        statement = f"{statement} ENCRYPTED"
+                    statement = f"{statement} PASSWORD '{v}'"
+                    if "valid_until" in props:
+                        timestamp = props.get("valid_until")
+                        statement = f"{statement} VALID UNTIL '{timestamp}'"
+
+                case k, bool(v) if k != "encrypted_password":
+                    flag = k.upper()
+                    if not v:
+                        flag = f"NO{flag}"
+                    statement = f"{statement} {flag}"
+
+                case "connection_limit", int(v):
+                    statement = f"{statement} CONNECTION LIMIT {v}"
+
+                # match a sequence with at least one element to filter out empty sequence
+                case k, [first, *roles]:
+                    option = k.upper().replace("_", " ")
+                    roles = [first] + roles
+                    formatted_roles = ", ".join([r.name for r in roles])
+                    statement = f"{statement} {option} {formatted_roles}"
+
+        # TODO binding isn't working, switching to simple quotes for now
+        return text(statement)
+
+    def exists_statement(self) -> TextClause:
+        return text("SELECT EXISTS(SELECT 1 FROM pg_authid WHERE rolname=:role)").bindparams(role=self.name)
 
 
 class DatabaseEntity(Entity):
@@ -229,9 +298,7 @@ class DatabaseContent(DatabaseEntity):
         databases: Sequence[Database] | None = None,
         error_if_exists: bool | None = None,
     ):
-        super().__init__(
-            name=name, databases=databases, error_if_exists=error_if_exists
-        )
+        super().__init__(name=name, databases=databases, error_if_exists=error_if_exists)
         self.base = sqlalchemy_base
 
     def create(self) -> None:
@@ -242,14 +309,7 @@ class DatabaseContent(DatabaseEntity):
         tables_in_db = []
         for db in self.databases:
             inspector: Inspector = inspect(db.db_engine())
-            tables_in_db.append(
-                all(
-                    [
-                        inspector.has_table(table.name)
-                        for table in self.base.metadata.tables.values()
-                    ]
-                )
-            )
+            tables_in_db.append(all([inspector.has_table(table.name) for table in self.base.metadata.tables.values()]))
         return all(tables_in_db)
 
 

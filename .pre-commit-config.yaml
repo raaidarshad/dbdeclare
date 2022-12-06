@@ -12,10 +12,10 @@ repos:
     rev: 22.3.0
     hooks:
     - id: black
-      language_version: python3.10
+      language_version: python3.11
 # flake8 checks code to make sure it conforms to pep8 (we specify things to ignore in tox.ini)
 # see https://flake8.pycqa.org/en/latest/ for more
--   repo: https://gitlab.com/pycqa/flake8
-    rev: 3.7.9
+-   repo: https://github.com/pycqa/flake8
+    rev: 6.0.0
     hooks:
     - id: flake8
