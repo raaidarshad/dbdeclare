@@ -63,7 +63,7 @@ def test_role() -> Role:
 
 
 @pytest.fixture
-def test_user(test_role) -> Role:
+def test_user(test_role: Role) -> Role:
     return Role(
         "test_user",
         login=True,
@@ -102,7 +102,7 @@ def test_database_content_present(test_tables: DatabaseContent) -> None:
 
 
 def test_get_passed_args() -> None:
-    args = dict(
+    kwargs = dict(
         name="test",
         allow_connections=True,
         strategy="WAL_LOG",
@@ -111,11 +111,11 @@ def test_get_passed_args() -> None:
         encoding="UTF8",
         locale_provider="libc",
     )
-    new_db = Database(**args)
-    check_args = new_db._get_passed_args()
+    new_db = Database(**kwargs)  # type: ignore
+    check_kwargs = new_db._get_passed_args()
     # remove "name" before check because it isn't a child class argument, so it shouldn't be in the fn output
-    args.pop("name")
-    assert args == check_args
+    kwargs.pop("name")
+    assert kwargs == check_kwargs
 
 
 ############
