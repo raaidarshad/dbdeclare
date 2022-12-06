@@ -4,7 +4,9 @@ import pytest
 from sqlalchemy import Engine, String, create_engine
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
-from postgres_declare.base import Database, DatabaseContent, Entity, Role
+from postgres_declare.base_entity import Entity
+from postgres_declare.cluster_entities import Database, Role
+from postgres_declare.database_entities import DatabaseContent
 from postgres_declare.exceptions import EntityExistsError, NoEngineError
 
 ########################

@@ -1,82 +1,11 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from datetime import datetime
 from inspect import signature
-from typing import Any, Sequence, Type
+from typing import Any, Sequence
 
-from sqlalchemy import Engine, Inspector, Row, TextClause, create_engine, inspect, text
-from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy import Engine, Row, TextClause, create_engine, text
 
-from postgres_declare.exceptions import EntityExistsError, NoEngineError
-
-
-class Entity(ABC):
-    entities: list["Entity"] = []
-    error_if_any_exist: bool = False
-    _engine: Engine | None = None
-
-    def __init__(
-        self,
-        name: str,
-        depends_on: Sequence["Entity"] | None = None,
-        error_if_exists: bool | None = None,
-    ):
-        # TODO have "name" be a str class that validates via regex for valid postgres names
-        self.name = name
-
-        # explicit None check because False requires different behavior
-        if error_if_exists is None:
-            self.error_if_exists = self.__class__.error_if_any_exist
-        else:
-            self.error_if_exists = error_if_exists
-
-        if not depends_on:
-            depends_on = []
-        self.depends_on: Sequence["Entity"] = depends_on
-
-        self.__class__._register(self)
-
-    @classmethod
-    def _register(cls, entity: "Entity") -> None:
-        cls.entities.append(entity)
-
-    @classmethod
-    def engine(cls) -> Engine:
-        if cls._engine:
-            return cls._engine
-        else:
-            raise NoEngineError(
-                "There is no SQLAlchemy Engine present. `Base._engine` must have "
-                "a valid engine. This should be passed via the `_create_all` method."
-            )
-
-    def safe_create(self) -> None:
-        if not self.exists():
-            self.create()
-        else:
-            if self.error_if_exists:
-                raise EntityExistsError(
-                    f"There is already a {self.__class__.__name__} with the "
-                    f"name {self.name}. If you want to proceed anyway, set "
-                    f"the `error_if_exists` parameter to False. This will "
-                    f"simply skip over the existing entity."
-                )
-            else:
-                # TODO log that we no-op?
-                pass
-
-    @abstractmethod
-    def create(self) -> None:
-        pass
-
-    @classmethod
-    def create_all(cls, engine: Engine) -> None:
-        cls._engine = engine
-        for entity in cls.entities:
-            entity.safe_create()
-
-    @abstractmethod
-    def exists(self) -> bool:
-        pass
+from postgres_declare.base_entity import Entity
 
 
 class ClusterWideEntity(Entity):
@@ -275,48 +204,3 @@ class Role(ClusterWideEntity):
 
     def exists_statement(self) -> TextClause:
         return text("SELECT EXISTS(SELECT 1 FROM pg_authid WHERE rolname=:role)").bindparams(role=self.name)
-
-
-class DatabaseEntity(Entity):
-    def __init__(
-        self,
-        name: str,
-        databases: Sequence[Database] | None = None,
-        error_if_exists: bool | None = None,
-    ):
-        if not databases:
-            databases = []
-        self.databases: Sequence[Database] = databases
-        super().__init__(name=name, error_if_exists=error_if_exists)
-
-
-class DatabaseContent(DatabaseEntity):
-    def __init__(
-        self,
-        name: str,
-        sqlalchemy_base: Type[DeclarativeBase],
-        databases: Sequence[Database] | None = None,
-        error_if_exists: bool | None = None,
-    ):
-        super().__init__(name=name, databases=databases, error_if_exists=error_if_exists)
-        self.base = sqlalchemy_base
-
-    def create(self) -> None:
-        for db in self.databases:
-            self.base.metadata.create_all(db.db_engine())
-
-    def exists(self) -> bool:
-        tables_in_db = []
-        for db in self.databases:
-            inspector: Inspector = inspect(db.db_engine())
-            tables_in_db.append(all([inspector.has_table(table.name) for table in self.base.metadata.tables.values()]))
-        return all(tables_in_db)
-
-
-class Grant(DatabaseEntity):
-    pass
-
-
-class Policy(DatabaseEntity):
-    # have this be the thing that can enable RLS?
-    pass
