@@ -5,7 +5,7 @@ from typing import Any, Sequence
 
 from sqlalchemy import Engine, Row, TextClause, create_engine, text
 
-from postgres_declare.base import Entity
+from postgres_declare.base_entity import Entity
 
 
 class ClusterWideEntity(Entity):

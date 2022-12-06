@@ -3,7 +3,7 @@ from typing import Sequence, Type
 from sqlalchemy import Inspector, inspect
 from sqlalchemy.orm import DeclarativeBase
 
-from postgres_declare.base import Entity
+from postgres_declare.base_entity import Entity
 from postgres_declare.cluster_entities import Database
 
 
