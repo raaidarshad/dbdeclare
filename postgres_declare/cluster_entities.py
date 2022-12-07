@@ -1,6 +1,5 @@
 from abc import abstractmethod
 from datetime import datetime
-from inspect import signature
 from typing import Any, Sequence
 
 from sqlalchemy import Engine, Row, TextClause, create_engine, text
@@ -35,14 +34,6 @@ class ClusterWideEntity(Entity):
     @abstractmethod
     def exists_statement(self) -> TextClause:
         pass
-
-    def _get_passed_args(self) -> dict[str, Any]:
-        # grab all the arguments to __init__ that aren't in the superclass and have a non-None value
-        return {
-            k: v
-            for k, v in vars(self).items()
-            if (k not in signature(ClusterWideEntity.__init__).parameters) and (v is not None)
-        }
 
 
 class Database(ClusterWideEntity):
