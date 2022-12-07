@@ -38,15 +38,6 @@ class ClusterWideEntity(Entity):
 
 class Database(ClusterWideEntity):
     _db_engine: Engine | None = None
-    # TODO not sure if this is right or how to use these properly, keep running unto issues when I try
-    literals = [
-        "locale",
-        "lc_collate",
-        "lc_ctype",
-        "icu_locale",
-        "collation_version",
-        "oid",
-    ]
 
     def __init__(
         self,
@@ -93,14 +84,7 @@ class Database(ClusterWideEntity):
 
         # append the arguments to the sql statement, "bind" aka quote the ones that need to be literal values
         for k, v in props.items():
-            statement = f"{statement} {k.upper()}="
-            if k in self.__class__.literals:
-                # bind param, "CREATE DATABASE dbname PROP=" + ":var_to_be_bound"
-                # TODO switching to simple quotes, binding of params is not working
-                statement = f"{statement}'{k}'"
-            else:
-                # don't bind, "CREATE DATABASE dbname PROP=" + "VALUE"
-                statement = f"{statement}{v}"
+            statement = f"{statement} {k.upper()}={v}"
 
         return text(statement)
 
@@ -122,8 +106,6 @@ class Database(ClusterWideEntity):
 
 
 class Role(ClusterWideEntity):
-    literals = ["password", "valid_until"]
-
     def __init__(
         self,
         name: str,
