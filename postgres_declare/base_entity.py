@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import Sequence
+from inspect import signature
+from typing import Any, Sequence
 
 from sqlalchemy import Engine
 
@@ -50,7 +51,7 @@ class Entity(ABC):
         if not self.exists():
             self.create()
         else:
-            if self.error_if_exists:
+            if self.error_if_exists or self.error_if_any_exist:
                 raise EntityExistsError(
                     f"There is already a {self.__class__.__name__} with the "
                     f"name {self.name}. If you want to proceed anyway, set "
@@ -74,3 +75,11 @@ class Entity(ABC):
     @abstractmethod
     def exists(self) -> bool:
         pass
+
+    def _get_passed_args(self) -> dict[str, Any]:
+        # grab all the arguments to __init__ that aren't in the superclass and have a non-None value
+        return {
+            k: v
+            for k, v in vars(self).items()
+            if (k not in signature(self.__class__.__bases__[0].__init__).parameters) and (v is not None)  # type: ignore
+        }

@@ -147,7 +147,7 @@ class Role(ClusterWideEntity):
         bypassrls: bool | None = None,
         connection_limit: int | None = None,
         password: str | None = None,
-        encrypted_password: bool | None = None,
+        encrypted: bool | None = None,
         valid_until: datetime | None = None,
         in_role: Sequence["Role"] | None = None,
         role: Sequence["Role"] | None = None,
@@ -162,7 +162,7 @@ class Role(ClusterWideEntity):
         self.bypassrls = bypassrls
         self.connection_limit = connection_limit
         self.password = password
-        self.encrypted_password = encrypted_password
+        self.encrypted = encrypted
         self.valid_until = valid_until
         self.in_role = in_role
         self.role = role
@@ -176,14 +176,14 @@ class Role(ClusterWideEntity):
         for k, v in props.items():
             match k, v:
                 case "password", str(v):
-                    if "encrypted_password" in props:
+                    if "encrypted" in props:
                         statement = f"{statement} ENCRYPTED"
                     statement = f"{statement} PASSWORD '{v}'"
                     if "valid_until" in props:
                         timestamp = props.get("valid_until")
                         statement = f"{statement} VALID UNTIL '{timestamp}'"
 
-                case k, bool(v) if k != "encrypted_password":
+                case k, bool(v) if k != "encrypted":
                     flag = k.upper()
                     if not v:
                         flag = f"NO{flag}"
