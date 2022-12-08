@@ -1,26 +1,15 @@
-from typing import Any, Generator, Sequence, TypeVar
+from typing import Any, Sequence
 
 import pytest
 from sqlalchemy import Engine, create_engine
 
 from postgres_declare.base_entity import Entity
 from postgres_declare.exceptions import EntityExistsError, NoEngineError
+from tests.helpers import YieldFixture
 
 ########################
 # FIXTURES AND CLASSES #
 ########################
-
-# for a given entity, we want to test creating it with every type of input
-# for test_args in possible_inputs:
-#     define entity
-#     create_entity
-#     assert it exists
-#     drop entity
-#     assert it does not exist
-
-
-T = TypeVar("T")
-YieldFixture = Generator[T, None, None]
 
 
 class MockEntity(Entity):
@@ -28,7 +17,7 @@ class MockEntity(Entity):
         self,
         name: str,
         depends_on: Sequence["Entity"] | None = None,
-        error_if_exists: bool | None = None,
+        check_if_exists: bool | None = None,
         mock_exists: bool = True,
         mock_kwarg_1: str | None = None,
         mock_kwarg_2: str | None = None,
@@ -36,7 +25,7 @@ class MockEntity(Entity):
         self.mock_exists = mock_exists
         self.mock_kwarg_1 = mock_kwarg_1
         self.mock_kwarg_2 = mock_kwarg_2
-        super().__init__(name=name, depends_on=depends_on, error_if_exists=error_if_exists)
+        super().__init__(name=name, depends_on=depends_on, check_if_exists=check_if_exists)
 
     def create(self) -> None:
         self.engine()
@@ -44,6 +33,9 @@ class MockEntity(Entity):
     def exists(self) -> bool:
         self.engine()
         return self.mock_exists
+
+    def remove(self) -> None:
+        self.engine()
 
 
 class ChildMockEntity(MockEntity):
@@ -57,17 +49,19 @@ class ChildMockEntity(MockEntity):
 def mock_entity_exists() -> YieldFixture[MockEntity]:
     yield MockEntity("mock_exists")
     Entity.entities = []
-    Entity.error_if_any_exist = False
+    Entity.check_if_any_exist = False
+    Entity._engine = None
 
 
 @pytest.fixture
 def mock_entity_does_not_exist() -> YieldFixture[MockEntity]:
     yield MockEntity("mock_does_not_exist", mock_exists=False)
     Entity.entities = []
-    Entity.error_if_any_exist = False
+    Entity.check_if_any_exist = False
+    Entity._engine = None
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def engine() -> Engine:
     user = "postgres"
     password = "postgres"
@@ -128,18 +122,33 @@ def test_entity_create_if_not_exist(mock_entity_exists: MockEntity, engine: Engi
     assert mock_entity_exists.exists()
 
 
-def test_entity_create_if_not_error_if_exists(mock_entity_exists: MockEntity, engine: Engine) -> None:
-    Entity.create_all(engine)
-    # should simply no op, nothing to assert really
+def test_entity_create_if_not_check_if_exists(mock_entity_exists: MockEntity, engine: Engine) -> None:
+    Entity.create_all(engine)  # should simply no op, nothing to assert really
 
 
-def test_entity_create_if_error_if_exists(mock_entity_exists: MockEntity, engine: Engine) -> None:
-    mock_entity_exists.error_if_exists = True
+def test_entity_create_if_check_if_exists(mock_entity_exists: MockEntity, engine: Engine) -> None:
+    mock_entity_exists.check_if_exists = True
     with pytest.raises(EntityExistsError):
         Entity.create_all(engine)
 
 
 def test_entity_create_if_error_if_any_exist(mock_entity_exists: MockEntity, engine: Engine) -> None:
-    Entity.error_if_any_exist = True
+    Entity.check_if_any_exist = True
     with pytest.raises(EntityExistsError):
         Entity.create_all(engine)
+
+
+def test_entity_remove_if_exists(mock_entity_exists: MockEntity, engine: Engine) -> None:
+    Entity.remove_all(engine)  # should simply no op, nothing to assert really
+
+
+def test_entity_remove_error_if_does_not_exist(mock_entity_does_not_exist: MockEntity, engine: Engine) -> None:
+    mock_entity_does_not_exist.check_if_exists = True
+    with pytest.raises(EntityExistsError):
+        Entity.remove_all(engine)
+
+
+def test_entity_remove_error_if_any_does_not_exist(mock_entity_does_not_exist: MockEntity, engine: Engine) -> None:
+    Entity.check_if_any_exist = True
+    with pytest.raises(EntityExistsError):
+        Entity.remove_all(engine)

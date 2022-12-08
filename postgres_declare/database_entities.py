@@ -12,12 +12,12 @@ class DatabaseEntity(Entity):
         self,
         name: str,
         databases: Sequence[Database] | None = None,
-        error_if_exists: bool | None = None,
+        check_if_exists: bool | None = None,
     ):
         if not databases:
             databases = []
         self.databases: Sequence[Database] = databases
-        super().__init__(name=name, error_if_exists=error_if_exists)
+        super().__init__(name=name, check_if_exists=check_if_exists)
 
 
 class DatabaseContent(DatabaseEntity):
@@ -26,9 +26,9 @@ class DatabaseContent(DatabaseEntity):
         name: str,
         sqlalchemy_base: Type[DeclarativeBase],
         databases: Sequence[Database] | None = None,
-        error_if_exists: bool | None = None,
+        check_if_exists: bool | None = None,
     ):
-        super().__init__(name=name, databases=databases, error_if_exists=error_if_exists)
+        super().__init__(name=name, databases=databases, check_if_exists=check_if_exists)
         self.base = sqlalchemy_base
 
     def create(self) -> None:

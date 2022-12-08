@@ -35,6 +35,13 @@ class ClusterWideEntity(Entity):
     def exists_statement(self) -> TextClause:
         pass
 
+    def remove(self) -> None:
+        self.__class__._commit_sql(self.remove_statement())
+
+    @abstractmethod
+    def remove_statement(self) -> TextClause:
+        pass
+
 
 class Database(ClusterWideEntity):
     _db_engine: Engine | None = None
@@ -43,7 +50,7 @@ class Database(ClusterWideEntity):
         self,
         name: str,
         depends_on: Sequence["Entity"] | None = None,
-        error_if_exists: bool | None = None,
+        check_if_exists: bool | None = None,
         owner: str | None = None,
         template: str | None = None,
         encoding: str | None = None,
@@ -75,7 +82,7 @@ class Database(ClusterWideEntity):
         self.connection_limit = connection_limit
         self.is_template = is_template
         self.oid = oid
-        super().__init__(name=name, depends_on=depends_on, error_if_exists=error_if_exists)
+        super().__init__(name=name, depends_on=depends_on, check_if_exists=check_if_exists)
 
     def create_statement(self) -> TextClause:
         statement = f"CREATE DATABASE {self.name}"
@@ -90,6 +97,9 @@ class Database(ClusterWideEntity):
 
     def exists_statement(self) -> TextClause:
         return text("SELECT EXISTS(SELECT 1 FROM pg_database WHERE datname=:db)").bindparams(db=self.name)
+
+    def remove_statement(self) -> TextClause:
+        return text(f"DROP DATABASE {self.name}")
 
     def db_engine(self) -> Engine:
         # database entities will reference this as the engine to use
@@ -110,7 +120,7 @@ class Role(ClusterWideEntity):
         self,
         name: str,
         depends_on: Sequence["Entity"] | None = None,
-        error_if_exists: bool | None = None,
+        check_if_exists: bool | None = None,
         superuser: bool | None = None,
         createdb: bool | None = None,
         createrole: bool | None = None,
@@ -140,7 +150,7 @@ class Role(ClusterWideEntity):
         self.in_role = in_role
         self.role = role
         self.admin = admin
-        super().__init__(name=name, depends_on=depends_on, error_if_exists=error_if_exists)
+        super().__init__(name=name, depends_on=depends_on, check_if_exists=check_if_exists)
 
     def create_statement(self) -> TextClause:
         statement = f"CREATE ROLE {self.name}"
@@ -177,3 +187,6 @@ class Role(ClusterWideEntity):
 
     def exists_statement(self) -> TextClause:
         return text("SELECT EXISTS(SELECT 1 FROM pg_authid WHERE rolname=:role)").bindparams(role=self.name)
+
+    def remove_statement(self) -> TextClause:
+        return text(f"DROP ROLE {self.name}")
