@@ -1,11 +1,3 @@
-# for a given entity, we want to test creating it with every type of input
-# for test_args in possible_inputs:
-#     define entity
-#     create_entity
-#     assert it exists
-#     drop entity
-#     assert it does not exist
-
 import pytest
 from sqlalchemy import Engine, create_engine
 
@@ -48,3 +40,6 @@ def test_remove(test_db: Database, engine: Engine) -> None:
     Entity._engine = engine
     test_db.safe_remove()
     assert not test_db.exists()
+
+
+# TODO test out variety of init/create options
