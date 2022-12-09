@@ -92,3 +92,16 @@ def test_inputs(
     )
     temp_role.safe_create()
     temp_role.safe_remove()
+
+
+@pytest.mark.order(after="test_remove")
+def test_dependency_inputs(engine: Engine) -> None:
+    existing_roles = [Role(name=f"existing_{n}") for n in range(3)]
+    Role(name="in_one", in_role=(existing_roles[0],))
+    Role(name="in_multiple", in_role=existing_roles)
+    Role(name="has_one", role=(existing_roles[0],))
+    Role(name="has_multiple", role=existing_roles)
+    Role(name="admin_one", admin=(existing_roles[0],))
+    Role(name="admin_multiple", admin=existing_roles)
+    Entity.create_all(engine)
+    Entity.remove_all(engine)
