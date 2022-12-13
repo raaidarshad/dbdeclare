@@ -2,7 +2,7 @@ import pytest
 from sqlalchemy import Engine, create_engine
 
 from postgres_declare.base_entity import Entity
-from postgres_declare.cluster_entities import Database
+from postgres_declare.cluster_entities import Database, Role
 from tests.helpers import YieldFixture
 
 
@@ -42,4 +42,21 @@ def test_remove(test_db: Database, engine: Engine) -> None:
     assert not test_db.exists()
 
 
-# TODO test out variety of init/create options
+def test_inputs(engine: Engine) -> None:
+    # allow_connections
+    # connection_limit
+    # is_template
+    pass
+
+
+def test_specific_inputs(engine: Engine) -> None:
+    # template
+    pass
+
+
+@pytest.mark.order(after="test_remove")
+def test_dependency_inputs(engine: Engine) -> None:
+    existing_role = Role(name="existing_role_for_db")
+    Database(name="has_owner", owner=existing_role)
+    Entity.create_all(engine)
+    Entity.remove_all(engine)

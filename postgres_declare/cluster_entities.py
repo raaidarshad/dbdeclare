@@ -43,83 +43,11 @@ class ClusterWideEntity(Entity):
         pass
 
 
-class Database(ClusterWideEntity):
-    _db_engine: Engine | None = None
-
-    def __init__(
-        self,
-        name: str,
-        depends_on: Sequence["Entity"] | None = None,
-        check_if_exists: bool | None = None,
-        owner: str | None = None,
-        template: str | None = None,
-        encoding: str | None = None,
-        strategy: str | None = None,
-        locale: str | None = None,
-        lc_collate: str | None = None,
-        lc_ctype: str | None = None,
-        icu_locale: str | None = None,
-        locale_provider: str | None = None,
-        collation_version: str | None = None,
-        tablespace: str | None = None,
-        allow_connections: bool | None = None,
-        connection_limit: int | None = None,
-        is_template: bool | None = None,
-        oid: str | None = None,
-    ):
-        self.owner = owner
-        self.template = template
-        self.encoding = encoding
-        self.strategy = strategy
-        self.locale = locale
-        self.lc_collate = lc_collate
-        self.lc_ctype = lc_ctype
-        self.icu_locale = icu_locale
-        self.locale_provider = locale_provider
-        self.collation_version = collation_version
-        self.tablespace = tablespace
-        self.allow_connections = allow_connections
-        self.connection_limit = connection_limit
-        self.is_template = is_template
-        self.oid = oid
-        super().__init__(name=name, depends_on=depends_on, check_if_exists=check_if_exists)
-
-    def create_statement(self) -> TextClause:
-        statement = f"CREATE DATABASE {self.name}"
-
-        props = self._get_passed_args()
-
-        # append the arguments to the sql statement, "bind" aka quote the ones that need to be literal values
-        for k, v in props.items():
-            statement = f"{statement} {k.upper()}={v}"
-
-        return text(statement)
-
-    def exists_statement(self) -> TextClause:
-        return text("SELECT EXISTS(SELECT 1 FROM pg_database WHERE datname=:db)").bindparams(db=self.name)
-
-    def remove_statement(self) -> TextClause:
-        return text(f"DROP DATABASE {self.name}")
-
-    def db_engine(self) -> Engine:
-        # database entities will reference this as the engine to use
-        if not self.__class__._db_engine:
-            # grab everything but db name from the cluster engine
-            host = self.__class__.engine().url.host
-            port = self.__class__.engine().url.port
-            user = self.__class__.engine().url.username
-            pw = self.__class__.engine().url.password
-
-            # then create a new engine
-            self.__class__._db_engine = create_engine(f"postgresql+psycopg://{user}:{pw}@{host}:{port}/{self.name}")
-        return self.__class__._db_engine
-
-
 class Role(ClusterWideEntity):
     def __init__(
         self,
         name: str,
-        depends_on: Sequence["Entity"] | None = None,
+        depends_on: Sequence[Entity] | None = None,
         check_if_exists: bool | None = None,
         superuser: bool | None = None,
         createdb: bool | None = None,
@@ -190,3 +118,80 @@ class Role(ClusterWideEntity):
 
     def remove_statement(self) -> TextClause:
         return text(f"DROP ROLE {self.name}")
+
+
+class Database(ClusterWideEntity):
+    _db_engine: Engine | None = None
+
+    def __init__(
+        self,
+        name: str,
+        depends_on: Sequence[Entity] | None = None,
+        check_if_exists: bool | None = None,
+        owner: Role | None = None,
+        template: str | None = None,
+        # encoding: str | None = None,
+        # strategy: str | None = None,
+        # locale: str | None = None,
+        # lc_collate: str | None = None,
+        # lc_ctype: str | None = None,
+        # icu_locale: str | None = None,
+        # locale_provider: str | None = None,
+        # collation_version: str | None = None,
+        # tablespace: str | None = None,
+        allow_connections: bool | None = None,
+        connection_limit: int | None = None,
+        is_template: bool | None = None,
+        # oid: str | None = None,
+    ):
+        self.owner = owner
+        self.template = template
+        # self.encoding = encoding
+        # self.strategy = strategy
+        # self.locale = locale
+        # self.lc_collate = lc_collate
+        # self.lc_ctype = lc_ctype
+        # self.icu_locale = icu_locale
+        # self.locale_provider = locale_provider
+        # self.collation_version = collation_version
+        # self.tablespace = tablespace
+        self.allow_connections = allow_connections
+        self.connection_limit = connection_limit
+        self.is_template = is_template
+        # self.oid = oid
+        super().__init__(name=name, depends_on=depends_on, check_if_exists=check_if_exists)
+
+    def create_statement(self) -> TextClause:
+        statement = f"CREATE DATABASE {self.name}"
+
+        props = self._get_passed_args()
+
+        # append the arguments to the sql statement
+        for k, v in props.items():
+            # case owner and type Role, use role.name
+            match k, v:
+                case "owner", v:
+                    statement = f"{statement} OWNER={v.name}"
+                case k, v:
+                    statement = f"{statement} {k.upper()}={v}"
+
+        return text(statement)
+
+    def exists_statement(self) -> TextClause:
+        return text("SELECT EXISTS(SELECT 1 FROM pg_database WHERE datname=:db)").bindparams(db=self.name)
+
+    def remove_statement(self) -> TextClause:
+        return text(f"DROP DATABASE {self.name}")
+
+    def db_engine(self) -> Engine:
+        # database entities will reference this as the engine to use
+        if not self.__class__._db_engine:
+            # grab everything but db name from the cluster engine
+            host = self.__class__.engine().url.host
+            port = self.__class__.engine().url.port
+            user = self.__class__.engine().url.username
+            pw = self.__class__.engine().url.password
+
+            # then create a new engine
+            self.__class__._db_engine = create_engine(f"postgresql+psycopg://{user}:{pw}@{host}:{port}/{self.name}")
+        return self.__class__._db_engine
