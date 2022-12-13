@@ -36,10 +36,11 @@ class ClusterWideEntity(Entity):
         pass
 
     def remove(self) -> None:
-        self.__class__._commit_sql(self.remove_statement())
+        for statement in self.remove_statements():
+            self.__class__._commit_sql(statement)
 
     @abstractmethod
-    def remove_statement(self) -> TextClause:
+    def remove_statements(self) -> Sequence[TextClause]:
         pass
 
 
@@ -116,8 +117,8 @@ class Role(ClusterWideEntity):
     def exists_statement(self) -> TextClause:
         return text("SELECT EXISTS(SELECT 1 FROM pg_authid WHERE rolname=:role)").bindparams(role=self.name)
 
-    def remove_statement(self) -> TextClause:
-        return text(f"DROP ROLE {self.name}")
+    def remove_statements(self) -> Sequence[TextClause]:
+        return [text(f"DROP ROLE {self.name}")]
 
 
 class Database(ClusterWideEntity):
@@ -180,8 +181,13 @@ class Database(ClusterWideEntity):
     def exists_statement(self) -> TextClause:
         return text("SELECT EXISTS(SELECT 1 FROM pg_database WHERE datname=:db)").bindparams(db=self.name)
 
-    def remove_statement(self) -> TextClause:
-        return text(f"DROP DATABASE {self.name}")
+    def remove_statements(self) -> Sequence[TextClause]:
+        statements = []
+        if self.is_template:
+            # cannot drop a template, must set is_template to false before drop
+            statements.append(text(f"ALTER DATABASE {self.name} is_template false"))
+        statements.append(text(f"DROP DATABASE {self.name}"))
+        return statements
 
     def db_engine(self) -> Engine:
         # database entities will reference this as the engine to use

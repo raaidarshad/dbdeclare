@@ -1,4 +1,6 @@
 import pytest
+from hypothesis import HealthCheck, given, settings
+from hypothesis import strategies as st
 from sqlalchemy import Engine, create_engine
 
 from postgres_declare.base_entity import Entity
@@ -42,11 +44,20 @@ def test_remove(test_db: Database, engine: Engine) -> None:
     assert not test_db.exists()
 
 
-def test_inputs(engine: Engine) -> None:
-    # allow_connections
-    # connection_limit
-    # is_template
-    pass
+@given(
+    allow_connections=st.booleans(),
+    connection_limit=st.integers(min_value=-1, max_value=100),
+    is_template=st.booleans(),
+)
+@settings(suppress_health_check=[HealthCheck.function_scoped_fixture])
+@pytest.mark.order(after="test_remove")
+def test_inputs(allow_connections: bool, connection_limit: int, is_template: bool, engine: Engine) -> None:
+    Entity._engine = engine
+    temp_db = Database(
+        name="bar", allow_connections=allow_connections, connection_limit=connection_limit, is_template=is_template
+    )
+    temp_db.safe_create()
+    temp_db.safe_remove()
 
 
 def test_specific_inputs(engine: Engine) -> None:
