@@ -60,9 +60,13 @@ def test_inputs(allow_connections: bool, connection_limit: int, is_template: boo
     temp_db.safe_remove()
 
 
-def test_specific_inputs(engine: Engine) -> None:
-    # template
-    pass
+@pytest.mark.parametrize("template", ["template0", "template1"])
+@pytest.mark.order(after="test_remove")
+def test_specific_inputs(template: str, engine: Engine) -> None:
+    Entity._engine = engine
+    temp_db = Database(name="foobar", template=template)
+    temp_db.safe_create()
+    temp_db.safe_remove()
 
 
 @pytest.mark.order(after="test_remove")
