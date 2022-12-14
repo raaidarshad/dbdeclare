@@ -1,7 +1,7 @@
 from typing import Any, Sequence
 
 import pytest
-from sqlalchemy import Engine, create_engine
+from sqlalchemy import Engine
 
 from postgres_declare.base_entity import Entity
 from postgres_declare.exceptions import EntityExistsError, NoEngineError
@@ -59,16 +59,6 @@ def mock_entity_does_not_exist() -> YieldFixture[MockEntity]:
     Entity.entities = []
     Entity.check_if_any_exist = False
     Entity._engine = None
-
-
-@pytest.fixture
-def engine() -> Engine:
-    user = "postgres"
-    password = "postgres"
-    host = "127.0.0.1"
-    port = 5432
-    db_name = "postgres"
-    return create_engine(f"postgresql+psycopg://{user}:{password}@{host}:{port}/{db_name}")
 
 
 #########

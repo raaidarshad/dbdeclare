@@ -1,7 +1,7 @@
 from typing import Optional
 
 import pytest
-from sqlalchemy import Engine, String, create_engine
+from sqlalchemy import Engine, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from postgres_declare.base_entity import Entity
@@ -35,16 +35,6 @@ def test_content(test_db: Database) -> YieldFixture[DatabaseContent]:
     Entity.entities = []
     Entity.check_if_any_exist = False
     Entity._engine = None
-
-
-@pytest.fixture
-def engine() -> Engine:
-    user = "postgres"
-    password = "postgres"
-    host = "127.0.0.1"
-    port = 5432
-    db_name = "postgres"
-    return create_engine(f"postgresql+psycopg://{user}:{password}@{host}:{port}/{db_name}")
 
 
 def test_does_not_exist(test_content: DatabaseContent, test_db: Database, engine: Engine) -> None:

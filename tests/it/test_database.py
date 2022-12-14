@@ -1,7 +1,7 @@
 import pytest
 from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
-from sqlalchemy import Engine, create_engine
+from sqlalchemy import Engine
 
 from postgres_declare.base_entity import Entity
 from postgres_declare.cluster_entities import Database, Role
@@ -13,16 +13,6 @@ def test_db() -> YieldFixture[Database]:
     yield Database(name="test_db")
     Entity.entities = []
     Entity.check_if_any_exist = False
-
-
-@pytest.fixture
-def engine() -> Engine:
-    user = "postgres"
-    password = "postgres"
-    host = "127.0.0.1"
-    port = 5432
-    db_name = "postgres"
-    return create_engine(f"postgresql+psycopg://{user}:{password}@{host}:{port}/{db_name}")
 
 
 def test_does_not_exist(test_db: Database, engine: Engine) -> None:
