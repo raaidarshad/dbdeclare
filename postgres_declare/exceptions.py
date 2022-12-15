@@ -2,9 +2,9 @@ class PostgresDeclareError(Exception):
     pass
 
 
-class NoEngineError(Exception):
+class NoEngineError(PostgresDeclareError):
     pass
 
 
-class EntityExistsError(Exception):
+class EntityExistsError(PostgresDeclareError):
     pass
