@@ -13,6 +13,7 @@ sqlalchemy = "2.0.0b3"
 
 
 [tool.poetry.dev-dependencies]
+hypothesis = "^6.60.0"
 mypy = "^0.961"
 pre-commit = "^2.19.0"
 pytest = "^7.1.2"
