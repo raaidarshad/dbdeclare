@@ -7,33 +7,22 @@ from sqlalchemy import Engine
 
 from postgres_declare.base_entity import Entity
 from postgres_declare.cluster_entities import Role
-from tests.helpers import YieldFixture
 
 
-@pytest.fixture
-def test_role() -> YieldFixture[Role]:
-    yield Role(name="test_role")
-    Entity.entities = []
-    Entity.check_if_any_exist = False
-
-
-def test_does_not_exist(test_role: Role, engine: Engine) -> None:
-    Entity._engine = engine
-    assert not test_role.exists()
+def test_does_not_exist(simple_role: Role) -> None:
+    assert not simple_role.exists()
 
 
 @pytest.mark.order(after="test_does_not_exist")
-def test_create(test_role: Role, engine: Engine) -> None:
-    Entity._engine = engine
-    test_role.safe_create()
-    assert test_role.exists()
+def test_create(simple_role: Role) -> None:
+    simple_role.safe_create()
+    assert simple_role.exists()
 
 
 @pytest.mark.order(after="test_create")
-def test_remove(test_role: Role, engine: Engine) -> None:
-    Entity._engine = engine
-    test_role.safe_remove()
-    assert not test_role.exists()
+def test_remove(simple_role: Role) -> None:
+    simple_role.safe_remove()
+    assert not simple_role.exists()
 
 
 @given(
