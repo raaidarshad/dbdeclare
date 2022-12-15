@@ -186,7 +186,7 @@ class Database(ClusterWideEntity):
         if self.is_template:
             # cannot drop a template, must set is_template to false before drop
             statements.append(text(f"ALTER DATABASE {self.name} is_template false"))
-        statements.append(text(f"DROP DATABASE {self.name}"))
+        statements.append(text(f"DROP DATABASE {self.name} (FORCE)"))
         return statements
 
     def db_engine(self) -> Engine:
