@@ -4,7 +4,7 @@ from sqlalchemy import Inspector, TextClause, inspect, text
 from sqlalchemy.orm import DeclarativeBase
 
 from postgres_declare.base_entity import Entity
-from postgres_declare.cluster_entities import Database
+from postgres_declare.cluster_entities import Database, Role
 from postgres_declare.mixins import SQLMixin
 
 
@@ -36,14 +36,30 @@ class DatabaseSqlEntity(SQLMixin, DatabaseEntity):
 
 
 class Schema(DatabaseSqlEntity):
+    def __init__(
+        self,
+        name: str,
+        databases: Sequence[Database],
+        depends_on: Sequence[Entity] | None = None,
+        check_if_exists: bool | None = None,
+        owner: Role | None = None,
+    ):
+        self.owner = owner
+        super().__init__(name=name, depends_on=depends_on, databases=databases, check_if_exists=check_if_exists)
+
     def create_statements(self) -> Sequence[TextClause]:
-        pass
+        statement = f"CREATE SCHEMA {self.name}"
+
+        if self.owner:
+            statement = f"{statement} AUTHORIZATION {self.owner.name}"
+
+        return [text(statement)]
 
     def exists_statement(self) -> TextClause:
         return text("SELECT EXISTS(SELECT 1 FROM pg_namespace WHERE nspname=:schema)").bindparams(schema=self.name)
 
     def remove_statements(self) -> Sequence[TextClause]:
-        pass
+        return [text(f"DROP SCHEMA {self.name}")]
 
 
 class DatabaseContent(DatabaseEntity):
