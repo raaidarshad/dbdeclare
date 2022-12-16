@@ -1,7 +1,7 @@
 import pytest
 
 from postgres_declare.cluster_entities import Database
-from postgres_declare.database_entities import DatabaseContent
+from postgres_declare.database_entities import DatabaseContent, Schema
 
 
 def test_does_not_exist(simple_db_content: DatabaseContent, simple_db: Database) -> None:
@@ -11,7 +11,9 @@ def test_does_not_exist(simple_db_content: DatabaseContent, simple_db: Database)
 
 
 @pytest.mark.order(after="test_does_not_exist")
-def test_create(simple_db_content: DatabaseContent) -> None:
+def test_create(simple_db_content: DatabaseContent, simple_schema: Schema) -> None:
+    # need the schema to exist for this and the next test
+    simple_schema.safe_create()
     simple_db_content.safe_create()
     assert simple_db_content.exists()
 

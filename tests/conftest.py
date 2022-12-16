@@ -38,9 +38,12 @@ def simple_role(entity: Entity) -> YieldFixture[Role]:
     yield Role(name="simple_role")
 
 
+schema_name = "simple_schema"
+
+
 @pytest.fixture(scope="module")
 def simple_schema(entity: Entity, simple_db: Database) -> YieldFixture[Schema]:
-    yield Schema(name="simple_schema", databases=[simple_db])
+    yield Schema(name=schema_name, databases=[simple_db])
 
 
 class MyBase(DeclarativeBase):
@@ -54,6 +57,17 @@ class SimpleTable(MyBase):
     fullname: Mapped[Optional[str]]
 
 
+class FancyTable(MyBase):
+    __tablename__ = "fancy_table"
+    __table_args__ = {"schema": schema_name}
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String(30))
+    fullname: Mapped[Optional[str]]
+
+
 @pytest.fixture(scope="module")
-def simple_db_content(entity: Entity, simple_db: Database) -> YieldFixture[DatabaseContent]:
-    yield DatabaseContent(name="simple_db_content", databases=[simple_db], sqlalchemy_base=MyBase)
+def simple_db_content(entity: Entity, simple_db: Database, simple_schema: Schema) -> YieldFixture[DatabaseContent]:
+    yield DatabaseContent(
+        name="simple_db_content", databases=[simple_db], schemas=[simple_schema], sqlalchemy_base=MyBase
+    )
