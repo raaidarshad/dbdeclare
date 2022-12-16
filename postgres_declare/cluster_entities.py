@@ -97,8 +97,6 @@ class Role(ClusterSqlEntity):
 
 
 class Database(ClusterSqlEntity):
-    _db_engine: Engine | None = None
-
     def __init__(
         self,
         name: str,
@@ -135,6 +133,9 @@ class Database(ClusterSqlEntity):
         self.connection_limit = connection_limit
         self.is_template = is_template
         # self.oid = oid
+
+        self._db_engine: Engine | None = None
+
         super().__init__(name=name, depends_on=depends_on, check_if_exists=check_if_exists)
 
     def create_statements(self) -> Sequence[TextClause]:
@@ -166,7 +167,7 @@ class Database(ClusterSqlEntity):
 
     def db_engine(self) -> Engine:
         # database entities will reference this as the engine to use
-        if not self.__class__._db_engine:
+        if not self._db_engine:
             # grab everything but db name from the cluster engine
             host = self.__class__.engine().url.host
             port = self.__class__.engine().url.port
@@ -174,5 +175,5 @@ class Database(ClusterSqlEntity):
             pw = self.__class__.engine().url.password
 
             # then create a new engine
-            self.__class__._db_engine = create_engine(f"postgresql+psycopg://{user}:{pw}@{host}:{port}/{self.name}")
-        return self.__class__._db_engine
+            self._db_engine = create_engine(f"postgresql+psycopg://{user}:{pw}@{host}:{port}/{self.name}")
+        return self._db_engine
