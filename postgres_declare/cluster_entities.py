@@ -1,50 +1,25 @@
-from abc import abstractmethod
 from datetime import datetime
-from typing import Any, Sequence
+from typing import Sequence
 
-from sqlalchemy import Engine, Row, TextClause, create_engine, text
+from sqlalchemy import Engine, TextClause, create_engine, text
 
 from postgres_declare.base_entity import Entity
+from postgres_declare.mixins import SQLMixin
 
 
-class ClusterWideEntity(Entity):
-    @classmethod
-    def _commit_sql(cls, statement: TextClause) -> None:
-        with cls.engine().connect() as conn:
-            conn.execution_options(isolation_level="AUTOCOMMIT").execute(statement)
-            conn.commit()
-
-    @classmethod
-    def _fetch_sql(cls, statement: TextClause) -> Sequence[Row[Any]]:
-        with cls.engine().connect() as conn:
-            result = conn.execute(statement)
-            return result.all()
-
+class ClusterSqlEntity(SQLMixin, Entity):
     def create(self) -> None:
-        self.__class__._commit_sql(self.create_statement())
-
-    @abstractmethod
-    def create_statement(self) -> TextClause:
-        pass
+        self._commit_sql(engine=self.__class__.engine(), statements=self.create_statements())
 
     def exists(self) -> bool:
-        rows = self.__class__._fetch_sql(self.exists_statement())
+        rows = self._fetch_sql(engine=self.__class__.engine(), statement=self.exists_statement())
         return rows[0][0]  # type: ignore
 
-    @abstractmethod
-    def exists_statement(self) -> TextClause:
-        pass
-
     def remove(self) -> None:
-        for statement in self.remove_statements():
-            self.__class__._commit_sql(statement)
-
-    @abstractmethod
-    def remove_statements(self) -> Sequence[TextClause]:
-        pass
+        self._commit_sql(engine=self.__class__.engine(), statements=self.remove_statements())
 
 
-class Role(ClusterWideEntity):
+class Role(ClusterSqlEntity):
     def __init__(
         self,
         name: str,
@@ -81,7 +56,7 @@ class Role(ClusterWideEntity):
         self.admin = admin
         super().__init__(name=name, depends_on=depends_on, check_if_exists=check_if_exists)
 
-    def create_statement(self) -> TextClause:
+    def create_statements(self) -> Sequence[TextClause]:
         statement = f"CREATE ROLE {self.name}"
         props = self._get_passed_args()
 
@@ -112,7 +87,7 @@ class Role(ClusterWideEntity):
                     statement = f"{statement} {option} {formatted_roles}"
 
         # TODO binding isn't working, switching to simple quotes for now
-        return text(statement)
+        return [text(statement)]
 
     def exists_statement(self) -> TextClause:
         return text("SELECT EXISTS(SELECT 1 FROM pg_authid WHERE rolname=:role)").bindparams(role=self.name)
@@ -121,7 +96,7 @@ class Role(ClusterWideEntity):
         return [text(f"DROP ROLE {self.name}")]
 
 
-class Database(ClusterWideEntity):
+class Database(ClusterSqlEntity):
     _db_engine: Engine | None = None
 
     def __init__(
@@ -162,7 +137,7 @@ class Database(ClusterWideEntity):
         # self.oid = oid
         super().__init__(name=name, depends_on=depends_on, check_if_exists=check_if_exists)
 
-    def create_statement(self) -> TextClause:
+    def create_statements(self) -> Sequence[TextClause]:
         statement = f"CREATE DATABASE {self.name}"
 
         props = self._get_passed_args()
@@ -176,7 +151,7 @@ class Database(ClusterWideEntity):
                 case k, v:
                     statement = f"{statement} {k.upper()}={v}"
 
-        return text(statement)
+        return [text(statement)]
 
     def exists_statement(self) -> TextClause:
         return text("SELECT EXISTS(SELECT 1 FROM pg_database WHERE datname=:db)").bindparams(db=self.name)

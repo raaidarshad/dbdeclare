@@ -5,6 +5,7 @@ from sqlalchemy.orm import DeclarativeBase
 
 from postgres_declare.base_entity import Entity
 from postgres_declare.cluster_entities import Database
+from postgres_declare.mixins import SQLMixin
 
 
 class DatabaseEntity(Entity):
@@ -17,6 +18,21 @@ class DatabaseEntity(Entity):
     ):
         self.databases: Sequence[Database] = databases
         super().__init__(name=name, depends_on=depends_on, check_if_exists=check_if_exists)
+
+
+class DatabaseSqlEntity(SQLMixin, DatabaseEntity):
+    def create(self) -> None:
+        for db in self.databases:
+            self._commit_sql(engine=db.db_engine(), statements=self.create_statements())
+
+    def exists(self) -> bool:
+        return all(
+            [self._fetch_sql(engine=db.db_engine(), statement=self.exists_statement())[0][0] for db in self.databases]
+        )
+
+    def remove(self) -> None:
+        for db in self.databases:
+            self._commit_sql(engine=db.db_engine(), statements=self.remove_statements())
 
 
 class DatabaseContent(DatabaseEntity):
@@ -47,10 +63,10 @@ class DatabaseContent(DatabaseEntity):
             self.base.metadata.drop_all(db.db_engine())
 
 
-class Grant(DatabaseEntity):
+class Grant(DatabaseSqlEntity):
     pass
 
 
-class Policy(DatabaseEntity):
+class Policy(DatabaseSqlEntity):
     # have this be the thing that can enable RLS?
     pass
