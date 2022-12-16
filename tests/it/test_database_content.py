@@ -4,9 +4,9 @@ from postgres_declare.cluster_entities import Database
 from postgres_declare.database_entities import DatabaseContent
 
 
-def test_does_not_exist(simple_db_content: DatabaseContent, simple_db_for_content: Database) -> None:
+def test_does_not_exist(simple_db_content: DatabaseContent, simple_db: Database) -> None:
     # need the database to exist for this and the next two tests
-    simple_db_for_content.safe_create()
+    simple_db.safe_create()
     assert not simple_db_content.exists()
 
 
@@ -17,8 +17,8 @@ def test_create(simple_db_content: DatabaseContent) -> None:
 
 
 @pytest.mark.order(after="test_create")
-def test_remove(simple_db_content: DatabaseContent, simple_db_for_content: Database) -> None:
+def test_remove(simple_db_content: DatabaseContent, simple_db: Database) -> None:
     simple_db_content.safe_remove()
     assert not simple_db_content.exists()
     # clean up database
-    simple_db_for_content.safe_remove()
+    simple_db.safe_remove()

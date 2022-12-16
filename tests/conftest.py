@@ -6,7 +6,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from postgres_declare.base_entity import Entity
 from postgres_declare.cluster_entities import Database, Role
-from postgres_declare.database_entities import DatabaseContent
+from postgres_declare.database_entities import DatabaseContent, Schema
 from tests.helpers import YieldFixture
 
 
@@ -38,6 +38,11 @@ def simple_role(entity: Entity) -> YieldFixture[Role]:
     yield Role(name="simple_role")
 
 
+@pytest.fixture(scope="module")
+def simple_schema(entity: Entity, simple_db: Database) -> YieldFixture[Schema]:
+    yield Schema(name="simple_schema", databases=[simple_db])
+
+
 class MyBase(DeclarativeBase):
     pass
 
@@ -50,10 +55,5 @@ class SimpleTable(MyBase):
 
 
 @pytest.fixture(scope="module")
-def simple_db_for_content(entity: Entity) -> YieldFixture[Database]:
-    yield Database(name="simple_db_for_content")
-
-
-@pytest.fixture(scope="module")
-def simple_db_content(entity: Entity, simple_db_for_content: Database) -> YieldFixture[DatabaseContent]:
-    yield DatabaseContent(name="simple_db_content", databases=[simple_db_for_content], sqlalchemy_base=MyBase)
+def simple_db_content(entity: Entity, simple_db: Database) -> YieldFixture[DatabaseContent]:
+    yield DatabaseContent(name="simple_db_content", databases=[simple_db], sqlalchemy_base=MyBase)

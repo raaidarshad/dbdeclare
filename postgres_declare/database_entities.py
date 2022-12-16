@@ -1,6 +1,6 @@
 from typing import Sequence, Type
 
-from sqlalchemy import Inspector, inspect
+from sqlalchemy import Inspector, TextClause, inspect, text
 from sqlalchemy.orm import DeclarativeBase
 
 from postgres_declare.base_entity import Entity
@@ -33,6 +33,17 @@ class DatabaseSqlEntity(SQLMixin, DatabaseEntity):
     def remove(self) -> None:
         for db in self.databases:
             self._commit_sql(engine=db.db_engine(), statements=self.remove_statements())
+
+
+class Schema(DatabaseSqlEntity):
+    def create_statements(self) -> Sequence[TextClause]:
+        pass
+
+    def exists_statement(self) -> TextClause:
+        return text("SELECT EXISTS(SELECT 1 FROM pg_namespace WHERE nspname=:schema)").bindparams(schema=self.name)
+
+    def remove_statements(self) -> Sequence[TextClause]:
+        pass
 
 
 class DatabaseContent(DatabaseEntity):
