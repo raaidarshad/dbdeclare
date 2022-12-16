@@ -1,6 +1,8 @@
 import pytest
+from sqlalchemy import Engine
 
-from postgres_declare.cluster_entities import Database
+from postgres_declare.base_entity import Entity
+from postgres_declare.cluster_entities import Database, Role
 from postgres_declare.database_entities import Schema
 
 
@@ -21,3 +23,14 @@ def test_remove(simple_schema: Schema, simple_db: Database) -> None:
     assert not simple_schema.exists()
     # clean up database
     simple_db.safe_remove()
+
+
+@pytest.mark.order(after="test_remove")
+def test_dependency_inputs(engine: Engine) -> None:
+    Entity.entities = []
+    Entity.check_if_any_exist = False
+    existing_role = Role(name="existing_role_for_schema")
+    existing_db = Database(name="foobar")
+    Schema(name="has_owner", databases=[existing_db], owner=existing_role)
+    Entity.create_all(engine)
+    Entity.remove_all(engine)
