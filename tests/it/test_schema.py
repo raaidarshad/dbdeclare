@@ -1,6 +1,7 @@
 import pytest
 from sqlalchemy import Engine
 
+from postgres_declare.base import Base
 from postgres_declare.entities.database import Database
 from postgres_declare.entities.entity import Entity
 from postgres_declare.entities.role import Role
@@ -33,5 +34,5 @@ def test_dependency_inputs(engine: Engine) -> None:
     existing_role = Role(name="existing_role_for_schema")
     existing_db = Database(name="foobar")
     Schema(name="has_owner", databases=[existing_db], owner=existing_role)
-    Entity.create_all(engine)
-    Entity.remove_all(engine)
+    Base.create_all(engine)
+    Base.remove_all(engine)

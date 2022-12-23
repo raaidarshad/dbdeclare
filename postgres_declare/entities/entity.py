@@ -66,12 +66,6 @@ class Entity(ABC):
                 # TODO log that we no-op?
                 pass
 
-    @classmethod
-    def create_all(cls, engine: Engine) -> None:
-        cls._engine = engine
-        for entity in cls.entities:
-            entity._safe_create()
-
     @abstractmethod
     def _exists(self) -> bool:
         pass
@@ -95,12 +89,6 @@ class Entity(ABC):
             else:
                 # TODO log that we no-op?
                 pass
-
-    @classmethod
-    def remove_all(cls, engine: Engine) -> None:
-        cls._engine = engine
-        for entity in reversed(cls.entities):
-            entity._safe_remove()
 
     def _get_passed_args(self) -> dict[str, Any]:
         # grab all the arguments to __init__ that aren't in the superclass and have a non-None value

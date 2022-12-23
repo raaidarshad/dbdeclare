@@ -5,6 +5,7 @@ from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 from sqlalchemy import Engine
 
+from postgres_declare.base import Base
 from postgres_declare.entities.entity import Entity
 from postgres_declare.entities.role import Role
 
@@ -82,5 +83,5 @@ def test_dependency_inputs(engine: Engine) -> None:
     Role(name="has_multiple", role=existing_roles)
     Role(name="admin_one", admin=(existing_roles[0],))
     Role(name="admin_multiple", admin=existing_roles)
-    Entity.create_all(engine)
-    Entity.remove_all(engine)
+    Base.create_all(engine)
+    Base.remove_all(engine)
