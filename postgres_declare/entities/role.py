@@ -44,7 +44,7 @@ class Role(ClusterSqlEntity):
         self.admin = admin
         super().__init__(name=name, depends_on=depends_on, check_if_exists=check_if_exists)
 
-    def create_statements(self) -> Sequence[TextClause]:
+    def _create_statements(self) -> Sequence[TextClause]:
         statement = f"CREATE ROLE {self.name}"
         props = self._get_passed_args()
 
@@ -77,8 +77,8 @@ class Role(ClusterSqlEntity):
         # TODO binding isn't working, switching to simple quotes for now
         return [text(statement)]
 
-    def exists_statement(self) -> TextClause:
+    def _exists_statement(self) -> TextClause:
         return text("SELECT EXISTS(SELECT 1 FROM pg_authid WHERE rolname=:role)").bindparams(role=self.name)
 
-    def remove_statements(self) -> Sequence[TextClause]:
+    def _remove_statements(self) -> Sequence[TextClause]:
         return [text(f"DROP ROLE {self.name}")]

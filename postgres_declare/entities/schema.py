@@ -20,7 +20,7 @@ class Schema(DatabaseSqlEntity):
         self.owner = owner
         super().__init__(name=name, depends_on=depends_on, databases=databases, check_if_exists=check_if_exists)
 
-    def create_statements(self) -> Sequence[TextClause]:
+    def _create_statements(self) -> Sequence[TextClause]:
         statement = f"CREATE SCHEMA {self.name}"
 
         if self.owner:
@@ -28,8 +28,8 @@ class Schema(DatabaseSqlEntity):
 
         return [text(statement)]
 
-    def exists_statement(self) -> TextClause:
+    def _exists_statement(self) -> TextClause:
         return text("SELECT EXISTS(SELECT 1 FROM pg_namespace WHERE nspname=:schema)").bindparams(schema=self.name)
 
-    def remove_statements(self) -> Sequence[TextClause]:
+    def _remove_statements(self) -> Sequence[TextClause]:
         return [text(f"DROP SCHEMA {self.name}")]

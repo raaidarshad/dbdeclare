@@ -21,13 +21,13 @@ class DatabaseSqlEntity(SQLMixin, DatabaseEntity):
     # TODO maybe inherit from grantable, maybe do it per entity?
     def _create(self) -> None:
         for db in self.databases:
-            self._commit_sql(engine=db.db_engine(), statements=self.create_statements())
+            self._commit_sql(engine=db.db_engine(), statements=self._create_statements())
 
     def _exists(self) -> bool:
         return all(
-            [self._fetch_sql(engine=db.db_engine(), statement=self.exists_statement())[0][0] for db in self.databases]
+            [self._fetch_sql(engine=db.db_engine(), statement=self._exists_statement())[0][0] for db in self.databases]
         )
 
     def _remove(self) -> None:
         for db in self.databases:
-            self._commit_sql(engine=db.db_engine(), statements=self.remove_statements())
+            self._commit_sql(engine=db.db_engine(), statements=self._remove_statements())

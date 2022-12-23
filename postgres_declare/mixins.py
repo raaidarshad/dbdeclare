@@ -31,13 +31,13 @@ class SQLMixin(ABC):
         pass
 
     @abstractmethod
-    def create_statements(self) -> Sequence[TextClause]:
+    def _create_statements(self) -> Sequence[TextClause]:
         pass
 
     @abstractmethod
-    def exists_statement(self) -> TextClause:
+    def _exists_statement(self) -> TextClause:
         pass
 
     @abstractmethod
-    def remove_statements(self) -> Sequence[TextClause]:
+    def _remove_statements(self) -> Sequence[TextClause]:
         pass
