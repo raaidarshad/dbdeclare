@@ -1,5 +1,5 @@
 from postgres_declare.entities.base_entity import Entity
-from postgres_declare.mixins import SQLMixin
+from postgres_declare.sqlmixin import SQLMixin
 
 
 class ClusterSqlEntity(SQLMixin, Entity):

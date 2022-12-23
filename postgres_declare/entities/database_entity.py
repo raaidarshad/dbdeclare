@@ -2,7 +2,7 @@ from typing import Sequence
 
 from postgres_declare.entities.base_entity import Entity
 from postgres_declare.entities.database import Database
-from postgres_declare.mixins import SQLMixin
+from postgres_declare.sqlmixin import SQLMixin
 
 
 class DatabaseEntity(Entity):
