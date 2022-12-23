@@ -19,15 +19,15 @@ class SQLMixin(ABC):
             return result.all()
 
     @abstractmethod
-    def create(self) -> None:
+    def _create(self) -> None:
         pass
 
     @abstractmethod
-    def exists(self) -> bool:
+    def _exists(self) -> bool:
         pass
 
     @abstractmethod
-    def remove(self) -> None:
+    def _remove(self) -> None:
         pass
 
     @abstractmethod

@@ -27,14 +27,14 @@ class MockEntity(Entity):
         self.mock_kwarg_2 = mock_kwarg_2
         super().__init__(name=name, depends_on=depends_on, check_if_exists=check_if_exists)
 
-    def create(self) -> None:
+    def _create(self) -> None:
         self.engine()
 
-    def exists(self) -> bool:
+    def _exists(self) -> bool:
         self.engine()
         return self.mock_exists
 
-    def remove(self) -> None:
+    def _remove(self) -> None:
         self.engine()
 
 
@@ -79,9 +79,9 @@ def test_entity_register_order(mock_entity_exists: MockEntity) -> None:
 
 def test_entity_no_engine(mock_entity_exists: MockEntity) -> None:
     with pytest.raises(NoEngineError):
-        mock_entity_exists.create()
+        mock_entity_exists._create()
     with pytest.raises(NoEngineError):
-        mock_entity_exists.exists()
+        mock_entity_exists._exists()
 
 
 def test_entity_get_passed_args() -> None:
@@ -104,12 +104,12 @@ def test_entity_get_passed_args_inherited() -> None:
 
 def test_entity_does_not_exist(mock_entity_does_not_exist: MockEntity, engine: Engine) -> None:
     Entity._engine = engine
-    assert not mock_entity_does_not_exist.exists()
+    assert not mock_entity_does_not_exist._exists()
 
 
 def test_entity_create_if_not_exist(mock_entity_exists: MockEntity, engine: Engine) -> None:
     Entity.create_all(engine)
-    assert mock_entity_exists.exists()
+    assert mock_entity_exists._exists()
 
 
 def test_entity_create_if_not_check_if_exists(mock_entity_exists: MockEntity, engine: Engine) -> None:

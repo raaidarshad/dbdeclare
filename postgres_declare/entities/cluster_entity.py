@@ -3,12 +3,12 @@ from postgres_declare.mixins import SQLMixin
 
 
 class ClusterSqlEntity(SQLMixin, Entity):
-    def create(self) -> None:
+    def _create(self) -> None:
         self._commit_sql(engine=self.__class__.engine(), statements=self.create_statements())
 
-    def exists(self) -> bool:
+    def _exists(self) -> bool:
         rows = self._fetch_sql(engine=self.__class__.engine(), statement=self.exists_statement())
         return rows[0][0]  # type: ignore
 
-    def remove(self) -> None:
+    def _remove(self) -> None:
         self._commit_sql(engine=self.__class__.engine(), statements=self.remove_statements())

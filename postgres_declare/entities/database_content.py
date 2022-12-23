@@ -25,11 +25,11 @@ class DatabaseContent(DatabaseEntity):
         # BUT it helps to have it as a dependency here to remind the user to make schemas they intend to use
         self.schemas = schemas
 
-    def create(self) -> None:
+    def _create(self) -> None:
         for db in self.databases:
             self.base.metadata.create_all(db.db_engine())
 
-    def exists(self) -> bool:
+    def _exists(self) -> bool:
         tables_in_db = []
         for db in self.databases:
             inspector: Inspector = inspect(db.db_engine())
@@ -43,6 +43,6 @@ class DatabaseContent(DatabaseEntity):
             )
         return all(tables_in_db)
 
-    def remove(self) -> None:
+    def _remove(self) -> None:
         for db in self.databases:
             self.base.metadata.drop_all(db.db_engine())

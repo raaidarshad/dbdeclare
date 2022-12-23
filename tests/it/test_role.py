@@ -10,19 +10,19 @@ from postgres_declare.entities.role import Role
 
 
 def test_does_not_exist(simple_role: Role) -> None:
-    assert not simple_role.exists()
+    assert not simple_role._exists()
 
 
 @pytest.mark.order(after="test_does_not_exist")
 def test_create(simple_role: Role) -> None:
-    simple_role.safe_create()
-    assert simple_role.exists()
+    simple_role._safe_create()
+    assert simple_role._exists()
 
 
 @pytest.mark.order(after="test_create")
 def test_remove(simple_role: Role) -> None:
-    simple_role.safe_remove()
-    assert not simple_role.exists()
+    simple_role._safe_remove()
+    assert not simple_role._exists()
 
 
 @given(
@@ -69,8 +69,8 @@ def test_inputs(
         encrypted=encrypted,
         valid_until=valid_until,
     )
-    temp_role.safe_create()
-    temp_role.safe_remove()
+    temp_role._safe_create()
+    temp_role._safe_remove()
 
 
 @pytest.mark.order(after="test_remove")

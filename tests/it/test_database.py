@@ -9,19 +9,19 @@ from postgres_declare.entities.role import Role
 
 
 def test_does_not_exist(simple_db: Database) -> None:
-    assert not simple_db.exists()
+    assert not simple_db._exists()
 
 
 @pytest.mark.order(after="test_does_not_exist")
 def test_create(simple_db: Database) -> None:
-    simple_db.safe_create()
-    assert simple_db.exists()
+    simple_db._safe_create()
+    assert simple_db._exists()
 
 
 @pytest.mark.order(after="test_create")
 def test_remove(simple_db: Database) -> None:
-    simple_db.safe_remove()
-    assert not simple_db.exists()
+    simple_db._safe_remove()
+    assert not simple_db._exists()
 
 
 @given(
@@ -36,8 +36,8 @@ def test_inputs(allow_connections: bool, connection_limit: int, is_template: boo
     temp_db = Database(
         name="bar", allow_connections=allow_connections, connection_limit=connection_limit, is_template=is_template
     )
-    temp_db.safe_create()
-    temp_db.safe_remove()
+    temp_db._safe_create()
+    temp_db._safe_remove()
 
 
 @pytest.mark.parametrize("template", ["template0", "template1"])
@@ -45,8 +45,8 @@ def test_inputs(allow_connections: bool, connection_limit: int, is_template: boo
 def test_specific_inputs(template: str, engine: Engine) -> None:
     Entity._engine = engine
     temp_db = Database(name="foobar", template=template)
-    temp_db.safe_create()
-    temp_db.safe_remove()
+    temp_db._safe_create()
+    temp_db._safe_remove()
 
 
 @pytest.mark.order(after="test_remove")
