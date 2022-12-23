@@ -3,9 +3,9 @@ from typing import Sequence, Type
 from sqlalchemy import Inspector, inspect
 from sqlalchemy.orm import DeclarativeBase
 
-from postgres_declare.entities.base_entity import Entity
 from postgres_declare.entities.database import Database
 from postgres_declare.entities.database_entity import DatabaseEntity
+from postgres_declare.entities.entity import Entity
 from postgres_declare.entities.schema import Schema
 
 

@@ -5,7 +5,7 @@ from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 from sqlalchemy import Engine
 
-from postgres_declare.entities.base_entity import Entity
+from postgres_declare.entities.entity import Entity
 from postgres_declare.entities.role import Role
 
 
