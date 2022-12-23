@@ -3,7 +3,7 @@ from typing import Any, Sequence
 import pytest
 from sqlalchemy import Engine
 
-from postgres_declare.base_entity import Entity
+from postgres_declare.entities.base_entity import Entity
 from postgres_declare.exceptions import EntityExistsError, NoEngineError
 from tests.helpers import YieldFixture
 

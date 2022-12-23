@@ -1,7 +1,8 @@
 import pytest
 
-from postgres_declare.cluster_entities import Database
-from postgres_declare.database_entities import DatabaseContent, Schema
+from postgres_declare.entities.database import Database
+from postgres_declare.entities.database_content import DatabaseContent
+from postgres_declare.entities.schema import Schema
 
 
 def test_does_not_exist(simple_db_content: DatabaseContent, simple_db: Database) -> None:
