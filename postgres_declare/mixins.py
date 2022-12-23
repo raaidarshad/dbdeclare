@@ -19,6 +19,18 @@ class SQLMixin(ABC):
             return result.all()
 
     @abstractmethod
+    def create(self) -> None:
+        pass
+
+    @abstractmethod
+    def exists(self) -> bool:
+        pass
+
+    @abstractmethod
+    def remove(self) -> None:
+        pass
+
+    @abstractmethod
     def create_statements(self) -> Sequence[TextClause]:
         pass
 
