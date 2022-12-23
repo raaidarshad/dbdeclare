@@ -27,8 +27,8 @@ class Base:
         cls.grant_all()
 
     @classmethod
-    def remove_all(cls, engine: Engine | None = None) -> None:
+    def drop_all(cls, engine: Engine | None = None) -> None:
         if engine:
             Entity._engine = engine
         for entity in reversed(Entity.entities):
-            entity._safe_remove()
+            entity._safe_drop()

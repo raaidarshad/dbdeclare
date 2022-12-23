@@ -43,6 +43,6 @@ class DatabaseContent(DatabaseEntity):
             )
         return all(tables_in_db)
 
-    def _remove(self) -> None:
+    def _drop(self) -> None:
         for db in self.databases:
             self.base.metadata.drop_all(db.db_engine())

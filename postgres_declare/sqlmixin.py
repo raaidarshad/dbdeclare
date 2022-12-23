@@ -27,7 +27,7 @@ class SQLMixin(ABC):
         pass
 
     @abstractmethod
-    def _remove(self) -> None:
+    def _drop(self) -> None:
         pass
 
     @abstractmethod

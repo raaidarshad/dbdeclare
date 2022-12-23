@@ -21,7 +21,7 @@ def test_create(simple_db: Database) -> None:
 
 @pytest.mark.order(after="test_create")
 def test_remove(simple_db: Database) -> None:
-    simple_db._safe_remove()
+    simple_db._safe_drop()
     assert not simple_db._exists()
 
 
@@ -38,7 +38,7 @@ def test_inputs(allow_connections: bool, connection_limit: int, is_template: boo
         name="bar", allow_connections=allow_connections, connection_limit=connection_limit, is_template=is_template
     )
     temp_db._safe_create()
-    temp_db._safe_remove()
+    temp_db._safe_drop()
 
 
 @pytest.mark.parametrize("template", ["template0", "template1"])
@@ -47,7 +47,7 @@ def test_specific_inputs(template: str, engine: Engine) -> None:
     Entity._engine = engine
     temp_db = Database(name="foobar", template=template)
     temp_db._safe_create()
-    temp_db._safe_remove()
+    temp_db._safe_drop()
 
 
 @pytest.mark.order(after="test_remove")
@@ -55,4 +55,4 @@ def test_dependency_inputs(engine: Engine) -> None:
     existing_role = Role(name="existing_role_for_db")
     Database(name="has_owner", owner=existing_role)
     Base.create_all(engine)
-    Base.remove_all()
+    Base.drop_all()

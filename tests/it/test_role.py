@@ -22,7 +22,7 @@ def test_create(simple_role: Role) -> None:
 
 @pytest.mark.order(after="test_create")
 def test_remove(simple_role: Role) -> None:
-    simple_role._safe_remove()
+    simple_role._safe_drop()
     assert not simple_role._exists()
 
 
@@ -71,7 +71,7 @@ def test_inputs(
         valid_until=valid_until,
     )
     temp_role._safe_create()
-    temp_role._safe_remove()
+    temp_role._safe_drop()
 
 
 @pytest.mark.order(after="test_remove")
@@ -84,4 +84,4 @@ def test_dependency_inputs(engine: Engine) -> None:
     Role(name="admin_one", admin=(existing_roles[0],))
     Role(name="admin_multiple", admin=existing_roles)
     Base.create_all(engine)
-    Base.remove_all(engine)
+    Base.drop_all(engine)

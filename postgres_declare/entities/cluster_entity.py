@@ -10,5 +10,5 @@ class ClusterSqlEntity(SQLMixin, Entity):
         rows = self._fetch_sql(engine=self.__class__.engine(), statement=self._exists_statement())
         return rows[0][0]  # type: ignore
 
-    def _remove(self) -> None:
+    def _drop(self) -> None:
         self._commit_sql(engine=self.__class__.engine(), statements=self._remove_statements())

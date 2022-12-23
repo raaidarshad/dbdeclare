@@ -21,7 +21,7 @@ def test_create(simple_db_content: DatabaseContent, simple_schema: Schema) -> No
 
 @pytest.mark.order(after="test_create")
 def test_remove(simple_db_content: DatabaseContent, simple_db: Database) -> None:
-    simple_db_content._safe_remove()
+    simple_db_content._safe_drop()
     assert not simple_db_content._exists()
     # clean up database
-    simple_db._safe_remove()
+    simple_db._safe_drop()

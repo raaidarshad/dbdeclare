@@ -28,6 +28,6 @@ class DatabaseSqlEntity(SQLMixin, DatabaseEntity):
             [self._fetch_sql(engine=db.db_engine(), statement=self._exists_statement())[0][0] for db in self.databases]
         )
 
-    def _remove(self) -> None:
+    def _drop(self) -> None:
         for db in self.databases:
             self._commit_sql(engine=db.db_engine(), statements=self._remove_statements())

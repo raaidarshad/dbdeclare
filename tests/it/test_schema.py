@@ -21,10 +21,10 @@ def test_create(simple_schema: Schema) -> None:
 
 @pytest.mark.order(after="test_create")
 def test_remove(simple_schema: Schema, simple_db: Database) -> None:
-    simple_schema._safe_remove()
+    simple_schema._safe_drop()
     assert not simple_schema._exists()
     # clean up database
-    simple_db._safe_remove()
+    simple_db._safe_drop()
 
 
 @pytest.mark.order(after="test_remove")
@@ -35,4 +35,4 @@ def test_dependency_inputs(engine: Engine) -> None:
     existing_db = Database(name="foobar")
     Schema(name="has_owner", databases=[existing_db], owner=existing_role)
     Base.create_all(engine)
-    Base.remove_all(engine)
+    Base.drop_all(engine)

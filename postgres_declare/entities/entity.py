@@ -71,12 +71,12 @@ class Entity(ABC):
         pass
 
     @abstractmethod
-    def _remove(self) -> None:
+    def _drop(self) -> None:
         pass
 
-    def _safe_remove(self) -> None:
+    def _safe_drop(self) -> None:
         if self._exists():
-            self._remove()
+            self._drop()
         else:
             if self.check_if_exists or self.check_if_any_exist:
                 raise EntityExistsError(
