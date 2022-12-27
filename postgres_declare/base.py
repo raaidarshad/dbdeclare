@@ -1,7 +1,7 @@
 from sqlalchemy import Engine
 
 from postgres_declare.entities.entity import Entity
-from postgres_declare.grant import Grantable
+from postgres_declare.entities.grant import GrantableEntity
 
 
 class Base:
@@ -17,8 +17,8 @@ class Base:
         if engine:
             Entity._engine = engine
         for entity in Entity.entities:
-            if isinstance(entity, Grantable):
-                entity._grant()
+            if isinstance(entity, GrantableEntity):
+                entity._safe_grant()
 
     @classmethod
     def run_all(cls, engine: Engine) -> None:
