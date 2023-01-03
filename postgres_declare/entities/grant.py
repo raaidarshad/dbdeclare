@@ -43,11 +43,12 @@ class GrantableEntity(Entity):
     def grant(self, grants: Sequence[Grant]) -> None:
         self.grants.extend(grants)
         # ensure entity order is correct
-        this_index = self.entities.index(self) - 1
+        this_index = self.entities.index(self)
         for grant in grants:
             for grantee in grant.grantees:
                 grantee_index = self.entities.index(grantee)
                 if grantee_index > this_index:
+                    print(self.entities)
                     self.entities.insert(this_index, self.entities.pop(grantee_index))
 
     @abstractmethod
@@ -59,30 +60,31 @@ class GrantableEntity(Entity):
     # _drop_grant: remove grant
 
     def _safe_grant(self) -> None:
-        grantees_and_existence = chain.from_iterable(
-            [[(grantee, grantee._exists()) for grantee in grant.grantees] for grant in self.grants]
-        )
-        try:
-            _, grantees_exist = zip(*grantees_and_existence)
-        except ValueError:
-            grantees_exist = ()
-        if self._exists() and all(grantees_exist):
-            self._grant()
-        elif not self._exists():
-            raise EntityExistsError(
-                f"There is no {self.__class__.__name__} with the "
-                f"name {self.name} to grant privileges to. The "
-                f"entity must exist before granting privileges."
+        if self.grants:
+            grantees_and_existence = chain.from_iterable(
+                [[(grantee, grantee._exists()) for grantee in grant.grantees] for grant in self.grants]
             )
-        elif not all(grantees_exist):
-            # loop over every grantee that doesn't exist
-            missing_grantees = [grantee.name for (grantee, existence) in grantees_and_existence if not existence]
-            formatted_missing_grantees = ", ".join(missing_grantees)
-            raise EntityExistsError(
-                f"There are no {Role.__class__.__name__}s with the "
-                f"following names: {formatted_missing_grantees}. "
-                f"These must exist before granting privileges."
-            )
+            try:
+                _, grantees_exist = zip(*grantees_and_existence)
+            except ValueError:
+                grantees_exist = ()
+            if self._exists() and all(grantees_exist):
+                self._grant()
+            elif not self._exists():
+                raise EntityExistsError(
+                    f"There is no {self.__class__.__name__} with the "
+                    f"name {self.name} to grant privileges to. The "
+                    f"entity must exist before granting privileges."
+                )
+            elif not all(grantees_exist):
+                # loop over every grantee that doesn't exist
+                missing_grantees = [grantee.name for (grantee, existence) in grantees_and_existence if not existence]
+                formatted_missing_grantees = ", ".join(missing_grantees)
+                raise EntityExistsError(
+                    f"There are no {Role.__class__.__name__}s with the "
+                    f"following names: {formatted_missing_grantees}. "
+                    f"These must exist before granting privileges."
+                )
 
     def _grant_statements(self) -> Sequence[TextClause]:
         # TODO check privileges for the type, or just let postgres handle the error?

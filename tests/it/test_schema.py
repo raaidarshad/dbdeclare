@@ -4,6 +4,7 @@ from sqlalchemy import Engine
 from postgres_declare.base import Base
 from postgres_declare.entities.database import Database
 from postgres_declare.entities.entity import Entity
+from postgres_declare.entities.grant import Grant, Privilege
 from postgres_declare.entities.role import Role
 from postgres_declare.entities.schema import Schema
 
@@ -35,4 +36,28 @@ def test_dependency_inputs(engine: Engine) -> None:
     existing_db = Database(name="foobar")
     Schema(name="has_owner", databases=[existing_db], owner=existing_role)
     Base.create_all(engine)
+    Base.drop_all()
+
+
+@pytest.mark.parametrize(
+    "privileges",
+    [
+        [Privilege.CREATE],
+        [Privilege.USAGE],
+        [Privilege.CREATE, Privilege.USAGE],
+        [Privilege.ALL_PRIVILEGES],
+    ],
+)
+@pytest.mark.order(after="test_remove")
+def test_grant(privileges: list[Privilege], engine: Engine) -> None:
+    Entity.entities = []
+    grantees = [Role(name=f"schema_grantee_{num}") for num in range(2)]
+    dbs = [Database(name=f"db_for_schema_grants_{num}") for num in range(2)]
+    schema = Schema(name="schema_for_grants", databases=dbs)
+    # grant
+    schema.grant([Grant(privileges=privileges, grantees=grantees)])
+    # execute
+    Base.run_all(engine)
+    # todo confirm access in place?
+    # remove
     Base.drop_all(engine)

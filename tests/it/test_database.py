@@ -72,11 +72,13 @@ def test_dependency_inputs(engine: Engine) -> None:
 )
 @pytest.mark.order(after="test_remove")
 def test_grant(privileges: list[Privilege], engine: Engine) -> None:
+    print(Entity.entities)
     db = Database(name="db_for_grants")
     grantees = [Role(name=f"grantee_{num}") for num in range(2)]
     # grant
     db.grant([Grant(privileges=privileges, grantees=grantees)])
     # execute
+    print(Entity.entities)
     Base.run_all(engine)
     # todo confirm access in place? either make a _has_grant fn or just run some sql
     # to see if the grantees can access the db
