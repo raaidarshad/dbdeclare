@@ -6,6 +6,7 @@ from sqlalchemy import Engine
 from postgres_declare.base import Base
 from postgres_declare.entities.database import Database
 from postgres_declare.entities.entity import Entity
+from postgres_declare.entities.grant import Grant, Privilege
 from postgres_declare.entities.role import Role
 
 
@@ -56,3 +57,28 @@ def test_dependency_inputs(engine: Engine) -> None:
     Database(name="has_owner", owner=existing_role)
     Base.create_all(engine)
     Base.drop_all()
+
+
+@pytest.mark.parametrize(
+    "privileges",
+    [
+        [Privilege.CREATE],
+        [Privilege.CONNECT],
+        [Privilege.TEMPORARY],
+        [Privilege.TEMP],
+        [Privilege.CREATE, Privilege.CONNECT],
+        [Privilege.ALL_PRIVILEGES],
+    ],
+)
+@pytest.mark.order(after="test_remove")
+def test_grant(privileges: list[Privilege], engine: Engine) -> None:
+    db = Database(name="db_for_grants")
+    grantees = [Role(name=f"grantee_{num}") for num in range(2)]
+    # grant
+    db.grant([Grant(privileges=privileges, grantees=grantees)])
+    # execute
+    Base.run_all(engine)
+    # todo confirm access in place? either make a _has_grant fn or just run some sql
+    # to see if the grantees can access the db
+    # remove
+    Base.drop_all(engine)

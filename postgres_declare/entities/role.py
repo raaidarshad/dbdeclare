@@ -3,11 +3,11 @@ from typing import Sequence
 
 from sqlalchemy import TextClause, text
 
-from postgres_declare.entities.cluster_entity import ClusterSqlEntity
+from postgres_declare.entities.cluster_entity import ClusterEntity
 from postgres_declare.entities.entity import Entity
 
 
-class Role(ClusterSqlEntity):
+class Role(ClusterEntity):
     def __init__(
         self,
         name: str,

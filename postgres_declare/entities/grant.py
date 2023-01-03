@@ -42,10 +42,21 @@ class GrantableEntity(Entity):
 
     def grant(self, grants: Sequence[Grant]) -> None:
         self.grants.extend(grants)
+        # ensure entity order is correct
+        this_index = self.entities.index(self) - 1
+        for grant in grants:
+            for grantee in grant.grantees:
+                grantee_index = self.entities.index(grantee)
+                if grantee_index > this_index:
+                    self.entities.insert(this_index, self.entities.pop(grantee_index))
 
     @abstractmethod
     def _grant(self) -> None:
         pass
+
+    # ^ _create_grant
+    # _has_grant: check if grant exists
+    # _drop_grant: remove grant
 
     def _safe_grant(self) -> None:
         grantees_and_existence = chain.from_iterable(
