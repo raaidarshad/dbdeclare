@@ -34,12 +34,6 @@ class Grant:
     grantees: Sequence[Role]
 
 
-@dataclass
-class DbGrant:
-    privileges: Sequence[Privilege]
-    grantee_name: str
-
-
 class GrantableEntity(Entity):
     def __init__(self, name: str, depends_on: Sequence[Entity] | None = None, check_if_exists: bool | None = None):
         super().__init__(name=name, depends_on=depends_on, check_if_exists=check_if_exists)
