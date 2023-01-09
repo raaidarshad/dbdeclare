@@ -5,11 +5,10 @@ from sqlalchemy import TextClause, text
 from postgres_declare.entities.database import Database
 from postgres_declare.entities.database_entity import DatabaseSqlEntity
 from postgres_declare.entities.entity import Entity
-from postgres_declare.entities.grant import GrantableEntity
 from postgres_declare.entities.role import Role
 
 
-class Schema(DatabaseSqlEntity, GrantableEntity):
+class Schema(DatabaseSqlEntity):
     def __init__(
         self,
         name: str,
@@ -34,7 +33,3 @@ class Schema(DatabaseSqlEntity, GrantableEntity):
 
     def _remove_statements(self) -> Sequence[TextClause]:
         return [text(f"DROP SCHEMA {self.name}")]
-
-    def _grant(self) -> None:
-        for db in self.databases:
-            self._commit_sql(engine=db.db_engine(), statements=self._grant_statements())

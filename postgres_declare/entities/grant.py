@@ -24,7 +24,6 @@ class Privilege(StrEnum):
     CREATE = "CREATE"
     CONNECT = "CONNECT"
     TEMPORARY = "TEMPORARY"
-    TEMP = "TEMP"
     EXECUTE = "EXECUTE"
     ALTER_SYSTEM = "ALTER SYSTEM"
 
@@ -33,6 +32,12 @@ class Privilege(StrEnum):
 class Grant:
     privileges: Sequence[Privilege]
     grantees: Sequence[Role]
+
+
+@dataclass
+class DbGrant:
+    privileges: Sequence[Privilege]
+    grantee_name: str
 
 
 class GrantableEntity(Entity):
@@ -48,16 +53,11 @@ class GrantableEntity(Entity):
             for grantee in grant.grantees:
                 grantee_index = self.entities.index(grantee)
                 if grantee_index > this_index:
-                    print(self.entities)
                     self.entities.insert(this_index, self.entities.pop(grantee_index))
 
     @abstractmethod
     def _grant(self) -> None:
         pass
-
-    # ^ _create_grant
-    # _has_grant: check if grant exists
-    # _drop_grant: remove grant
 
     def _safe_grant(self) -> None:
         if self.grants:
@@ -91,6 +91,45 @@ class GrantableEntity(Entity):
         return [
             text(
                 f"GRANT {self._format_privileges(grant)} ON {self.__class__.__name__.upper()} {self.name} TO {self._format_grantees(grant)}"
+            )
+            for grant in self.grants
+        ]
+
+    @abstractmethod
+    def _revoke(self) -> None:
+        pass
+
+    def _safe_revoke(self) -> None:
+        if self.grants:
+            grantees_and_existence = chain.from_iterable(
+                [[(grantee, grantee._exists()) for grantee in grant.grantees] for grant in self.grants]
+            )
+            try:
+                _, grantees_exist = zip(*grantees_and_existence)
+            except ValueError:
+                grantees_exist = ()
+            if self._exists() and all(grantees_exist):
+                self._revoke()
+            elif not self._exists():
+                raise EntityExistsError(
+                    f"There is no {self.__class__.__name__} with the "
+                    f"name {self.name} to revoke privileges from. The "
+                    f"entity must exist before revoking privileges."
+                )
+            elif not all(grantees_exist):
+                # loop over every grantee that doesn't exist
+                missing_grantees = [grantee.name for (grantee, existence) in grantees_and_existence if not existence]
+                formatted_missing_grantees = ", ".join(missing_grantees)
+                raise EntityExistsError(
+                    f"There are no {Role.__class__.__name__}s with the "
+                    f"following names: {formatted_missing_grantees}. "
+                    f"These must exist before revoking privileges."
+                )
+
+    def _revoke_statements(self) -> Sequence[TextClause]:
+        return [
+            text(
+                f"REVOKE {self._format_privileges(grant)} ON {self.__class__.__name__.upper()} {self.name} FROM {self._format_grantees(grant)}"
             )
             for grant in self.grants
         ]

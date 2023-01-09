@@ -4,11 +4,10 @@ from sqlalchemy import Engine, TextClause, create_engine, text
 
 from postgres_declare.entities.cluster_entity import ClusterEntity
 from postgres_declare.entities.entity import Entity
-from postgres_declare.entities.grant import GrantableEntity
 from postgres_declare.entities.role import Role
 
 
-class Database(GrantableEntity, ClusterEntity):
+class Database(ClusterEntity):
     def __init__(
         self,
         name: str,
@@ -78,9 +77,6 @@ class Database(GrantableEntity, ClusterEntity):
             statements.append(text(f"ALTER DATABASE {self.name} is_template false"))
         statements.append(text(f"DROP DATABASE {self.name} (FORCE)"))
         return statements
-
-    def _grant(self) -> None:
-        self._commit_sql(engine=self.__class__.engine(), statements=self._grant_statements())
 
     def db_engine(self) -> Engine:
         # database entities will reference this as the engine to use

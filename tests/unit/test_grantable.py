@@ -35,6 +35,9 @@ class MockGrantable(GrantableEntity):
     def _grant(self) -> None:
         self.engine()
 
+    def _revoke(self) -> None:
+        self.engine()
+
     def _drop(self) -> None:
         self.engine()
 
@@ -113,3 +116,6 @@ def test_grant_all_error_if_grantees_do_not_exist(
 ) -> None:
     with pytest.raises(EntityExistsError):
         Base.grant_all(engine)
+
+
+# TODO add revoke tests
