@@ -32,3 +32,11 @@ class Base:
             Entity._engine = engine
         for entity in reversed(Entity.entities):
             entity._safe_drop()
+
+    @classmethod
+    def revoke_all(cls, engine: Engine | None = None) -> None:
+        if engine:
+            Entity._engine = engine
+        for entity in reversed(Entity.entities):
+            if isinstance(entity, GrantableEntity):
+                entity._safe_revoke()
