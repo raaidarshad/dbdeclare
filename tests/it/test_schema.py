@@ -20,14 +20,14 @@ def test_create(simple_schema: Schema) -> None:
 
 
 @pytest.mark.order(after="test_create")
-def test_remove(simple_schema: Schema, simple_db: Database) -> None:
+def test_drop(simple_schema: Schema, simple_db: Database) -> None:
     simple_schema._safe_drop()
     assert not simple_schema._exists()
     # clean up database
     simple_db._safe_drop()
 
 
-@pytest.mark.order(after="test_remove")
+@pytest.mark.order(after="test_drop")
 def test_dependency_inputs(engine: Engine) -> None:
     Entity.entities = []
     Entity.check_if_any_exist = False

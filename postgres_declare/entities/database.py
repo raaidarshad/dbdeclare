@@ -70,7 +70,7 @@ class Database(ClusterEntity):
     def _exists_statement(self) -> TextClause:
         return text("SELECT EXISTS(SELECT 1 FROM pg_database WHERE datname=:db)").bindparams(db=self.name)
 
-    def _remove_statements(self) -> Sequence[TextClause]:
+    def _drop_statements(self) -> Sequence[TextClause]:
         statements = []
         if self.is_template:
             # cannot drop a template, must set is_template to false before drop

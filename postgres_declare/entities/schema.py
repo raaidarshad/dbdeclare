@@ -31,5 +31,5 @@ class Schema(DatabaseSqlEntity):
     def _exists_statement(self) -> TextClause:
         return text("SELECT EXISTS(SELECT 1 FROM pg_namespace WHERE nspname=:schema)").bindparams(schema=self.name)
 
-    def _remove_statements(self) -> Sequence[TextClause]:
+    def _drop_statements(self) -> Sequence[TextClause]:
         return [text(f"DROP SCHEMA {self.name}")]

@@ -11,4 +11,4 @@ class ClusterEntity(SQLMixin, Entity):
         return rows[0][0]  # type: ignore
 
     def _drop(self) -> None:
-        self._commit_sql(engine=self.__class__.engine(), statements=self._remove_statements())
+        self._commit_sql(engine=self.__class__.engine(), statements=self._drop_statements())

@@ -30,4 +30,4 @@ class DatabaseSqlEntity(SQLMixin, DatabaseEntity):
 
     def _drop(self) -> None:
         for db in self.databases:
-            self._commit_sql(engine=db.db_engine(), statements=self._remove_statements())
+            self._commit_sql(engine=db.db_engine(), statements=self._drop_statements())

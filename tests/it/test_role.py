@@ -21,7 +21,7 @@ def test_create(simple_role: Role) -> None:
 
 
 @pytest.mark.order(after="test_create")
-def test_remove(simple_role: Role) -> None:
+def test_drop(simple_role: Role) -> None:
     simple_role._safe_drop()
     assert not simple_role._exists()
 
@@ -40,7 +40,7 @@ def test_remove(simple_role: Role) -> None:
     valid_until=st.datetimes(min_value=datetime.today(), max_value=datetime.today() + timedelta(days=180)),
 )
 @settings(suppress_health_check=[HealthCheck.function_scoped_fixture])
-@pytest.mark.order(after="test_remove")
+@pytest.mark.order(after="test_drop")
 def test_inputs(
     superuser: bool,
     createdb: bool,
@@ -74,7 +74,7 @@ def test_inputs(
     temp_role._safe_drop()
 
 
-@pytest.mark.order(after="test_remove")
+@pytest.mark.order(after="test_drop")
 def test_dependency_inputs(engine: Engine) -> None:
     existing_roles = [Role(name=f"existing_{n}") for n in range(3)]
     Role(name="in_one", in_role=(existing_roles[0],))

@@ -39,5 +39,5 @@ class SQLMixin(ABC):
         pass
 
     @abstractmethod
-    def _remove_statements(self) -> Sequence[TextClause]:
+    def _drop_statements(self) -> Sequence[TextClause]:
         pass

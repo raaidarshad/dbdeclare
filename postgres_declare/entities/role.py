@@ -80,5 +80,5 @@ class Role(ClusterEntity):
     def _exists_statement(self) -> TextClause:
         return text("SELECT EXISTS(SELECT 1 FROM pg_authid WHERE rolname=:role)").bindparams(role=self.name)
 
-    def _remove_statements(self) -> Sequence[TextClause]:
+    def _drop_statements(self) -> Sequence[TextClause]:
         return [text(f"DROP ROLE {self.name}")]
