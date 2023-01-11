@@ -51,17 +51,13 @@ class MockRole(Role):
         return self.mock_exists
 
 
+# TODO these mocks need to be a bit more sensible and have grants for some
+# of them! should add a test to check for that too
+
+
 @pytest.fixture
 def grantable_entity() -> YieldFixture[MockGrantable]:
     yield MockGrantable(name="mock_grantable_single")
-    Entity.entities = []
-    Entity.check_if_any_exist = False
-    Entity._engine = None
-
-
-@pytest.fixture
-def grantable_entity_does_not_exist() -> YieldFixture[MockGrantable]:
-    yield MockGrantable(name="mock_grantable_does_not_exist", mock_exists=False)
     Entity.entities = []
     Entity.check_if_any_exist = False
     Entity._engine = None
@@ -75,6 +71,16 @@ def mock_role() -> YieldFixture[MockRole]:
 @pytest.fixture
 def mock_role_does_not_exist() -> YieldFixture[MockRole]:
     yield MockRole(name="nothere", mock_exists=False)
+
+
+@pytest.fixture
+def grantable_entity_does_not_exist(mock_role: MockRole) -> YieldFixture[MockGrantable]:
+    mg = MockGrantable(name="mock_grantable_does_not_exist", mock_exists=False)
+    mg.grant(grants=[Grant(privileges=[Privilege.SELECT], grantees=[mock_role])])
+    yield mg
+    Entity.entities = []
+    Entity.check_if_any_exist = False
+    Entity._engine = None
 
 
 @pytest.fixture
@@ -118,4 +124,17 @@ def test_grant_all_error_if_grantees_do_not_exist(
         Base.grant_all(engine)
 
 
-# TODO add revoke tests
+def test_revoke_all(grantable_with_grant: MockGrantable, engine: Engine) -> None:
+    Base.revoke_all(engine)
+
+
+def test_revoke_error_if_self_does_not_exist(grantable_entity_does_not_exist: MockGrantable, engine: Engine) -> None:
+    with pytest.raises(EntityExistsError):
+        Base.revoke_all(engine)
+
+
+def test_revoke_error_if_grantees_do_not_exist(
+    grantable_with_grant_to_nonexistent_grantees: MockGrantable, engine: Engine
+) -> None:
+    with pytest.raises(EntityExistsError):
+        Base.revoke_all(engine)
