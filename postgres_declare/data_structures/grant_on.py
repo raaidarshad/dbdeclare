@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Sequence
 
 from postgres_declare.data_structures.privileges import Privilege
-from postgres_declare.entities.grant import GrantableEntity
+from postgres_declare.entities.grantable import GrantableEntity
 
 
 @dataclass

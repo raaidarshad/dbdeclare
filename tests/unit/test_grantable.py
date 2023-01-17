@@ -7,7 +7,7 @@ from postgres_declare.base import Base
 from postgres_declare.data_structures.grant_to import GrantTo
 from postgres_declare.data_structures.privileges import Privilege
 from postgres_declare.entities.entity import Entity
-from postgres_declare.entities.grant import GrantableEntity
+from postgres_declare.entities.grantable import GrantableEntity
 from postgres_declare.entities.role import Role
 from postgres_declare.exceptions import EntityExistsError
 from tests.helpers import YieldFixture
