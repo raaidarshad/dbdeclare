@@ -21,6 +21,21 @@ def test_create(simple_role: Role) -> None:
 
 
 @pytest.mark.order(after="test_create")
+def test_grant_does_not_exist() -> None:
+    pass  # assert grant doesn't exist
+
+
+@pytest.mark.order(after="test_grant_does_not_exist")
+def test_grant() -> None:
+    pass  # assert grant exists
+
+
+@pytest.mark.order(after="test_grant")
+def test_revoke() -> None:
+    pass  # assert grant doesn't exist
+
+
+@pytest.mark.order(after="test_create")
 def test_drop(simple_role: Role) -> None:
     simple_role._safe_drop()
     assert not simple_role._exists()
