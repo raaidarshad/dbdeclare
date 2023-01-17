@@ -33,6 +33,14 @@ class Entity(ABC):
 
         self.__class__._register(self)
 
+    def __hash__(self) -> int:
+        return hash((self.name, self.__class__.__name__))
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        return (self.name, self.__class__.__name__) == (other.name, other.__class__.__name__)
+
     @classmethod
     def _register(cls, entity: "Entity") -> None:
         cls.entities.append(entity)

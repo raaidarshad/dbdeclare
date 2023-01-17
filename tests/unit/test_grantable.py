@@ -4,8 +4,10 @@ import pytest
 from sqlalchemy import Engine
 
 from postgres_declare.base import Base
+from postgres_declare.data_structures.grant_to import GrantTo
+from postgres_declare.data_structures.privileges import Privilege
 from postgres_declare.entities.entity import Entity
-from postgres_declare.entities.grant import Grant, GrantableEntity, Privilege
+from postgres_declare.entities.grant import GrantableEntity
 from postgres_declare.entities.role import Role
 from postgres_declare.exceptions import EntityExistsError
 from tests.helpers import YieldFixture
@@ -32,12 +34,6 @@ class MockGrantable(GrantableEntity):
         self.engine()
         return self.mock_exists
 
-    def _grant(self) -> None:
-        self.engine()
-
-    def _revoke(self) -> None:
-        self.engine()
-
     def _drop(self) -> None:
         self.engine()
 
@@ -50,9 +46,11 @@ class MockRole(Role):
     def _exists(self) -> bool:
         return self.mock_exists
 
+    def _grant(self) -> None:
+        self.engine()
 
-# TODO these mocks need to be a bit more sensible and have grants for some
-# of them! should add a test to check for that too
+    def _revoke(self) -> None:
+        self.engine()
 
 
 @pytest.fixture
@@ -76,7 +74,7 @@ def mock_role_does_not_exist() -> YieldFixture[MockRole]:
 @pytest.fixture
 def grantable_entity_does_not_exist(mock_role: MockRole) -> YieldFixture[MockGrantable]:
     mg = MockGrantable(name="mock_grantable_does_not_exist", mock_exists=False)
-    mg.grant(grants=[Grant(privileges=[Privilege.SELECT], grantees=[mock_role])])
+    mg.grant(grants=[GrantTo(privileges=[Privilege.SELECT], to=[mock_role])])
     yield mg
     Entity.entities = []
     Entity.check_if_any_exist = False
@@ -84,12 +82,12 @@ def grantable_entity_does_not_exist(mock_role: MockRole) -> YieldFixture[MockGra
 
 
 @pytest.fixture
-def simple_grant(mock_role: MockRole) -> YieldFixture[Grant]:
-    yield Grant(privileges=[Privilege.SELECT, Privilege.INSERT], grantees=[mock_role])
+def simple_grant(mock_role: MockRole) -> YieldFixture[GrantTo]:
+    yield GrantTo(privileges=[Privilege.SELECT, Privilege.INSERT], to=[mock_role])
 
 
 @pytest.fixture
-def grantable_with_grant(grantable_entity: MockGrantable, simple_grant: Grant) -> YieldFixture[MockGrantable]:
+def grantable_with_grant(grantable_entity: MockGrantable, simple_grant: GrantTo) -> YieldFixture[MockGrantable]:
     grantable_entity.grant([simple_grant])
     yield grantable_entity
 
@@ -98,14 +96,14 @@ def grantable_with_grant(grantable_entity: MockGrantable, simple_grant: Grant) -
 def grantable_with_grant_to_nonexistent_grantees(
     grantable_entity: MockGrantable, mock_role_does_not_exist: MockRole
 ) -> YieldFixture[MockGrantable]:
-    grant_with_nonexistent_grantees = Grant(privileges=[Privilege.SELECT], grantees=[mock_role_does_not_exist])
+    grant_with_nonexistent_grantees = GrantTo(privileges=[Privilege.SELECT], to=[mock_role_does_not_exist])
     grantable_entity.grant([grant_with_nonexistent_grantees])
     yield grantable_entity
 
 
-def test_grant(grantable_entity: MockGrantable, simple_grant: Grant) -> None:
+def test_grant(grantable_entity: MockGrantable, mock_role: MockRole, simple_grant: GrantTo) -> None:
     grantable_entity.grant([simple_grant])
-    assert grantable_entity.grants[0] == simple_grant
+    assert mock_role.grants[grantable_entity] == set(simple_grant.privileges)
 
 
 def test_grant_all(grantable_with_grant: MockGrantable, engine: Engine) -> None:

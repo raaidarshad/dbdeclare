@@ -143,3 +143,10 @@ def test_entity_drop_error_if_any_does_not_exist(mock_entity_does_not_exist: Moc
     Entity.check_if_any_exist = True
     with pytest.raises(EntityExistsError):
         Base.drop_all(engine)
+
+
+def test_entity_works_as_dict_key(mock_entity_exists: MockEntity) -> None:
+    mydict = {mock_entity_exists: "foo"}
+    assert mydict[mock_entity_exists] == "foo"
+    myset = {mock_entity_exists, mock_entity_exists}
+    assert len(myset) == 1
