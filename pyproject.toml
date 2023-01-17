@@ -14,7 +14,7 @@ sqlalchemy = "2.0.0b3"
 
 [tool.poetry.dev-dependencies]
 hypothesis = "^6.60.0"
-mypy = "^0.961"
+mypy = "^0.991"
 pre-commit = "^2.19.0"
 pytest = "^7.1.2"
 pytest-order = "1.0.1"
@@ -47,9 +47,4 @@ strict = "True"
 files = "."
 exclude = [
     '\.venv',
-]
-
-[tool.pytest.ini_options]
-markers = [
-    "with_db: marks tests as those that need a DB present to interact with (deselect with '-m \"not slow\"')"
 ]
