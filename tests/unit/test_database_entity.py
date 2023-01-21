@@ -8,7 +8,7 @@ class MockDatabaseEntity(DatabaseEntity):
         pass
 
     def _exists(self) -> bool:
-        pass
+        return True
 
     def _drop(self) -> None:
         pass
