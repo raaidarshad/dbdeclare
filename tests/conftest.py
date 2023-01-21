@@ -45,7 +45,7 @@ schema_name = "simple_schema"
 
 @pytest.fixture(scope="module")
 def simple_schema(entity: Entity, simple_db: Database) -> YieldFixture[Schema]:
-    yield Schema(name=schema_name, databases=[simple_db])
+    yield Schema(name=schema_name, database=simple_db)
 
 
 class MyBase(DeclarativeBase):
@@ -70,6 +70,4 @@ class FancyTable(MyBase):
 
 @pytest.fixture(scope="module")
 def simple_db_content(entity: Entity, simple_db: Database, simple_schema: Schema) -> YieldFixture[DatabaseContent]:
-    yield DatabaseContent(
-        name="simple_db_content", databases=[simple_db], schemas=[simple_schema], sqlalchemy_base=MyBase
-    )
+    yield DatabaseContent(name="simple_db_content", database=simple_db, schemas=[simple_schema], sqlalchemy_base=MyBase)

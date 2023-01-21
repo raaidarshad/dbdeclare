@@ -43,6 +43,7 @@ class Entity(ABC):
 
     @classmethod
     def _register(cls, entity: "Entity") -> None:
+        # TODO add code to make sure there are no duplicate entities
         cls.entities.append(entity)
 
     @classmethod
@@ -50,10 +51,7 @@ class Entity(ABC):
         if cls._engine:
             return cls._engine
         else:
-            raise NoEngineError(
-                "There is no SQLAlchemy Engine present. `Base._engine` must have "
-                "a valid engine. This should be passed via the `_create_all` method."
-            )
+            raise NoEngineError("There is no SQLAlchemy Engine present. `Base._engine` must have " "a valid engine.")
 
     @abstractmethod
     def _create(self) -> None:

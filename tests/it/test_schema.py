@@ -33,6 +33,6 @@ def test_dependency_inputs(engine: Engine) -> None:
     Entity.check_if_any_exist = False
     existing_role = Role(name="existing_role_for_schema")
     existing_db = Database(name="foobar")
-    Schema(name="has_owner", databases=[existing_db], owner=existing_role)
+    Schema(name="has_owner", database=existing_db, owner=existing_role)
     Base.create_all(engine)
     Base.drop_all()

@@ -12,13 +12,13 @@ class Schema(DatabaseSqlEntity):
     def __init__(
         self,
         name: str,
-        databases: Sequence[Database],
+        database: Database,
         depends_on: Sequence[Entity] | None = None,
         check_if_exists: bool | None = None,
         owner: Role | None = None,
     ):
         self.owner = owner
-        super().__init__(name=name, depends_on=depends_on, databases=databases, check_if_exists=check_if_exists)
+        super().__init__(name=name, depends_on=depends_on, database=database, check_if_exists=check_if_exists)
 
     def _create_statements(self) -> Sequence[TextClause]:
         statement = f"CREATE SCHEMA {self.name}"
