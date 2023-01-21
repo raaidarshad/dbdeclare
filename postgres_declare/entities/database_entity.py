@@ -16,6 +16,18 @@ class DatabaseEntity(Entity):
         self.database = database
         super().__init__(name=name, depends_on=depends_on, check_if_exists=check_if_exists)
 
+    def __hash__(self) -> int:
+        return hash((self.name, self.__class__.__name__, self.database.name))
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        return (self.name, self.__class__.__name__, self.database.name) == (
+            other.name,
+            other.__class__.__name__,
+            other.database.name,
+        )
+
 
 class DatabaseSqlEntity(SQLMixin, DatabaseEntity):
     # TODO maybe inherit from grantable, maybe do it per entity?
