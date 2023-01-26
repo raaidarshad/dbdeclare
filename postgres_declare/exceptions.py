@@ -8,3 +8,7 @@ class NoEngineError(PostgresDeclareError):
 
 class EntityExistsError(PostgresDeclareError):
     pass
+
+
+class InvalidPrivilegeError(PostgresDeclareError):
+    pass

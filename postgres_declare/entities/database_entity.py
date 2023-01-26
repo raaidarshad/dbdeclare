@@ -2,7 +2,7 @@ from typing import Sequence
 
 from postgres_declare.entities.database import Database
 from postgres_declare.entities.entity import Entity
-from postgres_declare.sqlmixin import SQLMixin
+from postgres_declare.sqlmixin import SQLCreatable
 
 
 class DatabaseEntity(Entity):
@@ -29,7 +29,7 @@ class DatabaseEntity(Entity):
         )
 
 
-class DatabaseSqlEntity(SQLMixin, DatabaseEntity):
+class DatabaseSqlEntity(SQLCreatable, DatabaseEntity):
     # TODO maybe inherit from grantable, maybe do it per entity?
     def _create(self) -> None:
         self._commit_sql(engine=self.database.db_engine(), statements=self._create_statements())

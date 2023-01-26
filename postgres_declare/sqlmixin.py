@@ -4,7 +4,7 @@ from typing import Any, Sequence
 from sqlalchemy import Engine, Row, TextClause
 
 
-class SQLMixin(ABC):
+class SQLBase(ABC):
     @staticmethod
     def _commit_sql(engine: Engine, statements: Sequence[TextClause]) -> None:
         with engine.connect() as conn:
@@ -18,6 +18,8 @@ class SQLMixin(ABC):
             result = conn.execute(statement)
             return result.all()
 
+
+class SQLCreatable(SQLBase):
     @abstractmethod
     def _create(self) -> None:
         pass
