@@ -5,11 +5,15 @@ from typing import Sequence, Type
 from sqlalchemy import Inspector, inspect
 from sqlalchemy.orm import DeclarativeBase
 
+from postgres_declare.data_structures.grant_to import GrantTo
+from postgres_declare.data_structures.privileges import Privilege
 from postgres_declare.entities.database import Database
 from postgres_declare.entities.database_entity import DatabaseEntity
 from postgres_declare.entities.entity import Entity
+from postgres_declare.entities.role import Role
 from postgres_declare.entities.schema import Schema
-from postgres_declare.mixins.grantable import Table
+from postgres_declare.mixins.grantable import Grantable
+from postgres_declare.mixins.sql import SQLBase
 
 
 class DatabaseContent(DatabaseEntity):
@@ -46,3 +50,57 @@ class DatabaseContent(DatabaseEntity):
 
     def _drop(self) -> None:
         self.base.metadata.drop_all(self.database.db_engine())
+
+
+class Table(SQLBase, Grantable):
+    def __init__(self, name: str, database_content: DatabaseContent, schema: str | None = "public"):
+        super().__init__(name=name)
+        self.database_content = database_content
+        self.schema = schema
+
+    def __hash__(self) -> int:
+        return hash((self.name, self.__class__.__name__, self.database_content.name, self.schema))
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        return (self.name, self.__class__.__name__, self.database_content.name, self.schema) == (
+            other.name,
+            other.__class__.__name__,
+            other.database_content.name,
+            self.schema,
+        )
+
+    def grant(self, grants: Sequence[GrantTo]) -> None:
+        super().grant(grants=grants)
+        self._fix_entity_order(grants=grants, target_entity=self.database_content)
+
+    def _exists(self) -> bool:
+        # TODO not sure how expensive creating an inspector is, might not want to do it for every run of this fn
+        inspector: Inspector = inspect(self.database_content.database.db_engine())
+        return inspector.has_table(table_name=self.name, schema=self.schema)
+
+    def _grant(self, grantee: Role, privileges: set[Privilege]) -> None:
+        self._commit_sql(
+            engine=self.database_content.database.db_engine(),
+            statements=self._grant_statements(grantee=grantee, privileges=privileges),
+        )
+
+    def _revoke(self, grantee: Role, privileges: set[Privilege]) -> None:
+        self._commit_sql(
+            engine=self.database_content.database.db_engine(),
+            statements=self._revoke_statements(grantee=grantee, privileges=privileges),
+        )
+
+    @staticmethod
+    def _allowed_privileges() -> set[Privilege]:
+        return {
+            Privilege.INSERT,
+            Privilege.SELECT,
+            Privilege.UPDATE,
+            Privilege.DELETE,
+            Privilege.TRUNCATE,
+            Privilege.REFERENCES,
+            Privilege.TRIGGER,
+            Privilege.ALL_PRIVILEGES,
+        }
