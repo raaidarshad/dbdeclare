@@ -17,8 +17,6 @@ if TYPE_CHECKING:
 
 
 class Grantable(ABC):
-    # TODO need to replace lots of uses of self.__class__.__name__ with a fn or attribute,
-    # TODO or change GrantableTable to Table and deal with that
     def __init__(self, name: str, grants: Sequence[GrantTo] | None = None):
         self.name = name
         if grants:
@@ -113,7 +111,7 @@ class GrantableEntity(Grantable, Entity):
         self._fix_entity_order(grants=grants, target_entity=self)
 
 
-class GrantableTable(SQLBase, Grantable):
+class Table(SQLBase, Grantable):
     def __init__(self, name: str, database_content: DatabaseContent, schema: str | None = "public"):
         super().__init__(name=name)
         self.database_content = database_content

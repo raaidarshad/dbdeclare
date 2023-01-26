@@ -9,7 +9,7 @@ from postgres_declare.entities.database import Database
 from postgres_declare.entities.database_entity import DatabaseEntity
 from postgres_declare.entities.entity import Entity
 from postgres_declare.entities.schema import Schema
-from postgres_declare.mixins.grantable import GrantableTable
+from postgres_declare.mixins.grantable import Table
 
 
 class DatabaseContent(DatabaseEntity):
@@ -28,7 +28,7 @@ class DatabaseContent(DatabaseEntity):
         # BUT it helps to have it as a dependency here to remind the user to make schemas they intend to use
         self.schemas = schemas
         self.tables = {
-            table.name: GrantableTable(name=table.name, database_content=self, schema=table.schema)
+            table.name: Table(name=table.name, database_content=self, schema=table.schema)
             for table in self.base.metadata.tables.values()
         }
 
