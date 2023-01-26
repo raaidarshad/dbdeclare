@@ -9,7 +9,7 @@ from postgres_declare.data_structures.grant_to import GrantTo
 from postgres_declare.data_structures.privileges import Privilege
 from postgres_declare.entities.entity import Entity
 from postgres_declare.exceptions import EntityExistsError, InvalidPrivilegeError
-from postgres_declare.sqlmixin import SQLBase
+from postgres_declare.mixins.sql import SQLBase
 
 if TYPE_CHECKING:
     from postgres_declare.entities.database_content import DatabaseContent
