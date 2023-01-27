@@ -25,3 +25,23 @@ def test_drop(simple_db_content: DatabaseContent, simple_db: Database) -> None:
     assert not simple_db_content._exists()
     # clean up database
     simple_db._safe_drop()
+
+
+def test_table_grant() -> None:
+    # TODO
+    pass
+
+
+def test_table_revoke() -> None:
+    # TODO
+    pass
+
+
+def test_column_grant() -> None:
+    # TODO
+    pass
+
+
+def test_column_revoke() -> None:
+    # TODO
+    pass

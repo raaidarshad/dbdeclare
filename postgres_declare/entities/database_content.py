@@ -31,7 +31,7 @@ class DatabaseContent(DatabaseEntity):
         # schemas doesn't do anything since __table_args__ in sqlalchemy defines the schema
         # BUT it helps to have it as a dependency here to remind the user to make schemas they intend to use
         self.schemas = schemas
-        self.tables = {
+        self.tables: dict[str, Table] = {
             table.name: Table(name=table.name, database_content=self, schema=table.schema)
             for table in self.base.metadata.tables.values()
         }

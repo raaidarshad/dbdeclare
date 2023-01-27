@@ -56,3 +56,13 @@ def test_dependency_inputs(engine: Engine) -> None:
     Database(name="has_owner", owner=existing_role)
     Base.create_all(engine)
     Base.drop_all()
+
+
+def test_grant() -> None:
+    # TODO
+    pass
+
+
+def test_revoke() -> None:
+    # TODO
+    pass
