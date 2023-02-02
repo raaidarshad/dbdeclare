@@ -5,7 +5,6 @@ from typing import Sequence
 from sqlalchemy import TextClause, text
 
 from postgres_declare.data_structures.grant_on import GrantOn, GrantStore
-from postgres_declare.data_structures.privileges import Privilege
 from postgres_declare.entities.cluster_entity import ClusterEntity
 from postgres_declare.entities.entity import Entity
 from postgres_declare.exceptions import EntityExistsError
@@ -97,81 +96,48 @@ class Role(ClusterEntity):
 
     def grant(self, grants: Sequence[GrantOn]) -> None:
         for grant in grants:
-            for grantor in grant.on:
-                self.grants[grantor].union(set(grant.privileges))
+            for target in grant.on:
+                self.grants[target].union(set(grant.privileges))
 
     def _safe_grant(self) -> None:
         if self.grants:
-            grantors = {grantor for grantor in self.grants.keys() if grantor._exists()}
-            grantors_that_do_not_exist = set(self.grants.keys()).difference(grantors)
-            # if the role doesn't exist, say so
             if not self._exists():
                 raise EntityExistsError(
                     f"There is no {self.__class__.__name__} with the "
                     f"name {self.name}. The {self.__class__.__name__} "
                     f"must exist to grant privileges."
                 )
-            # if the grantors don't exist, say so, and say which ones
-            elif grantors_that_do_not_exist:
-                missing_grantors = ", ".join(
-                    [f"{g.__class__.__name__.upper()} - {g.name}" for g in grantors_that_do_not_exist]
-                )
-                raise EntityExistsError(
-                    f"There are no entities of the following kind and name: "
-                    f"{missing_grantors}. "
-                    f"These must exist to grant privileges."
-                )
-            # if everything needed exists, run _grant
             else:
-                self._grant()
+                for target, privileges in self.grants.items():
+                    target._safe_grant(grantee=self, privileges=privileges)
 
-    def _grant(self) -> None:
-        self._commit_sql(engine=self.__class__.engine(), statements=self._grant_statements())
-
-    def _grant_statements(self) -> Sequence[TextClause]:
-        return [
-            text(
-                f"GRANT {self._format_privileges(privileges)} ON {grantor.__class__.__name__.upper()} {grantor.name} TO {self.name}"
-            )
-            for grantor, privileges in self.grants.items()
-        ]
+    def _grants_exist(self) -> bool:
+        if self.grants:
+            if not self._exists():
+                raise EntityExistsError(
+                    f"There is no {self.__class__.__name__} with the "
+                    f"name {self.name}. The {self.__class__.__name__} "
+                    f"must exist to alter privileges."
+                )
+            else:
+                return all(
+                    [
+                        target._grants_exist(grantee=self, privileges=privileges)
+                        for target, privileges in self.grants.items()
+                    ]
+                )
+        else:
+            # if there aren't any grants, return True because technically all specified grants are present
+            return True
 
     def _safe_revoke(self) -> None:
         if self.grants:
-            grantors = {grantor for grantor in self.grants.keys() if grantor._exists()}
-            grantors_that_do_not_exist = set(self.grants.keys()).difference(grantors)
-            # if the role doesn't exist, say so
             if not self._exists():
                 raise EntityExistsError(
                     f"There is no {self.__class__.__name__} with the "
                     f"name {self.name}. The {self.__class__.__name__} "
                     f"must exist to revoke privileges."
                 )
-            # if the grantors don't exist, say so, and say which ones
-            elif grantors_that_do_not_exist:
-                missing_grantors = ", ".join(
-                    [f"{g.__class__.__name__.upper()} - {g.name}" for g in grantors_that_do_not_exist]
-                )
-                raise EntityExistsError(
-                    f"There are no entities of the following kind and name: "
-                    f"{missing_grantors}. "
-                    f"These must exist to revoke privileges."
-                )
-            # if everything needed exists, run _grant
             else:
-                self._revoke()
-
-    def _revoke(self) -> None:
-        self._commit_sql(engine=self.__class__.engine(), statements=self._revoke_statements())
-
-    def _revoke_statements(self) -> Sequence[TextClause]:
-        return [
-            text(
-                f"REVOKE {self._format_privileges(privileges)} ON {grantor.__class__.__name__.upper()} {grantor.name} FROM {self.name}"
-            )
-            for grantor, privileges in self.grants.items()
-        ]
-
-    @staticmethod
-    def _format_privileges(privileges: set[Privilege]) -> str:
-        return ", ".join(privileges)
+                for target, privileges in self.grants.items():
+                    target._safe_revoke(grantee=self, privileges=privileges)

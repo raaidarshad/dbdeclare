@@ -1,8 +1,8 @@
 from postgres_declare.entities.entity import Entity
-from postgres_declare.sqlmixin import SQLMixin
+from postgres_declare.mixins.sql import SQLCreatable
 
 
-class ClusterEntity(SQLMixin, Entity):
+class ClusterEntity(SQLCreatable, Entity):
     def _create(self) -> None:
         self._commit_sql(engine=self.__class__.engine(), statements=self._create_statements())
 
