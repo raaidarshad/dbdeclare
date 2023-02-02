@@ -111,6 +111,25 @@ class Role(ClusterEntity):
                 for target, privileges in self.grants.items():
                     target._safe_grant(grantee=self, privileges=privileges)
 
+    def _grants_exist(self) -> bool:
+        if self.grants:
+            if not self._exists():
+                raise EntityExistsError(
+                    f"There is no {self.__class__.__name__} with the "
+                    f"name {self.name}. The {self.__class__.__name__} "
+                    f"must exist to alter privileges."
+                )
+            else:
+                return all(
+                    [
+                        target._grants_exist(grantee=self, privileges=privileges)
+                        for target, privileges in self.grants.items()
+                    ]
+                )
+        else:
+            # if there aren't any grants, return True because technically all specified grants are present
+            return True
+
     def _safe_revoke(self) -> None:
         if self.grants:
             if not self._exists():

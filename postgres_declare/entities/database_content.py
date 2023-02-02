@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Sequence, Type
 
-from sqlalchemy import Inspector, inspect
+from sqlalchemy import Inspector, TextClause, inspect, text
 from sqlalchemy.orm import DeclarativeBase
 
 from postgres_declare.data_structures.grant_to import GrantTo
@@ -85,6 +85,18 @@ class Table(SQLBase, Grantable):
             engine=self.database_content.database.db_engine(),
             statements=self._grant_statements(grantee=grantee, privileges=privileges),
         )
+
+    def _grants_exist(self, grantee: Role, privileges: set[Privilege]) -> bool:
+        rows = self._fetch_sql(
+            engine=self.database_content.database.db_engine(), statement=self._grants_exist_statement(grantee=grantee)
+        )
+        existing_privileges = {r[0] for r in rows}
+        return privileges.issubset(existing_privileges)
+
+    def _grants_exist_statement(self, grantee: Role) -> TextClause:
+        return text(
+            "SELECT privilege_type FROM information_schema.table_privileges WHERE table_name=:table_name  AND grantee=:grantee_name"
+        ).bindparams(table_name=self.name, grantee_name=grantee.name)
 
     def _revoke(self, grantee: Role, privileges: set[Privilege]) -> None:
         self._commit_sql(

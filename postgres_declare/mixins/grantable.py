@@ -64,6 +64,10 @@ class Grantable(ABC):
             self._revoke(grantee=grantee, privileges=privileges)
 
     @abstractmethod
+    def _grants_exist(self, grantee: Role, privileges: set[Privilege]) -> bool:
+        pass
+
+    @abstractmethod
     def _revoke(self, grantee: Role, privileges: set[Privilege]) -> None:
         pass
 

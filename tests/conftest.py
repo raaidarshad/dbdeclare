@@ -71,3 +71,8 @@ class FancyTable(MyBase):
 @pytest.fixture(scope="module")
 def simple_db_content(entity: Entity, simple_db: Database, simple_schema: Schema) -> YieldFixture[DatabaseContent]:
     yield DatabaseContent(name="simple_db_content", database=simple_db, schemas=[simple_schema], sqlalchemy_base=MyBase)
+
+
+@pytest.fixture(scope="module")
+def grant_role(entity: Entity) -> YieldFixture[Role]:
+    yield Role(name="grant_role")

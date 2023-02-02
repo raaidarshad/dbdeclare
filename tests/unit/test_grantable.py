@@ -24,6 +24,9 @@ class MockGrantable(Grantable):
     def _grant(self, grantee: Role, privileges: set[Privilege]) -> None:
         pass
 
+    def _grants_exist(self, grantee: Role, privileges: set[Privilege]) -> bool:
+        return self.mock_exists
+
     def _revoke(self, grantee: Role, privileges: set[Privilege]) -> None:
         pass
 
