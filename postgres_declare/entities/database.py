@@ -1,3 +1,4 @@
+import re
 from typing import Sequence
 
 from sqlalchemy import Engine, TextClause, create_engine, text
@@ -84,13 +85,38 @@ class Database(ClusterEntity, Grantable):
         return statements
 
     def _grant(self, grantee: Role, privileges: set[Privilege]) -> None:
-        pass
+        self._commit_sql(
+            engine=self.engine(), statements=self._grant_statements(grantee=grantee, privileges=privileges)
+        )
 
     def _grants_exist(self, grantee: Role, privileges: set[Privilege]) -> bool:
-        pass
+        rows = self._fetch_sql(engine=self.engine(), statement=self._grants_exist_statement())
+        # filter to grantee and extract privileges
+        try:
+            existing_privileges = list(
+                filter(None, [self._extract_privileges(acl=r[0], grantee=grantee) for r in rows])
+            )[0]
+            return privileges.issubset(existing_privileges)
+        except IndexError:
+            return False
+
+    def _extract_privileges(self, acl: str, grantee: Role) -> set[Privilege]:
+        m = re.match(r"(\w*)=(\w*)\/(\w*)", acl)
+        if m:
+            if m.group(1) == grantee.name:
+                raw_privileges = m.group(2)
+                return {self._code_to_privilege(code) for code in raw_privileges}
+        return set()
+
+    def _grants_exist_statement(self) -> TextClause:
+        return text("SELECT unnest(datacl) as acl FROM pg_catalog.pg_database WHERE datname=:db_name").bindparams(
+            db_name=self.name
+        )
 
     def _revoke(self, grantee: Role, privileges: set[Privilege]) -> None:
-        pass
+        self._commit_sql(
+            engine=self.engine(), statements=self._revoke_statements(grantee=grantee, privileges=privileges)
+        )
 
     @staticmethod
     def _allowed_privileges() -> set[Privilege]:
