@@ -90,6 +90,16 @@ class Grantable(ABC):
     def _allowed_privileges() -> set[Privilege]:
         pass
 
+    def _check_privileges(self, defined_privileges: set[Privilege], existing_privileges: set[Privilege]) -> bool:
+        # if all privileges is in defined_privileges, convert it
+        if Privilege.ALL_PRIVILEGES in defined_privileges:
+            defined = self._allowed_privileges()
+            defined.discard(Privilege.ALL_PRIVILEGES)
+        else:
+            defined = defined_privileges
+
+        return defined.issubset(existing_privileges)
+
     def _invalid_privileges(self, privileges: set[Privilege]) -> set[Privilege]:
         return privileges.difference(self._allowed_privileges())
 
@@ -105,6 +115,23 @@ class Grantable(ABC):
                 grantee_index = target_entity.entities.index(grantee)
                 if grantee_index > target_index:
                     target_entity.entities.insert(target_index, target_entity.entities.pop(grantee_index))
+
+    @staticmethod
+    def _code_to_privilege(code: str) -> Privilege:
+        return {
+            "r": Privilege.SELECT,
+            "w": Privilege.UPDATE,
+            "a": Privilege.INSERT,
+            "d": Privilege.DELETE,
+            "D": Privilege.TRUNCATE,
+            "x": Privilege.REFERENCES,
+            "t": Privilege.TRIGGER,
+            "X": Privilege.EXECUTE,
+            "U": Privilege.USAGE,
+            "C": Privilege.CREATE,
+            "c": Privilege.CONNECT,
+            "T": Privilege.TEMPORARY,
+        }[code]
 
 
 class GrantableEntity(Grantable, Entity):
