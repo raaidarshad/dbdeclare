@@ -2,12 +2,15 @@ from typing import Sequence
 
 from sqlalchemy import Engine, TextClause, create_engine, text
 
+from postgres_declare.data_structures.grant_to import GrantTo
+from postgres_declare.data_structures.privileges import Privilege
 from postgres_declare.entities.cluster_entity import ClusterEntity
 from postgres_declare.entities.entity import Entity
 from postgres_declare.entities.role import Role
+from postgres_declare.mixins.grantable import Grantable
 
 
-class Database(ClusterEntity):
+class Database(ClusterEntity, Grantable):
     def __init__(
         self,
         name: str,
@@ -28,6 +31,7 @@ class Database(ClusterEntity):
         connection_limit: int | None = None,
         is_template: bool | None = None,
         # oid: str | None = None,
+        grants: Sequence[GrantTo] | None = None,
     ):
         self.owner = owner
         self.template = template
@@ -47,7 +51,8 @@ class Database(ClusterEntity):
 
         self._db_engine: Engine | None = None
 
-        super().__init__(name=name, depends_on=depends_on, check_if_exists=check_if_exists)
+        Grantable.__init__(self, name=name, grants=grants)
+        ClusterEntity.__init__(self, name=name, depends_on=depends_on, check_if_exists=check_if_exists)
 
     def _create_statements(self) -> Sequence[TextClause]:
         statement = f"CREATE DATABASE {self.name}"
@@ -77,6 +82,19 @@ class Database(ClusterEntity):
             statements.append(text(f"ALTER DATABASE {self.name} is_template false"))
         statements.append(text(f"DROP DATABASE {self.name} (FORCE)"))
         return statements
+
+    def _grant(self, grantee: Role, privileges: set[Privilege]) -> None:
+        pass
+
+    def _grants_exist(self, grantee: Role, privileges: set[Privilege]) -> bool:
+        pass
+
+    def _revoke(self, grantee: Role, privileges: set[Privilege]) -> None:
+        pass
+
+    @staticmethod
+    def _allowed_privileges() -> set[Privilege]:
+        return {Privilege.CREATE, Privilege.CONNECT, Privilege.TEMPORARY, Privilege.ALL_PRIVILEGES}
 
     def db_engine(self) -> Engine:
         # database entities will reference this as the engine to use
