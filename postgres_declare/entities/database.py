@@ -1,4 +1,3 @@
-import re
 from typing import Sequence
 
 from sqlalchemy import Engine, TextClause, create_engine, text
@@ -99,14 +98,6 @@ class Database(ClusterEntity, Grantable):
             return privileges.issubset(existing_privileges)
         except IndexError:
             return False
-
-    def _extract_privileges(self, acl: str, grantee: Role) -> set[Privilege]:
-        m = re.match(r"(\w*)=(\w*)\/(\w*)", acl)
-        if m:
-            if m.group(1) == grantee.name:
-                raw_privileges = m.group(2)
-                return {self._code_to_privilege(code) for code in raw_privileges}
-        return set()
 
     def _grants_exist_statement(self) -> TextClause:
         return text("SELECT unnest(datacl) as acl FROM pg_catalog.pg_database WHERE datname=:db_name").bindparams(

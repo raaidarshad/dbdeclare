@@ -48,7 +48,20 @@ class Schema(DatabaseSqlEntity, Grantable):
         )
 
     def _grants_exist(self, grantee: Role, privileges: set[Privilege]) -> bool:
-        pass
+        rows = self._fetch_sql(engine=self.database.db_engine(), statement=self._grants_exist_statement())
+
+        try:
+            existing_privileges = list(
+                filter(None, [self._extract_privileges(acl=r[0], grantee=grantee) for r in rows])
+            )[0]
+            return privileges.issubset(existing_privileges)
+        except IndexError:
+            return False
+
+    def _grants_exist_statement(self) -> TextClause:
+        return text("SELECT unnest(nspacl) FROM pg_catalog.pg_namespace WHERE nspname=:schema_name").bindparams(
+            schema_name=self.name
+        )
 
     def _revoke(self, grantee: Role, privileges: set[Privilege]) -> None:
         self._commit_sql(
