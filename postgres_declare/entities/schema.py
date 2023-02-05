@@ -43,13 +43,17 @@ class Schema(DatabaseSqlEntity, Grantable):
         return [text(f"DROP SCHEMA {self.name}")]
 
     def _grant(self, grantee: Role, privileges: set[Privilege]) -> None:
-        pass
+        self._commit_sql(
+            engine=self.database.db_engine(), statements=self._grant_statements(grantee=grantee, privileges=privileges)
+        )
 
     def _grants_exist(self, grantee: Role, privileges: set[Privilege]) -> bool:
         pass
 
     def _revoke(self, grantee: Role, privileges: set[Privilege]) -> None:
-        pass
+        self._commit_sql(
+            engine=self.database.db_engine(), statements=self._revoke_statements(grantee=grantee, privileges=privileges)
+        )
 
     @staticmethod
     def _allowed_privileges() -> set[Privilege]:
