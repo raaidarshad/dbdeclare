@@ -43,6 +43,8 @@ def test_grant(simple_db: Database, grant_role: Role, db_privileges: set[Privile
 def test_revoke(simple_db: Database, grant_role: Role, db_privileges: set[Privilege]) -> None:
     grant_role._safe_revoke()
     assert not simple_db._grants_exist(grantee=grant_role, privileges=db_privileges)
+    # clean up role
+    grant_role._safe_drop()
 
 
 @pytest.mark.order(after="test_revoke")

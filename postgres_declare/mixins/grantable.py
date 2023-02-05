@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Sequence
 
@@ -115,6 +116,14 @@ class Grantable(ABC):
                 grantee_index = target_entity.entities.index(grantee)
                 if grantee_index > target_index:
                     target_entity.entities.insert(target_index, target_entity.entities.pop(grantee_index))
+
+    def _extract_privileges(self, acl: str, grantee: Role) -> set[Privilege]:
+        m = re.match(r"(\w*)=(\w*)\/(\w*)", acl)
+        if m:
+            if m.group(1) == grantee.name:
+                raw_privileges = m.group(2)
+                return {self._code_to_privilege(code) for code in raw_privileges}
+        return set()
 
     @staticmethod
     def _code_to_privilege(code: str) -> Privilege:
