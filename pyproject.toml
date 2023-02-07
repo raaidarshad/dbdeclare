@@ -43,7 +43,7 @@ exclude = '''
 profile = "black"
 
 [tool.mypy]
-strict = "True"
+strict = true
 files = "."
 exclude = [
     '\.venv',
