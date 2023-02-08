@@ -5,6 +5,11 @@ from postgres_declare.entities.role import Role
 
 
 class Controller:
+    """
+    This is the entrypoint for creating/dropping database entities and granting/revoking privileges once they are
+    defined in code. This is a wrapper of sorts around :class:`postgres_declare.entities.entity.Entity`.
+    """
+
     @classmethod
     def create_all(cls, engine: Engine | None = None) -> None:
         if engine:
