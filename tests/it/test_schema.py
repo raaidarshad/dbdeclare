@@ -1,7 +1,7 @@
 import pytest
 from sqlalchemy import Engine
 
-from postgres_declare.base import Base
+from postgres_declare.controller import Controller
 from postgres_declare.data_structures.grant_to import GrantTo
 from postgres_declare.data_structures.privileges import Privilege
 from postgres_declare.entities.database import Database
@@ -62,5 +62,5 @@ def test_dependency_inputs(engine: Engine) -> None:
     existing_role = Role(name="existing_role_for_schema")
     existing_db = Database(name="foobar")
     Schema(name="has_owner", database=existing_db, owner=existing_role)
-    Base.create_all(engine)
-    Base.drop_all()
+    Controller.create_all(engine)
+    Controller.drop_all()

@@ -4,7 +4,7 @@ from postgres_declare.entities.entity import Entity
 from postgres_declare.entities.role import Role
 
 
-class Base:
+class Controller:
     @classmethod
     def create_all(cls, engine: Engine | None = None) -> None:
         if engine:

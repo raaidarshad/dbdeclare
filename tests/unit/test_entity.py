@@ -3,7 +3,7 @@ from typing import Any, Sequence
 import pytest
 from sqlalchemy import Engine
 
-from postgres_declare.base import Base
+from postgres_declare.controller import Controller
 from postgres_declare.entities.entity import Entity
 from postgres_declare.exceptions import EntityExistsError, NoEngineError
 from tests.helpers import YieldFixture
@@ -109,40 +109,40 @@ def test_entity_does_not_exist(mock_entity_does_not_exist: MockEntity, engine: E
 
 
 def test_entity_create_if_not_exist(mock_entity_exists: MockEntity, engine: Engine) -> None:
-    Base.create_all(engine)
+    Controller.create_all(engine)
     assert mock_entity_exists._exists()
 
 
 def test_entity_create_if_not_check_if_exists(mock_entity_exists: MockEntity, engine: Engine) -> None:
-    Base.create_all(engine)  # should simply no op, nothing to assert really
+    Controller.create_all(engine)  # should simply no op, nothing to assert really
 
 
 def test_entity_create_if_check_if_exists(mock_entity_exists: MockEntity, engine: Engine) -> None:
     mock_entity_exists.check_if_exists = True
     with pytest.raises(EntityExistsError):
-        Base.create_all(engine)
+        Controller.create_all(engine)
 
 
 def test_entity_create_if_error_if_any_exist(mock_entity_exists: MockEntity, engine: Engine) -> None:
     Entity.check_if_any_exist = True
     with pytest.raises(EntityExistsError):
-        Base.create_all(engine)
+        Controller.create_all(engine)
 
 
 def test_entity_drop_if_exists(mock_entity_exists: MockEntity, engine: Engine) -> None:
-    Base.drop_all(engine)  # should simply no op, nothing to assert really
+    Controller.drop_all(engine)  # should simply no op, nothing to assert really
 
 
 def test_entity_drop_error_if_does_not_exist(mock_entity_does_not_exist: MockEntity, engine: Engine) -> None:
     mock_entity_does_not_exist.check_if_exists = True
     with pytest.raises(EntityExistsError):
-        Base.drop_all(engine)
+        Controller.drop_all(engine)
 
 
 def test_entity_drop_error_if_any_does_not_exist(mock_entity_does_not_exist: MockEntity, engine: Engine) -> None:
     Entity.check_if_any_exist = True
     with pytest.raises(EntityExistsError):
-        Base.drop_all(engine)
+        Controller.drop_all(engine)
 
 
 def test_entity_works_as_dict_key(mock_entity_exists: MockEntity) -> None:

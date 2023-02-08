@@ -3,7 +3,7 @@ from typing import Sequence
 import pytest
 from sqlalchemy import Engine
 
-from postgres_declare.base import Base
+from postgres_declare.controller import Controller
 from postgres_declare.data_structures.grant_to import GrantTo
 from postgres_declare.data_structures.privileges import Privilege
 from postgres_declare.entities.entity import Entity
@@ -136,32 +136,32 @@ def test_order_fixing(grantable_entity: MockGrantableEntity, mock_role: MockRole
 
 
 def test_grant_all(grantable_with_grant: MockGrantable, engine: Engine) -> None:
-    Base.grant_all(engine)
+    Controller.grant_all(engine)
 
 
 def test_grant_all_error_if_self_does_not_exist(grantable_does_not_exist: MockGrantable, engine: Engine) -> None:
     with pytest.raises(EntityExistsError):
-        Base.grant_all(engine)
+        Controller.grant_all(engine)
 
 
 def test_grant_all_error_if_targets_do_not_exist(
     grantable_with_grant_to_nonexistent_grantees: MockGrantable, engine: Engine
 ) -> None:
     with pytest.raises(EntityExistsError):
-        Base.grant_all(engine)
+        Controller.grant_all(engine)
 
 
 def test_revoke_all(grantable_with_grant: MockGrantable, engine: Engine) -> None:
-    Base.revoke_all(engine)
+    Controller.revoke_all(engine)
 
 
 def test_revoke_error_if_self_does_not_exist(grantable_does_not_exist: MockGrantable, engine: Engine) -> None:
     with pytest.raises(EntityExistsError):
-        Base.revoke_all(engine)
+        Controller.revoke_all(engine)
 
 
 def test_revoke_error_if_targets_do_not_exist(
     grantable_with_grant_to_nonexistent_grantees: MockGrantable, engine: Engine
 ) -> None:
     with pytest.raises(EntityExistsError):
-        Base.revoke_all(engine)
+        Controller.revoke_all(engine)
