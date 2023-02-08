@@ -34,6 +34,10 @@ class Controller:
 
     @classmethod
     def run_all(cls, engine: Engine | None = None) -> None:
+        """
+        Attempts to create all defined entities then grant all defined privileges. Main way to do so.
+        :param engine: A :class:`sqlalchemy.Engine` that defines the connection to a Postgres instance/cluster.
+        """
         cls._handle_engine(engine)
         cls.create_all()
         cls.grant_all()
