@@ -97,7 +97,7 @@ class Role(ClusterEntity):
     def grant(self, grants: Sequence[GrantOn]) -> None:
         for grant in grants:
             for target in grant.on:
-                self.grants[target].union(set(grant.privileges))
+                self.grants[target] = self.grants[target].union(set(grant.privileges))
 
     def _safe_grant(self) -> None:
         if self.grants:
