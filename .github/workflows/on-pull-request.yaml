@@ -9,11 +9,14 @@ on:
 jobs:
   run-checks:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version: [ 13, 14, 15 ]
     services:
       # Label used to access the service container
       postgres:
         # Docker Hub image
-        image: postgres
+        image: postgres:${{ matrix.version }}
         # Provide the password for postgres
         env:
           POSTGRES_PASSWORD: postgres
