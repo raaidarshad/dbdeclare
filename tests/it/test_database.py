@@ -80,6 +80,7 @@ def test_specific_inputs(template: str, engine: Engine) -> None:
 
 @pytest.mark.order(after="test_drop")
 def test_dependency_inputs(engine: Engine) -> None:
+    Entity.entities = []
     existing_role = Role(name="existing_role_for_db")
     Database(name="has_owner", owner=existing_role)
     Base.create_all(engine)
