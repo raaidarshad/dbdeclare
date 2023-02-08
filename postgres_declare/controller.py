@@ -66,6 +66,10 @@ class Controller:
 
     @classmethod
     def remove_all(cls, engine: Engine | None = None) -> None:
+        """
+        Attempts to revoke all defined privileges then drop all defined entities. Main way to do so.
+        :param engine: A :class:`sqlalchemy.Engine` that defines the connection to a Postgres instance/cluster.
+        """
         cls._handle_engine(engine)
         cls.revoke_all()
         cls.drop_all()
