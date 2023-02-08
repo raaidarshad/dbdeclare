@@ -13,7 +13,7 @@ class Controller:
     @classmethod
     def create_all(cls, engine: Engine | None = None) -> None:
         """
-        Attempts to create all defined entities.
+        Attempts to create all defined entities. Typically run via `run_all`.
         :param engine: A :class:`sqlalchemy.Engine` that defines the connection to a Postgres instance/cluster.
         """
         cls._handle_engine(engine)
@@ -22,6 +22,11 @@ class Controller:
 
     @classmethod
     def grant_all(cls, engine: Engine | None = None) -> None:
+        """
+        Attempts to grant all defined privileges. Requires entities to exist, typically run via
+        `run_all` or after `create_all`.
+        :param engine: A :class:`sqlalchemy.Engine` that defines the connection to a Postgres instance/cluster.
+        """
         cls._handle_engine(engine)
         for entity in Entity.entities:
             if isinstance(entity, Role):
