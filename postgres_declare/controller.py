@@ -54,6 +54,11 @@ class Controller:
 
     @classmethod
     def revoke_all(cls, engine: Engine | None = None) -> None:
+        """
+        Attempts to revoke all defined privileges. Requires entities to exist, typically run via `remove_all` or before
+        `drop_all`.
+        :param engine: A :class:`sqlalchemy.Engine` that defines the connection to a Postgres instance/cluster.
+        """
         cls._handle_engine(engine)
         for entity in reversed(Entity.entities):
             if isinstance(entity, Role):
