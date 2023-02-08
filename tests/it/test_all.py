@@ -8,17 +8,17 @@ from postgres_declare.entities import Database, DatabaseContent, Role, Schema
 schema_name = "logs"
 
 
-class TestBase(DeclarativeBase):
+class MockBase(DeclarativeBase):
     pass
 
 
-class Event(TestBase):
+class Event(MockBase):
     __tablename__ = "event"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(30))
 
 
-class Pipeline(TestBase):
+class Pipeline(MockBase):
     __tablename__ = "pipeline"
     __table_args__ = {"schema": schema_name}
 
@@ -35,7 +35,7 @@ def test_all(engine: Engine) -> None:
         # define schemas
         logs_schema = Schema(name=schema_name, database=db)
         # define db content with grants
-        db_content = DatabaseContent(name="main", sqlalchemy_base=TestBase, database=db, schemas=[logs_schema])
+        db_content = DatabaseContent(name="main", sqlalchemy_base=MockBase, database=db, schemas=[logs_schema])
 
         db_content.tables["event"].grant(grants=[GrantTo(privileges=[Privilege.SELECT], to=[reader, writer])])
         db_content.tables["event"].grant(grants=[GrantTo(privileges=[Privilege.INSERT, Privilege.UPDATE], to=[writer])])
