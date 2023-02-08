@@ -44,6 +44,10 @@ class Controller:
 
     @classmethod
     def drop_all(cls, engine: Engine | None = None) -> None:
+        """
+        Attempts to drop all defined entities. Typically run via `remove_all`.
+        :param engine: A :class:`sqlalchemy.Engine` that defines the connection to a Postgres instance/cluster.
+        """
         cls._handle_engine(engine)
         for entity in reversed(Entity.entities):
             entity._safe_drop()
