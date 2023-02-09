@@ -76,20 +76,36 @@ class Controller:
 
     @classmethod
     def _all_entities_exist(cls, engine: Engine | None = None) -> bool:
+        """
+        Checks if all defined entities exist in the cluster.
+        :param engine:  A :class:`sqlalchemy.Engine` that defines the connection to a Postgres instance/cluster.
+        """
         cls._handle_engine(engine)
         return all([entity._exists() for entity in Entity.entities])
 
     @classmethod
     def _all_grants_exist(cls, engine: Engine | None = None) -> bool:
+        """
+        Checks if all defined grants exist in the cluster.
+        :param engine:  A :class:`sqlalchemy.Engine` that defines the connection to a Postgres instance/cluster.
+        """
         cls._handle_engine(engine)
         return all([role._grants_exist() for role in Entity.entities if isinstance(role, Role)])
 
     @classmethod
     def _all_exist(cls, engine: Engine | None = None) -> bool:
+        """
+        Checks if all defined entities and grants exist in the cluster.
+        :param engine:  A :class:`sqlalchemy.Engine` that defines the connection to a Postgres instance/cluster.
+        """
         cls._handle_engine(engine)
         return cls._all_entities_exist() and cls._all_grants_exist()
 
     @staticmethod
     def _handle_engine(engine: Engine | None = None) -> None:
+        """
+        Utility to assign the engine if it is provided.
+        :param engine: A :class:`sqlalchemy.Engine` that defines the connection to a Postgres instance/cluster.
+        """
         if engine:
             Entity._engine = engine
