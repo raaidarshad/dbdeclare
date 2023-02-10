@@ -100,6 +100,7 @@ class Entity(ABC):
     def _exists(self) -> bool:
         """
         Check if this entity currently exists in the cluster.
+        :return: True if it exists, False if it does not.
         """
         pass
 
@@ -133,7 +134,7 @@ class Entity(ABC):
         """
         Helper to grab all the arguments to __init__ that aren't in the superclass and have a non-None value. Useful
         for subclasses.
-        :return:
+        :return: A dict mapping the names of init arguments to their values.
         """
         return {
             k: v
