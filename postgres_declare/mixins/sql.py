@@ -56,7 +56,7 @@ class SQLCreatable(SQLBase):
     @abstractmethod
     def _create_statements(self) -> Sequence[TextClause]:
         """
-        The SQL statements that, when committed, create this entity.
+        The SQL statements that create this entity.
         :return: A Sequence of :class:`sqlalchemy.TextClause` containing the SQL to create this entity.
         """
         pass
@@ -72,7 +72,7 @@ class SQLCreatable(SQLBase):
     @abstractmethod
     def _drop_statements(self) -> Sequence[TextClause]:
         """
-        The SQL statements that, when committed, drop this entity.
+        The SQL statements that drop this entity.
         :return: A Sequence of :class:`sqlalchemy.TextClause` containing the SQL to drop this entity.
         """
         pass

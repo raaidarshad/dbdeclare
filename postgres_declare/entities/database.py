@@ -11,6 +11,10 @@ from postgres_declare.mixins.grantable import Grantable
 
 
 class Database(ClusterEntity, Grantable):
+    """
+    Represents a Postgres `Database <https://www.postgresql.org/docs/current/managing-databases.html>`_.
+    """
+
     def __init__(
         self,
         name: str,
@@ -33,6 +37,21 @@ class Database(ClusterEntity, Grantable):
         # oid: str | None = None,
         grants: Sequence[GrantTo] | None = None,
     ):
+        """
+        All __init__ params correspond to CREATE DATABASE arguments and options, see
+        `official Postgres documentation <https://www.postgresql.org/docs/current/sql-createdatabase.html>`_.
+
+
+        :param name: Unique name of the Database. Must be unique across the cluster.
+        :param depends_on: Any entities that should be created before this one.
+        :param check_if_exists: Flag to set existence check behavior. If `True`, will raise an exception during _safe_create if the entity already exists, and will raise an exception during _safe_drop if the entity does not exist.
+        :param owner: The :class:`postgres_declare.entitites.Role` who will own this database. Postgres defaults to the user executing the command.
+        :param template: The name of the template from which to create the new database. Postgres defaults to template1.
+        :param allow_connections: Flag to allow connections to this database. Postgres defaults to `True`.
+        :param connection_limit: Number of concurrent connections that can be made to this database. Postgres defaults to -1, which means no limit.
+        :param is_template: Flag to allow this database to be cloned by any user with CREATEDB privileges; if `False` (the default), then only superusers or the owner of the database can clone it.
+        :param grants: Sequence of :class:`postgres_declare.data_structures.GrantTo` to specify privileges this database has in relation to specified roles.
+        """
         self.owner = owner
         self.template = template
         # self.encoding = encoding
@@ -100,6 +119,10 @@ class Database(ClusterEntity, Grantable):
             return False
 
     def _grants_exist_statement(self) -> TextClause:
+        """
+        The SQL statement that checks to see what grants exist.
+        :return: A single :class:`sqlalchemy.TextClause` containing the SQL to check what grants exist on this entity.
+        """
         return text("SELECT unnest(datacl) as acl FROM pg_catalog.pg_database WHERE datname=:db_name").bindparams(
             db_name=self.name
         )
@@ -114,6 +137,10 @@ class Database(ClusterEntity, Grantable):
         return {Privilege.CREATE, Privilege.CONNECT, Privilege.TEMPORARY, Privilege.ALL_PRIVILEGES}
 
     def db_engine(self) -> Engine:
+        """
+        Getter for this database's engine. Will create it if it is not yet set.
+        :return: A `sqlalchemy.Engine` to connect to this database.
+        """
         # database entities will reference this as the engine to use
         if not self._db_engine:
             # grab everything but db name from the cluster engine
