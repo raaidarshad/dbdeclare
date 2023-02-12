@@ -2,6 +2,10 @@ from enum import StrEnum
 
 
 class Privilege(StrEnum):
+    """
+    Enumeration of all possible privileges, see official documentation `here <https://www.postgresql.org/docs/current/ddl-priv.html#PRIVILEGE-ABBREVS-TABLE>`_.
+    """
+
     ALL_PRIVILEGES = "ALL PRIVILEGES"
     SELECT = "SELECT"
     INSERT = "INSERT"
