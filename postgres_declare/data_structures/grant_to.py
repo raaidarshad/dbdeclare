@@ -11,5 +11,10 @@ if TYPE_CHECKING:
 
 @dataclass
 class GrantTo:
+    """
+    Represents a Sequence of :class:`postgres_declare.data_structures.Privilege` to grant to a
+    :class:`postgres_declare.entities.Role` for a given :class:`postgres_declare.mixins.Grantable`.
+    """
+
     privileges: Sequence[Privilege]
     to: Sequence[Role]
