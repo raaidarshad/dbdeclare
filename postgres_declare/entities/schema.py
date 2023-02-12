@@ -12,6 +12,10 @@ from postgres_declare.mixins.grantable import Grantable
 
 
 class Schema(DatabaseSqlEntity, Grantable):
+    """
+    Represents a Postgres `Schema <https://www.postgresql.org/docs/15/ddl-schemas.html>`_.
+    """
+
     def __init__(
         self,
         name: str,
@@ -21,6 +25,18 @@ class Schema(DatabaseSqlEntity, Grantable):
         owner: Role | None = None,
         grants: Sequence[GrantTo] | None = None,
     ):
+        """
+        All __init__ params correspond to CREATE SCHEMA arguments and options, see
+        `official Postgres documentation <https://www.postgresql.org/docs/current/sql-createschema.html>`_.
+
+
+        :param name: Unique name of the entity. Must be unique within a database.
+        :param database: The :class:`postgres_declare.entities.Database` that this entity belongs to.
+        :param depends_on: Any entities that should be created before this one.
+        :param check_if_exists: Flag to set existence check behavior. If `True`, will raise an exception during _safe_create if the entity already exists, and will raise an exception during _safe_drop if the entity does not exist.
+        :param owner: The :class:`postgres_declare.entitites.Role` who will own this database. Postgres defaults to the user executing the command.
+        :param grants: Sequence of :class:`postgres_declare.data_structures.GrantTo` to specify privileges this database has in relation to specified roles.
+        """
         self.owner = owner
 
         Grantable.__init__(self, name=name, grants=grants)
@@ -59,6 +75,10 @@ class Schema(DatabaseSqlEntity, Grantable):
             return False
 
     def _grants_exist_statement(self) -> TextClause:
+        """
+        The SQL statement that checks to see what grants exist.
+        :return: A single :class:`sqlalchemy.TextClause` containing the SQL to check what grants exist on this entity.
+        """
         return text("SELECT unnest(nspacl) FROM pg_catalog.pg_namespace WHERE nspname=:schema_name").bindparams(
             schema_name=self.name
         )

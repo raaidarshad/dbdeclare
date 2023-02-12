@@ -17,6 +17,10 @@ from postgres_declare.mixins.sql import SQLBase
 
 
 class DatabaseContent(DatabaseEntity):
+    """
+    Represents a `sqlalchemy.orm.DeclarativeBase` and other helpful functionality.
+    """
+
     def __init__(
         self,
         name: str,
@@ -26,6 +30,14 @@ class DatabaseContent(DatabaseEntity):
         depends_on: Sequence[Entity] | None = None,
         check_if_exists: bool | None = None,
     ):
+        """
+        :param name: Unique name of the entity. Must be unique within a database.
+        :param sqlalchemy_base: The `sqlalchemy.orm.DeclarativeBase` to refer to a collection of tables.
+        :param schemas: Any schemas that need to be created prior to the tables specified in the sqlalchemy_base.
+        :param database: The :class:`postgres_declare.entities.Database` that this entity belongs to.
+        :param depends_on: Any entities that should be created before this one.
+        :param check_if_exists: Flag to set existence check behavior. If `True`, will raise an exception during _safe_create if the entity already exists, and will raise an exception during _safe_drop if the entity does not exist.
+        """
         super().__init__(name=name, depends_on=depends_on, database=database, check_if_exists=check_if_exists)
         self.base = sqlalchemy_base
         # schemas doesn't do anything since __table_args__ in sqlalchemy defines the schema
@@ -53,7 +65,16 @@ class DatabaseContent(DatabaseEntity):
 
 
 class Table(SQLBase, Grantable):
+    """
+    An internal wrapper for a table, primarily intended to allow easy access to grants.
+    """
+
     def __init__(self, name: str, database_content: DatabaseContent, schema: str | None = "public"):
+        """
+        :param name: Unique name of the entity. Must be unique within a schema within a database.
+        :param database_content: The `postgres_declare.entities.DatabaseContent` this Table belongs to.
+        :param schema: The string name of the schema this belongs to.
+        """
         super().__init__(name=name)
         self.database_content = database_content
         self.schema = schema
@@ -94,6 +115,10 @@ class Table(SQLBase, Grantable):
         return self._check_privileges(defined_privileges=privileges, existing_privileges=existing_privileges)
 
     def _grants_exist_statement(self, grantee: Role) -> TextClause:
+        """
+        The SQL statement that checks to see what grants exist.
+        :return: A single :class:`sqlalchemy.TextClause` containing the SQL to check what grants exist on this entity.
+        """
         return text(
             "SELECT privilege_type FROM information_schema.table_privileges WHERE table_name=:table_name  AND grantee=:grantee_name"
         ).bindparams(table_name=self.name, grantee_name=grantee.name)

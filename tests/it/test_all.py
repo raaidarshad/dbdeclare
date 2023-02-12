@@ -1,7 +1,7 @@
 from sqlalchemy import Engine, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
-from postgres_declare.base import Base
+from postgres_declare.controller import Controller
 from postgres_declare.data_structures import GrantOn, GrantTo, Privilege
 from postgres_declare.entities import Database, DatabaseContent, Role, Schema
 
@@ -41,6 +41,6 @@ def test_all(engine: Engine) -> None:
         db_content.tables["event"].grant(grants=[GrantTo(privileges=[Privilege.INSERT, Privilege.UPDATE], to=[writer])])
 
     # create and grant all, confirm everything exists
-    Base.run_all(engine)
-    assert Base._all_exist()
-    Base.remove_all()
+    Controller.run_all(engine)
+    assert Controller._all_exist()
+    Controller.remove_all()

@@ -8,6 +8,11 @@ from postgres_declare.exceptions import EntityExistsError, NoEngineError
 
 
 class Entity(ABC):
+    """
+    Base class to inherit from for all entities. Defines methods common to all entities, abstract methods that are
+    needed for all entities, and class methods that enable collection of entities for easy cluster interaction.
+    """
+
     entities: list["Entity"] = []
     check_if_any_exist: bool = False
     _engine: Engine | None = None
@@ -18,6 +23,11 @@ class Entity(ABC):
         depends_on: Sequence["Entity"] | None = None,
         check_if_exists: bool | None = None,
     ):
+        """
+        :param name: Unique name of the entity. Cluster-level entities must be unique, database-level entities must be unique within a database.
+        :param depends_on: Any entities that should be created before this one.
+        :param check_if_exists: Flag to set existence check behavior. If `True`, will raise an exception during _safe_create if the entity already exists, and will raise an exception during _safe_drop if the entity does not exist.
+        """
         # TODO have "name" be a str class that validates via regex for valid postgres names
         self.name = name
 
@@ -43,11 +53,19 @@ class Entity(ABC):
 
     @classmethod
     def _register(cls, entity: "Entity") -> None:
+        """
+        Appends an entity to the running list of all entities.
+        :param entity: Any given entity, can be thought of as operating on a subclassed `self`.
+        """
         # TODO add code to make sure there are no duplicate entities
         cls.entities.append(entity)
 
     @classmethod
     def engine(cls) -> Engine:
+        """
+        Convenience wrapper to safely get the main engine.
+        :return: A :class:`sqlalchemy.Engine` if one has been assigned, otherwise raises an exception.
+        """
         if cls._engine:
             return cls._engine
         else:
@@ -55,9 +73,15 @@ class Entity(ABC):
 
     @abstractmethod
     def _create(self) -> None:
+        """
+        Create this entity in the cluster.
+        """
         pass
 
     def _safe_create(self) -> None:
+        """
+        Run an existence check before attempting to create the entity in the cluster.
+        """
         if not self._exists():
             self._create()
         else:
@@ -74,13 +98,23 @@ class Entity(ABC):
 
     @abstractmethod
     def _exists(self) -> bool:
+        """
+        Check if this entity currently exists in the cluster.
+        :return: True if it exists, False if it does not.
+        """
         pass
 
     @abstractmethod
     def _drop(self) -> None:
+        """
+        Drop this entity from the cluster.
+        """
         pass
 
     def _safe_drop(self) -> None:
+        """
+        Run an existence check before attempting to drop the entity from the cluster.
+        """
         if self._exists():
             self._drop()
         else:
@@ -97,7 +131,11 @@ class Entity(ABC):
                 pass
 
     def _get_passed_args(self) -> dict[str, Any]:
-        # grab all the arguments to __init__ that aren't in the superclass and have a non-None value
+        """
+        Helper to grab all the arguments to __init__ that aren't in the superclass and have a non-None value. Useful
+        for subclasses.
+        :return: A dict mapping the names of init arguments to their values.
+        """
         return {
             k: v
             for k, v in vars(self).items()
