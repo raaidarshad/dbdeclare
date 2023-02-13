@@ -31,9 +31,7 @@ classifiers = [
 python = "^3.11.0"
 sqlalchemy = "^2.0.0"
 
-
-[tool.poetry.group.test.dependencies]
-optional = true
+[tool.poetry.group.dev.dependencies]
 hypothesis = "^6.60.0"
 mypy = "^0.991"
 pre-commit = "^2.19.0"
