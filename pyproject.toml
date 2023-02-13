@@ -39,9 +39,11 @@ psycopg = "3.1.4"
 pytest = "^7.1.2"
 pytest-order = "1.0.1"
 
-# TODO fill out when adding docs tools
-#[tool.poetry.group.docs.dependencies]
-#optional = true
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.docs.dependencies]
+mkdocs-material = "^9.0.1"
 
 
 [build-system]
