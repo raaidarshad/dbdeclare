@@ -11,6 +11,21 @@ readme = "README.md"
 repository = "https://github.com/raaidarshad/postgres-declare"
 # TODO fill in when docs are up
 #documentation = ""
+keywords = ["sql", "alchemy", "postgres"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: System Administrators",
+    "Operating System :: OS Independent",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Database",
+    "Typing :: Typed"
+]
 
 [tool.poetry.dependencies]
 python = "^3.11.0"
