@@ -6,11 +6,9 @@ license = "MIT"
 authors = ["Raaid Arshad <raaid@protonmail.com>"]
 #maintainers = []
 readme = "README.md"
-# TODO fill in when docs are up
-#homepage = ""
+homepage = "https://postgres-declare.raaid.xyz"
 repository = "https://github.com/raaidarshad/postgres-declare"
-# TODO fill in when docs are up
-#documentation = ""
+documentation = "https://postgres-declare.raaid.xyz"
 keywords = ["sql", "alchemy", "postgres"]
 classifiers = [
     "Development Status :: 3 - Alpha",

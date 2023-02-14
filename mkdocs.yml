@@ -1,6 +1,6 @@
 site_name: My Docs
 site_description: postgres-declare, declarative layer for everything Postgres.
-site_url: https://TODO
+site_url: https://postgres-declare.raaid.xyz
 theme:
   name: material
   palette:
