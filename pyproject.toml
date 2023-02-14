@@ -9,7 +9,7 @@ readme = "README.md"
 homepage = "https://postgres-declare.raaid.xyz"
 repository = "https://github.com/raaidarshad/postgres-declare"
 documentation = "https://postgres-declare.raaid.xyz"
-keywords = ["sql", "alchemy", "postgres"]
+keywords = ["sql", "sqlalchemy", "postgres"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
