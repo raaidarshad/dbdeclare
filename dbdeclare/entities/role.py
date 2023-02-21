@@ -4,10 +4,10 @@ from typing import Sequence
 
 from sqlalchemy import TextClause, text
 
-from postgres_declare.data_structures.grant_on import GrantOn, GrantStore
-from postgres_declare.entities.cluster_entity import ClusterEntity
-from postgres_declare.entities.entity import Entity
-from postgres_declare.exceptions import EntityExistsError
+from dbdeclare.data_structures.grant_on import GrantOn, GrantStore
+from dbdeclare.entities.cluster_entity import ClusterEntity
+from dbdeclare.entities.entity import Entity
+from dbdeclare.exceptions import EntityExistsError
 
 
 class Role(ClusterEntity):
@@ -55,10 +55,10 @@ class Role(ClusterEntity):
         :param password: Set the role's password. Postgres defaults to a null password, which means password authentication always fails.
         :param encrypted: Keyword has no effect but is present for backwards compatability. Consider removing.
         :param valid_until: Sets a date and time after which the role's password is no longer valid. Postgres defaults to no limit.
-        :param in_role: Sequence of :class:`postgres_declare.entities.Role` that this role belongs to.
-        :param role: Sequence of :class:`postgres_declare.entities.Role` that belong to this role.
+        :param in_role: Sequence of :class:`dbdeclare.entities.Role` that this role belongs to.
+        :param role: Sequence of :class:`dbdeclare.entities.Role` that belong to this role.
         :param admin: Like the `role` param above, but gives the roles the right to grant membership to this role to other roles.
-        :param grants: Sequence of :class:`postgres_declare.data_structures.GrantOn` to specify privileges this role has in relation to other entities.
+        :param grants: Sequence of :class:`dbdeclare.data_structures.GrantOn` to specify privileges this role has in relation to other entities.
         """
         self.superuser = superuser
         self.createdb = createdb
@@ -125,7 +125,7 @@ class Role(ClusterEntity):
     def grant(self, grants: Sequence[GrantOn]) -> None:
         """
         Sets the privileges to grant on this role to the specified entities.
-        :param grants: A Sequence of :class:`postgres_declare.data_structures.GrantOn` to store.
+        :param grants: A Sequence of :class:`dbdeclare.data_structures.GrantOn` to store.
         """
         for grant in grants:
             for target in grant.on:

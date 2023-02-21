@@ -4,7 +4,7 @@ from typing import Any, Sequence
 
 from sqlalchemy import Engine
 
-from postgres_declare.exceptions import EntityExistsError, NoEngineError
+from dbdeclare.exceptions import EntityExistsError, NoEngineError
 
 
 class Entity(ABC):

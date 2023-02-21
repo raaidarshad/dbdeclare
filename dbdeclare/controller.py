@@ -1,13 +1,13 @@
 from sqlalchemy import Engine
 
-from postgres_declare.entities.entity import Entity
-from postgres_declare.entities.role import Role
+from dbdeclare.entities.entity import Entity
+from dbdeclare.entities.role import Role
 
 
 class Controller:
     """
     Entrypoint for creating/dropping database entities and granting/revoking privileges once they are
-    defined in code. This is a wrapper of sorts around :class:`postgres_declare.entities.entity.Entity`.
+    defined in code. This is a wrapper of sorts around :class:`dbdeclare.entities.entity.Entity`.
     """
 
     @classmethod

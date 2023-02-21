@@ -4,11 +4,11 @@ import pytest
 from sqlalchemy import Engine, String, create_engine
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
-from postgres_declare.entities.database import Database
-from postgres_declare.entities.database_content import DatabaseContent
-from postgres_declare.entities.entity import Entity
-from postgres_declare.entities.role import Role
-from postgres_declare.entities.schema import Schema
+from dbdeclare.entities.database import Database
+from dbdeclare.entities.database_content import DatabaseContent
+from dbdeclare.entities.entity import Entity
+from dbdeclare.entities.role import Role
+from dbdeclare.entities.schema import Schema
 from tests.helpers import YieldFixture
 
 

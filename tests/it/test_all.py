@@ -1,9 +1,9 @@
 from sqlalchemy import Engine, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
-from postgres_declare.controller import Controller
-from postgres_declare.data_structures import GrantOn, GrantTo, Privilege
-from postgres_declare.entities import Database, DatabaseContent, Role, Schema
+from dbdeclare.controller import Controller
+from dbdeclare.data_structures import GrantOn, GrantTo, Privilege
+from dbdeclare.entities import Database, DatabaseContent, Role, Schema
 
 schema_name = "logs"
 

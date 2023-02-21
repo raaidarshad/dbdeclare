@@ -80,9 +80,9 @@ Assuming you have a Python environment set up, DbDeclare installed, and psycopg 
 you can create a database and a user that can connect to it like this:
 
 ```python
-from postgres_declare.controller import Controller
-from postgres_declare.data_structures import GrantOn, Privilege
-from postgres_declare.entities import Database, Role
+from dbdeclare.controller import Controller
+from dbdeclare.data_structures import GrantOn, Privilege
+from dbdeclare.entities import Database, Role
 from sqlalchemy import create_engine
 
 # define the database
@@ -90,13 +90,13 @@ falafel_db = Database(name="falafel")
 # define the user
 hungry_user = Role(
     name="hungry_user",
-    login=True, # (1)!
-    password="fakepassword", # (2)!
-    grants=[GrantOn(privileges=[Privilege.CONNECT], on=[falafel_db])] # (3)!
+    login=True,  # (1)!
+    password="fakepassword",  # (2)!
+    grants=[GrantOn(privileges=[Privilege.CONNECT], on=[falafel_db])]  # (3)!
 )
 
 # create engine with admin user and default database
-engine = create_engine( # (4)!
+engine = create_engine(  # (4)!
     url="postgresql+psycopg://postgres:postgres@127.0.0.1:5433/postgres"
 )
 # create all entities and grant all privileges

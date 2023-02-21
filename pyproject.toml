@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "postgres-declare"
+name = "dbdeclare"
 version = "0.0.1"
 description = "Declarative layer for your database."
 license = "MIT"

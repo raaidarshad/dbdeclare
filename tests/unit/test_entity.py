@@ -3,9 +3,9 @@ from typing import Any, Sequence
 import pytest
 from sqlalchemy import Engine
 
-from postgres_declare.controller import Controller
-from postgres_declare.entities.entity import Entity
-from postgres_declare.exceptions import EntityExistsError, NoEngineError
+from dbdeclare.controller import Controller
+from dbdeclare.entities.entity import Entity
+from dbdeclare.exceptions import EntityExistsError, NoEngineError
 from tests.helpers import YieldFixture
 
 ########################

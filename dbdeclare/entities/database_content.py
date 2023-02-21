@@ -5,15 +5,15 @@ from typing import Sequence, Type
 from sqlalchemy import Inspector, TextClause, inspect, text
 from sqlalchemy.orm import DeclarativeBase
 
-from postgres_declare.data_structures.grant_to import GrantTo
-from postgres_declare.data_structures.privileges import Privilege
-from postgres_declare.entities.database import Database
-from postgres_declare.entities.database_entity import DatabaseEntity
-from postgres_declare.entities.entity import Entity
-from postgres_declare.entities.role import Role
-from postgres_declare.entities.schema import Schema
-from postgres_declare.mixins.grantable import Grantable
-from postgres_declare.mixins.sql import SQLBase
+from dbdeclare.data_structures.grant_to import GrantTo
+from dbdeclare.data_structures.privileges import Privilege
+from dbdeclare.entities.database import Database
+from dbdeclare.entities.database_entity import DatabaseEntity
+from dbdeclare.entities.entity import Entity
+from dbdeclare.entities.role import Role
+from dbdeclare.entities.schema import Schema
+from dbdeclare.mixins.grantable import Grantable
+from dbdeclare.mixins.sql import SQLBase
 
 
 class DatabaseContent(DatabaseEntity):
@@ -34,7 +34,7 @@ class DatabaseContent(DatabaseEntity):
         :param name: Unique name of the entity. Must be unique within a database.
         :param sqlalchemy_base: The `sqlalchemy.orm.DeclarativeBase` to refer to a collection of tables.
         :param schemas: Any schemas that need to be created prior to the tables specified in the sqlalchemy_base.
-        :param database: The :class:`postgres_declare.entities.Database` that this entity belongs to.
+        :param database: The :class:`dbdeclare.entities.Database` that this entity belongs to.
         :param depends_on: Any entities that should be created before this one.
         :param check_if_exists: Flag to set existence check behavior. If `True`, will raise an exception during _safe_create if the entity already exists, and will raise an exception during _safe_drop if the entity does not exist.
         """
@@ -72,7 +72,7 @@ class Table(SQLBase, Grantable):
     def __init__(self, name: str, database_content: DatabaseContent, schema: str | None = "public"):
         """
         :param name: Unique name of the entity. Must be unique within a schema within a database.
-        :param database_content: The `postgres_declare.entities.DatabaseContent` this Table belongs to.
+        :param database_content: The `dbdeclare.entities.DatabaseContent` this Table belongs to.
         :param schema: The string name of the schema this belongs to.
         """
         super().__init__(name=name)

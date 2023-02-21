@@ -6,13 +6,13 @@ from typing import TYPE_CHECKING, Sequence
 
 from sqlalchemy import TextClause, text
 
-from postgres_declare.data_structures.grant_to import GrantTo
-from postgres_declare.data_structures.privileges import Privilege
-from postgres_declare.entities.entity import Entity
-from postgres_declare.exceptions import EntityExistsError, InvalidPrivilegeError
+from dbdeclare.data_structures.grant_to import GrantTo
+from dbdeclare.data_structures.privileges import Privilege
+from dbdeclare.entities.entity import Entity
+from dbdeclare.exceptions import EntityExistsError, InvalidPrivilegeError
 
 if TYPE_CHECKING:
-    from postgres_declare.entities.role import Role
+    from dbdeclare.entities.role import Role
 
 
 class Grantable(ABC):
@@ -23,7 +23,7 @@ class Grantable(ABC):
     def __init__(self, name: str, grants: Sequence[GrantTo] | None = None):
         """
         :param name: Unique name of the grantable.
-        :param grants: Sequence of grant definitions in the form of :class:`postgres_declare.data_structures.GrantTo`.
+        :param grants: Sequence of grant definitions in the form of :class:`dbdeclare.data_structures.GrantTo`.
         """
         self.name = name
         if grants:
@@ -31,8 +31,8 @@ class Grantable(ABC):
 
     def grant(self, grants: Sequence[GrantTo]) -> None:
         """
-        Parses the provided grants, checks their validity, and stores them in the appropriate :class:`postgres_declare.entities.Role`.
-        :param grants: Sequence of grant definitions in the form of :class:`postgres_declare.data_structures.GrantTo`.
+        Parses the provided grants, checks their validity, and stores them in the appropriate :class:`dbdeclare.entities.Role`.
+        :param grants: Sequence of grant definitions in the form of :class:`dbdeclare.data_structures.GrantTo`.
         """
         for grant in grants:
             for grantee in grant.to:
@@ -58,8 +58,8 @@ class Grantable(ABC):
     def _safe_grant(self, grantee: Role, privileges: set[Privilege]) -> None:
         """
         Run an existence check before attempting to grant privileges.
-        :param grantee: The :class:`postgres_declare.entities.Role` to grant privileges to.
-        :param privileges: The set of :class:`postgres_declare.data_structures.Privilege` to grant.
+        :param grantee: The :class:`dbdeclare.entities.Role` to grant privileges to.
+        :param privileges: The set of :class:`dbdeclare.data_structures.Privilege` to grant.
         """
         if not self._exists():
             raise EntityExistsError(
@@ -74,16 +74,16 @@ class Grantable(ABC):
     def _grant(self, grantee: Role, privileges: set[Privilege]) -> None:
         """
         Grant privileges on this entity to the grantee.
-        :param grantee: The :class:`postgres_declare.entities.Role` to grant privileges to.
-        :param privileges: The set of :class:`postgres_declare.data_structures.Privilege` to grant.
+        :param grantee: The :class:`dbdeclare.entities.Role` to grant privileges to.
+        :param privileges: The set of :class:`dbdeclare.data_structures.Privilege` to grant.
         """
         pass
 
     def _safe_revoke(self, grantee: Role, privileges: set[Privilege]) -> None:
         """
         Run an existence check before attempting to revoke privileges.
-        :param grantee: The :class:`postgres_declare.entities.Role` to revoke privileges from.
-        :param privileges: The set of :class:`postgres_declare.data_structures.Privilege` to revoke.
+        :param grantee: The :class:`dbdeclare.entities.Role` to revoke privileges from.
+        :param privileges: The set of :class:`dbdeclare.data_structures.Privilege` to revoke.
         """
         if not self._exists():
             raise EntityExistsError(
@@ -98,8 +98,8 @@ class Grantable(ABC):
     def _grants_exist(self, grantee: Role, privileges: set[Privilege]) -> bool:
         """
         Check if these privileges are granted to the grantee.
-        :param grantee: The :class:`postgres_declare.entities.Role` to check access for.
-        :param privileges: The set of :class:`postgres_declare.data_structures.Privilege` to check on.
+        :param grantee: The :class:`dbdeclare.entities.Role` to check access for.
+        :param privileges: The set of :class:`dbdeclare.data_structures.Privilege` to check on.
         """
         pass
 
@@ -107,16 +107,16 @@ class Grantable(ABC):
     def _revoke(self, grantee: Role, privileges: set[Privilege]) -> None:
         """
         Revoke privileges on this entity from the grantee.
-        :param grantee: The :class:`postgres_declare.entities.Role` to revoke privileges from.
-        :param privileges: The set of :class:`postgres_declare.data_structures.Privilege` to revoke.
+        :param grantee: The :class:`dbdeclare.entities.Role` to revoke privileges from.
+        :param privileges: The set of :class:`dbdeclare.data_structures.Privilege` to revoke.
         """
         pass
 
     def _grant_statements(self, grantee: Role, privileges: set[Privilege]) -> Sequence[TextClause]:
         """
         Generates a grant statement to commit via SQL.
-        :param grantee: The :class:`postgres_declare.entities.Role` to grant privileges to.
-        :param privileges: The set of :class:`postgres_declare.data_structures.Privilege` to grant.
+        :param grantee: The :class:`dbdeclare.entities.Role` to grant privileges to.
+        :param privileges: The set of :class:`dbdeclare.data_structures.Privilege` to grant.
         :return: A Sequence of :class:`sqlalchemy.TextClause` that represent the desired grant statements.
         """
         return [
@@ -128,8 +128,8 @@ class Grantable(ABC):
     def _revoke_statements(self, grantee: Role, privileges: set[Privilege]) -> Sequence[TextClause]:
         """
         Generates a revoke statement to commit via SQL.
-        :param grantee: The :class:`postgres_declare.entities.Role` to revoke privileges from.
-        :param privileges: The set of :class:`postgres_declare.data_structures.Privilege` to revoke.
+        :param grantee: The :class:`dbdeclare.entities.Role` to revoke privileges from.
+        :param privileges: The set of :class:`dbdeclare.data_structures.Privilege` to revoke.
         :return: A Sequence of :class:`sqlalchemy.TextClause` that represent the desired revoke statements.
         """
         return [
@@ -142,16 +142,16 @@ class Grantable(ABC):
     @abstractmethod
     def _allowed_privileges() -> set[Privilege]:
         """
-        Define the set of :class:`postgres_declare.data_structures.Privilege` that are allowed for this entity.
-        :return: The set of :class:`postgres_declare.data_structures.Privilege` that are allowed for this entity.
+        Define the set of :class:`dbdeclare.data_structures.Privilege` that are allowed for this entity.
+        :return: The set of :class:`dbdeclare.data_structures.Privilege` that are allowed for this entity.
         """
         pass
 
     def _check_privileges(self, defined_privileges: set[Privilege], existing_privileges: set[Privilege]) -> bool:
         """
         Check the in-code defined privileges against the in-cluster existing privileges.
-        :param defined_privileges: A set of :class:`postgres_declare.data_structures.Privilege` defined in code for this entity.
-        :param existing_privileges: A set of :class:`postgres_declare.data_structures.Privilege` defined in cluster for this entity.
+        :param defined_privileges: A set of :class:`dbdeclare.data_structures.Privilege` defined in code for this entity.
+        :param existing_privileges: A set of :class:`dbdeclare.data_structures.Privilege` defined in cluster for this entity.
         :return: True if the defined privileges are a subset of the existing privileges. Accounts for ALL_PRIVILEGES.
         """
         if Privilege.ALL_PRIVILEGES in defined_privileges:
@@ -165,8 +165,8 @@ class Grantable(ABC):
     def _invalid_privileges(self, privileges: set[Privilege]) -> set[Privilege]:
         """
         Find all invalid privileges for this entity type.
-        :param privileges: A set of :class:`postgres_declare.data_structures.Privilege` to check for invalid entries.
-        :return: A set of :class:`postgres_declare.data_structures.Privilege` that are invalid. Empty if all valid.
+        :param privileges: A set of :class:`dbdeclare.data_structures.Privilege` to check for invalid entries.
+        :return: A set of :class:`dbdeclare.data_structures.Privilege` that are invalid. Empty if all valid.
         """
         return privileges.difference(self._allowed_privileges())
 
@@ -174,7 +174,7 @@ class Grantable(ABC):
     def _format_privileges(privileges: set[Privilege]) -> str:
         """
         Helper method that formats privileges for a SQL statement.
-        :param privileges: A set of :class:`postgres_declare.data_structures.Privilege` to format.
+        :param privileges: A set of :class:`dbdeclare.data_structures.Privilege` to format.
         :return: A comma-separated list of the provided privileges as a string.
         """
         return ", ".join(privileges)
@@ -184,7 +184,7 @@ class Grantable(ABC):
         """
         If a grant relationship exists between a Grantable and a Role, the Role must exist prior to the Grantable.
         This method can be used by subclasses to ensure the entity order is correct, likely in the grant method.
-        :param grants: A Sequence of :class:`postgres_declare.data_structures.GrantTo`.
+        :param grants: A Sequence of :class:`dbdeclare.data_structures.GrantTo`.
         :param target_entity: The target to check against. Likely `self` or similar.
         """
         target_index = target_entity.entities.index(target_entity)
@@ -196,12 +196,12 @@ class Grantable(ABC):
 
     def _extract_privileges(self, acl: str, grantee: Role) -> set[Privilege]:
         """
-        Extracts a set of :class:`postgres_declare.data_structures.Privilege` from a Postgres ACL statement.
+        Extracts a set of :class:`dbdeclare.data_structures.Privilege` from a Postgres ACL statement.
         The expected format is: grantee=xxxx/grantor, where grantee and grantor are roles and the "x"s indicate
         potential privilege codes. If the grantee is absent, the grantee is PUBLIC.
         :param acl: Raw acl string from Postgres in the form of grantee=xxxx/grantor.
-        :param grantee: The :class:`postgres_declare.entities.Role` to filter to.
-        :return: A set of :class:`postgres_declare.data_structures.Privilege` that exist in cluster, granted to the grantee.
+        :param grantee: The :class:`dbdeclare.entities.Role` to filter to.
+        :return: A set of :class:`dbdeclare.data_structures.Privilege` that exist in cluster, granted to the grantee.
         """
         m = re.match(r"(\w*)=(\w*)\/(\w*)", acl)
         if m:
@@ -215,7 +215,7 @@ class Grantable(ABC):
         """
         Wrapper around a dictionary to map from a letter code to a typed privilege.
         :param code: A letter code representing a privilege. See `Postgres docs <https://www.postgresql.org/docs/current/ddl-priv.html#PRIVILEGE-ABBREVS-TABLE>`_ for more.
-        :return: A :class:`postgres_declare.data_structures.Privilege` corresponding to the provided letter code.
+        :return: A :class:`dbdeclare.data_structures.Privilege` corresponding to the provided letter code.
         """
         return {
             "r": Privilege.SELECT,

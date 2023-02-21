@@ -1,7 +1,7 @@
 from sqlalchemy.orm import DeclarativeBase
 
-from postgres_declare.data_structures import GrantOn, Privilege
-from postgres_declare.entities import Database, DatabaseContent, Role, Schema
+from dbdeclare.data_structures import GrantOn, Privilege
+from dbdeclare.entities import Database, DatabaseContent, Role, Schema
 
 
 class ExampleBase(DeclarativeBase):

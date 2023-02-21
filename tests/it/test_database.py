@@ -3,12 +3,12 @@ from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 from sqlalchemy import Engine
 
-from postgres_declare.controller import Controller
-from postgres_declare.data_structures.grant_to import GrantTo
-from postgres_declare.data_structures.privileges import Privilege
-from postgres_declare.entities.database import Database
-from postgres_declare.entities.entity import Entity
-from postgres_declare.entities.role import Role
+from dbdeclare.controller import Controller
+from dbdeclare.data_structures.grant_to import GrantTo
+from dbdeclare.data_structures.privileges import Privilege
+from dbdeclare.entities.database import Database
+from dbdeclare.entities.entity import Entity
+from dbdeclare.entities.role import Role
 
 
 @pytest.fixture
