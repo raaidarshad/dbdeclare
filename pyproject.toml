@@ -42,6 +42,7 @@ optional = true
 
 [tool.poetry.group.docs.dependencies]
 mkdocs-material = "^9.0.1"
+mdx-include = "^1.4.2"
 
 
 [build-system]
