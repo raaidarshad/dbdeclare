@@ -1,14 +1,14 @@
 [tool.poetry]
 name = "postgres-declare"
 version = "0.0.1"
-description = "Declarative layer for everything Postgres."
+description = "Declarative layer for your database."
 license = "MIT"
 authors = ["Raaid Arshad <raaid@protonmail.com>"]
 #maintainers = []
 readme = "README.md"
-homepage = "https://postgres-declare.raaid.xyz"
-repository = "https://github.com/raaidarshad/postgres-declare"
-documentation = "https://postgres-declare.raaid.xyz"
+homepage = "https://dbdeclare.raaid.xyz"
+repository = "https://github.com/raaidarshad/dbdeclare"
+documentation = "https://dbdeclare.raaid.xyz"
 keywords = ["sql", "sqlalchemy", "postgres"]
 classifiers = [
     "Development Status :: 3 - Alpha",
