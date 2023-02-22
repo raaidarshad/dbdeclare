@@ -1,6 +1,6 @@
 site_name: DbDeclare
 site_description: DbDeclare, a declarative layer for your database.
-site_url: https://db-declare.raaid.xyz
+site_url: https://dbdeclare.raaid.xyz
 theme:
   name: material
   palette:
@@ -38,8 +38,8 @@ theme:
   logo: img/icon-white.svg
   favicon: img/favicon.png
   language: en
-repo_name: raaidarshad/db-declare
-repo_url: https://github.com/raaidarshad/db-declare
+repo_name: raaidarshad/dbdeclare
+repo_url: https://github.com/raaidarshad/dbdeclare
 edit_uri: ''
 nav:
   - DbDeclare: index.md
@@ -104,7 +104,7 @@ markdown_extensions:
 extra:
   social:
   - icon: fontawesome/brands/github-alt
-    link: https://github.com/raaidarshad/db-declare
+    link: https://github.com/raaidarshad/dbdeclare
   - icon: fontawesome/brands/twitter
     link: https://twitter.com/RaaidNajeeb
   - icon: fontawesome/brands/linkedin

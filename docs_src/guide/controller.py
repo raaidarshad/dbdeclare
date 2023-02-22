@@ -35,7 +35,7 @@ class GoodRequest(ExampleBase):
     pass
 
 
-def create_stage(stage: str) -> None:
+def define_stage(stage: str) -> None:
     # database
     db = Database(name=stage)
 
@@ -45,8 +45,8 @@ def create_stage(stage: str) -> None:
     reader = Role(name=f"{stage}_reader")
 
     # users
-    Role(name=f"{stage}_etl", in_role=[etl_writer, reader])
-    Role(name=f"{stage}_ml", in_role=[ml_writer, reader])
+    Role(name=f"{stage}_etl", login=True, password="fake", in_role=[etl_writer, reader])
+    Role(name=f"{stage}_ml", login=True, password="fake", in_role=[ml_writer, reader])
 
     # create extra schemas
     log_schema = Schema(name="log", database=db)
@@ -79,7 +79,7 @@ def create_stage(stage: str) -> None:
         ]
     )
 
-    # create log role and grant privileges if dev or prod
+    # create log role and grant privileges if not test stage
     if stage != "test":
         log_role = Role(
             name=f"{stage}_logger",
@@ -90,10 +90,14 @@ def create_stage(stage: str) -> None:
                 )
             ],
         )
-        Role(name=f"{stage}_api", in_role=[log_role, reader])
+        Role(name=f"{stage}_api", login=True, password="fake", in_role=[log_role, reader])
 
 
 def main() -> None:
     stages = ["test", "dev", "prod"]
     for stage in stages:
-        create_stage(stage)
+        define_stage(stage)
+
+
+if __name__ == "__main__":
+    main()

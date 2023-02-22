@@ -79,28 +79,8 @@ password `postgres`, on port `5433` to not conflict with any locally running ins
 Assuming you have a Python environment set up, DbDeclare installed, and psycopg installed (`pip install psycopg`),
 you can create a database and a user that can connect to it like this:
 
-```python
-from dbdeclare.controller import Controller
-from dbdeclare.data_structures import GrantOn, Privilege
-from dbdeclare.entities import Database, Role
-from sqlalchemy import create_engine
-
-# define the database
-falafel_db = Database(name="falafel")
-# define the user
-hungry_user = Role(
-    name="hungry_user",
-    login=True,  # (1)!
-    password="fakepassword",  # (2)!
-    grants=[GrantOn(privileges=[Privilege.CONNECT], on=[falafel_db])]  # (3)!
-)
-
-# create engine with admin user and default database
-engine = create_engine(  # (4)!
-    url="postgresql+psycopg://postgres:postgres@127.0.0.1:5433/postgres"
-)
-# create all entities and grant all privileges
-Controller.run_all(engine=engine)
+```Python
+{!./docs_src/index.py!}
 ```
 
 1. Make sure this role can log in (make it a user)
@@ -108,7 +88,7 @@ Controller.run_all(engine=engine)
 3. Specify that this user can connect to the `falafel` database
 4. The engine to run DbDeclare must have admin privileges, so we use the `postgres` user here
 
-Now you should be able to access the `falafel` database as `hungry_user`. You can try it out with
+After running this script, you should be able to access the `falafel` database as `hungry_user`. You can try it out with
 `psql` (if you don't have it installed, find it [here](https://www.timescale.com/blog/how-to-install-psql-on-mac-ubuntu-debian-windows/)).
 In a separate shell from where the docker run command is running, you can run:
 
