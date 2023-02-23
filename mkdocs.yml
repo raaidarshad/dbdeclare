@@ -48,7 +48,7 @@ nav:
     - guide/databases.md
     - guide/roles.md
     - guide/schemas.md
-    - guide/tables-and-columns.md
+    - guide/tables.md
     - guide/grants.md
     - guide/controller.md
   - help.md

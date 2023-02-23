@@ -1,5 +1,6 @@
 from docs_src.guide.databases import main as databases_main
 from docs_src.guide.roles import main as roles_main
+from docs_src.guide.schemas import main as schemas_main
 
 
 def test_databases_main() -> None:
@@ -11,7 +12,7 @@ def test_roles_main() -> None:
 
 
 def test_schemas_main() -> None:
-    pass
+    schemas_main()
 
 
 def test_content_main() -> None:

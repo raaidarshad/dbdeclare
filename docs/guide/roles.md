@@ -1,9 +1,9 @@
 # Roles
 
-First, we'll go over basics and examine the `Role` class. Then, we'll start to build our example.
+First, we'll go over basics and examine the `Role` class. Then, we'll continue to build our example.
 You can also [skip ahead](#example) to the example.
 
-## The class
+## The Role class
 
 You can import `Role` like so:
 

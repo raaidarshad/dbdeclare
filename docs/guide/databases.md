@@ -3,7 +3,7 @@
 First, we'll go over basics and examine the `Database` class. Then, we'll start
 to build our example. You can also [skip ahead](#example) to the example.
 
-## The class
+## The Database class
 
 You can import `Database` like so:
 
