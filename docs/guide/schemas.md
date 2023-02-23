@@ -35,5 +35,11 @@ Note that we assign the output of our call to `Database` to a variable now (`db`
 can explicitly refer to it when we create our log `Schema`. We don't need to create the default
 schema, as that will already exist when a new database is created.
 
+Entire file now:
+
+```Python
+{!./docs_src/guide/schemas.py!}
+```
+
 This code now defines the databases, roles, and schemas we need. All that's left is to define the
 tables + columns, grant privileges, then actually push all this to the cluster. Let's [add some tables](/guide/tables).
