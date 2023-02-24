@@ -60,8 +60,10 @@ The entire, complete file:
 If you run this (with an active Postgres instance/cluster), it should create all the databases, roles, schemas,
 and tables. It should also grant all the privileges declared. You can test via psql:
 
-```shell
+```
 > psql -h 127.0.0.1 -U dev_api -d dev
+
+password for user dev_api: ***
 
 dev=> SELECT * FROM log.good_request;
  id 

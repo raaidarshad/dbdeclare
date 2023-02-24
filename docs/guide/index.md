@@ -5,8 +5,6 @@ are omitted as they are unnecessary for the example, and some are contrived to s
 
 ## The example
 
-### Overview
-
 Let's say we have an application that takes in articles from a variety of news sites, clusters them, and exposes
 the clusters via an API. We also want to store API logs (yes, this is typically not done in tables in Postgres, please
 bear with me for the sake of the example). We want to accommodate 3 stages in our cluster: `test`, `dev`, and `prod`

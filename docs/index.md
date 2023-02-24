@@ -112,4 +112,4 @@ Need help, or want to help out? Find out how [here](/help).
 
 ## License
 
-This project is licensed under the terms of the [MIT license](https://github.com/raaid/db-declare/blob/main/LICENSE)
+This project is licensed under the terms of the [MIT license](https://github.com/raaid/db-declare/blob/main/LICENSE).
