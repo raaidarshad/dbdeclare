@@ -123,7 +123,7 @@ class Database(ClusterEntity, Grantable):
         The SQL statement that checks to see what grants exist.
         :return: A single :class:`sqlalchemy.TextClause` containing the SQL to check what grants exist on this entity.
         """
-        return text("SELECT unnest(datacl) as acl FROM pg_catalog.pg_database WHERE datname=:db_name").bindparams(
+        return text("SELECT unnest(datacl) AS acl FROM pg_catalog.pg_database WHERE datname=:db_name").bindparams(
             db_name=self.name
         )
 
