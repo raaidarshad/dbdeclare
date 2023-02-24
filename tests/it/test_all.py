@@ -32,9 +32,9 @@ def test_all(engine: Engine) -> None:
         db = Database(name=stage)
         reader = Role(name=f"{stage}_reader", grants=[GrantOn(privileges=[Privilege.CONNECT], on=[db])])
         writer = Role(name=f"{stage}_writer", grants=[GrantOn(privileges=[Privilege.CONNECT], on=[db])])
-        # define schemas
+        # declare schemas
         logs_schema = Schema(name=schema_name, database=db)
-        # define db content with grants
+        # declare db content with grants
         db_content = DatabaseContent(name="main", sqlalchemy_base=MockBase, database=db, schemas=[logs_schema])
 
         db_content.tables["event"].grant(grants=[GrantTo(privileges=[Privilege.SELECT], to=[reader, writer])])

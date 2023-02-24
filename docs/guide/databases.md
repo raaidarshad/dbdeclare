@@ -21,14 +21,14 @@ methods defined, what classes it inherits from, and more.
 ## Example
 
 Let's start building our example. We need a database for each stage, so let's create a function
-that takes a stage (like `dev` or `prod`) as input and defines a database with it:
+that takes a stage (like `dev` or `prod`) as input and declares a database with it:
 
 ```Python
 {!./docs_src/guide/databases.py[ln:1-6]!}
 ```
 
-This imports the `Database` class, defines a function `define_stage` that accepts a string name of a stage,
-and defines a `Database` with the stage as the name. Now let's define a main function that creates all three
+This imports the `Database` class, defines a function `declare_stage` that accepts a string name of a stage,
+and declares a `Database` with the stage as the name. Now let's define a main function that creates all three
 stages we want to create:
 
 ```Python hl_lines="8-11"
@@ -36,7 +36,7 @@ stages we want to create:
 ```
 
 Here, we add a `main` function with no inputs, define a list of desired stages, loop over them, and run the
-`define_stage` function for each stage.
+`declare_stage` function for each stage.
 
 You can run the entire file:
 
@@ -44,5 +44,5 @@ You can run the entire file:
 {!./docs_src/guide/databases.py!}
 ```
 
-This defines all three databases. Excellent! Note that we haven't created anything in our cluster yet, we have only
-defined our databases in code. We'll get to creation, but first let's [add some roles](/guide/roles).
+This declares all three databases. Excellent! Note that we haven't created anything in our cluster yet, we have only
+declared our databases in code. We'll get to creation, but first let's [add some roles](/guide/roles).

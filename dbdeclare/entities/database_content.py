@@ -116,7 +116,7 @@ class Table(SQLBase, Grantable):
             engine=self.database_content.database.db_engine(), statement=self._grants_exist_statement(grantee=grantee)
         )
         existing_privileges = {r[0] for r in rows}
-        return self._check_privileges(defined_privileges=privileges, existing_privileges=existing_privileges)
+        return self._check_privileges(declared_privileges=privileges, existing_privileges=existing_privileges)
 
     def _grants_exist_statement(self, grantee: Role) -> TextClause:
         """

@@ -20,7 +20,7 @@ TODO image of what sqlalchemy covers, what this covers, what IaC covers
 
 DbDeclare does what SQLA does but for database entities beyond tables and columns. You can:
 
-- Define desired state in Python
+- Declare desired state in Python
 - Avoid maintaining raw SQL
 - Tightly integrate your databases, roles, access control, and more with your tables
 
@@ -36,7 +36,7 @@ Additionally, DbDeclare is:
 - Well-tested: Though this is a new package under active development, solid test coverage is a high priority
 
 Running SQL scripts before SQLA and after IaC can be messy and hard to maintain.
-If you prefer to have databases, roles, and the like defined alongside your infrastructure, then there are
+If you prefer to have databases, roles, and the like declared alongside your infrastructure, then there are
 great tools available for that, like Terraform and Pulumi's providers for Postgres and MySQL. So if you want
 it tied to that, great! But if, like me, you want it closer to your application code and alongside SQLA, this
 tool likely makes more sense for you.
@@ -70,11 +70,11 @@ If needed, an easy way to spin up a Postgres instance is with [Docker](https://w
 specifically the [official Postgres image](https://hub.docker.com/_/postgres):
 
 ```
-> docker run --rm --name postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_HOST_AUTH_METHOD=trust -p 127.0.0.1:5433:5432/tcp postgres
+> docker run --rm --name postgres -e POSTGRES_PASSWORD=postgres -p 127.0.0.1:5432:5432/tcp postgres
 ```
 
 This spins up a Postgres instance with the default database name of `postgres`, an admin user of `postgres` with the
-password `postgres`, on port `5433` to not conflict with any locally running instance.
+password `postgres`, on port `5432`.
 
 Assuming you have a Python environment set up, DbDeclare installed, and psycopg installed (`pip install psycopg`),
 you can create a database and a user that can connect to it like this:
@@ -93,18 +93,18 @@ After running this script, you should be able to access the `falafel` database a
 In a separate shell from where the docker run command is running, you can run:
 
 ```
-> psql -h 127.0.0.1 -p 5433 -U hungry_user -d falafel
+> psql -h 127.0.0.1 -p 5432 -U hungry_user -d falafel
 
 password for user hungry_user: ***
 
-falafel=# 
+falafel=>
 ```
 
 Voila! Check out the [user guide](/guide) for more involved use cases.
 
 ## Contributing
 
-Check out development, testing, and contributing guidelines [here](/contributing).
+Check out development, testing, and contributing guidance [here](/contributing).
 
 ## Help or get help
 

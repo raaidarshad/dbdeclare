@@ -1,10 +1,10 @@
 # Tables (and columns)
 
-Tables and columns are defined via [SQLAlchemy](https://www.sqlalchemy.org/), a proven,
-robust tool that this package is built on. You can optional define tables and columns
+Tables and columns are declared via [SQLAlchemy](https://www.sqlalchemy.org/), a proven,
+robust tool that this package is built on. You can optionally declare tables and columns
 via [SQLModel](https://sqlmodel.tiangolo.com/), a project that combines a lot of the benefits of SQLA with
 [Pydantic](https://docs.pydantic.dev/), resulting in highly reusable models for both data definition and strong
-typing throughout your application. In either case, you define tables and columns through
+typing throughout your application. In either case, you declare tables and columns through
 another library, then simply refer to them from DbDeclare via the `DatabaseContent` class.
 
 We'll go over the basics and examine the `DatabaseContent` class, then we'll continue
@@ -32,7 +32,7 @@ this one.
 
 ## Example
 
-Let's keep building our example. We have our databases, roles, and extra schemas. Let's define
+Let's keep building our example. We have our databases, roles, and extra schemas. Let's declare
 our tables and columns via SQLA then refer to them via the `DatabaseContent` class:
 
 ```Python
@@ -43,7 +43,7 @@ our tables and columns via SQLA then refer to them via the `DatabaseContent` cla
 
 In the code above, we import `DatabaseContent` from `dbdeclare` and we import `DeclarativeBase`
 from `sqlalchemy`. We then define a base and a bunch of tables. Please refer to
-[SQLA documentation](https://docs.sqlalchemy.org/en/20/orm/mapping_styles.html#orm-declarative-mapping) for more information on how to define tables and columns.
+[SQLA documentation](https://docs.sqlalchemy.org/en/20/orm/mapping_styles.html#orm-declarative-mapping) for more information on how to declare tables and columns.
 Now let's refer to the base:
 
 ```Python hl_lines="9 12"
@@ -59,9 +59,9 @@ Now let's refer to the base:
 ```
 
 We update the schema definition so that we store a reference to it in `log_schema`. We then
-define our `DatabaseContent` and have it point to `db`, `ExampleBase`, and `log_schema` so that
+declare our `DatabaseContent` and have it point to `db`, `ExampleBase`, and `log_schema` so that
 Postgres will know exactly where to put these tables and what entities need to exist before these
 tables can exist.
 
-This code now defines the databases, roles, schemas, tables, and columns we need. Apart from
+This code now declares the databases, roles, schemas, tables, and columns we need. Apart from
 actually creating all this in the cluster, all we need to do is [grant privileges](/guide/grants).

@@ -148,20 +148,20 @@ class Grantable(ABC):
         """
         pass
 
-    def _check_privileges(self, defined_privileges: set[Privilege], existing_privileges: set[Privilege]) -> bool:
+    def _check_privileges(self, declared_privileges: set[Privilege], existing_privileges: set[Privilege]) -> bool:
         """
-        Check the in-code defined privileges against the in-cluster existing privileges.
-        :param defined_privileges: A set of :class:`dbdeclare.data_structures.Privilege` defined in code for this entity.
-        :param existing_privileges: A set of :class:`dbdeclare.data_structures.Privilege` defined in cluster for this entity.
-        :return: True if the defined privileges are a subset of the existing privileges. Accounts for ALL_PRIVILEGES.
+        Check the in-code declared privileges against the in-cluster existing privileges.
+        :param declared_privileges: A set of :class:`dbdeclare.data_structures.Privilege` declared in code for this entity.
+        :param existing_privileges: A set of :class:`dbdeclare.data_structures.Privilege` declared in cluster for this entity.
+        :return: True if the declared privileges are a subset of the existing privileges. Accounts for ALL_PRIVILEGES.
         """
-        if Privilege.ALL_PRIVILEGES in defined_privileges:
-            defined = self._allowed_privileges()
-            defined.discard(Privilege.ALL_PRIVILEGES)
+        if Privilege.ALL_PRIVILEGES in declared_privileges:
+            declared = self._allowed_privileges()
+            declared.discard(Privilege.ALL_PRIVILEGES)
         else:
-            defined = defined_privileges
+            declared = declared_privileges
 
-        return defined.issubset(existing_privileges)
+        return declared.issubset(existing_privileges)
 
     def _invalid_privileges(self, privileges: set[Privilege]) -> set[Privilege]:
         """

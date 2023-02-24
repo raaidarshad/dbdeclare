@@ -148,7 +148,7 @@ class Role(ClusterEntity):
 
     def _grants_exist(self) -> bool:
         """
-        Checks to see if all in-code defined grants exist in the cluster.
+        Checks to see if all in-code declared grants exist in the cluster.
         """
         if self.grants:
             if not self._exists():

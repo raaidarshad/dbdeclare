@@ -6,9 +6,9 @@ from dbdeclare.entities import Database, Role
 
 
 def main() -> None:
-    # define the database
+    # declare the database
     falafel_db = Database(name="falafel")
-    # define the user
+    # declare the user
     Role(
         name="hungry_user",
         login=True,  # (1)!
@@ -17,7 +17,7 @@ def main() -> None:
     )
 
     # create engine with admin user and default database
-    engine = create_engine(url="postgresql+psycopg://postgres:postgres@127.0.0.1:5433/postgres")  # (4)!
+    engine = create_engine(url="postgresql+psycopg://postgres:postgres@127.0.0.1:5432/postgres")  # (4)!
     # create all entities and grant all privileges
     Controller.run_all(engine=engine)
 

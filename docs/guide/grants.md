@@ -8,8 +8,8 @@ example. You can also [skip ahead](#example) to the example.
 The `Grantable` class is an internal class used by DbDeclare (aka you won't use it unless you are developing
 and extending the package). It defines behavior for any entity that can have privileges granted to it. This
 includes entities like databases, schemas, and tables. Grantable entities work in tandem with `Role`s to
-define access privileges, like connecting to a database or selecting from a table. Ultimately, you are able
-to define relationships that result in a `GRANT {privileges} ON {entity_type} {entity} TO {role}`.
+declare access privileges, like connecting to a database or selecting from a table. Ultimately, you are able
+to declare relationships that result in a `GRANT {privileges} ON {entity_type} {entity} TO {role}`.
 
 ### Privileges
 
@@ -20,11 +20,11 @@ for a complete overview. DbDeclare defines them all in a Python `enum`:
 from dbdeclare.data_structures import Privilege
 ```
 
-Use this to define what privileges you want to when you define a grant.
+Use this to declare what privileges you want to when you declare a grant.
 
 ### Multiple ways to grant
 
-Grantable entities and `Role`s can both define grants.
+Grantable entities and `Role`s can both declare grants.
 
 #### From a role
 
@@ -38,7 +38,7 @@ from dbdeclare.data_structures import GrantOn
 `GrantOn` is a dataclass that has two attributes: `privileges`, which is a `Sequence[Privilege]`, and
 `on`, which is a sequence of `Grantable` entities to grant those privileges on.
 
-You can also pass in a `Sequence[GrantOn]` when you define a `Role` via the `__init__` method, if it is
+You can also pass in a `Sequence[GrantOn]` when you declare a `Role` via the `__init__` method, if it is
 more convenient to do so.
 
 #### From a grantable entity
@@ -53,7 +53,7 @@ from dbdeclare.data_structures import GrantTo
 `GrantTo` is a dataclass that has two attributes: `privileges`, which is a `Sequence[Privilege]`, and
 `to`, which is a sequence of `Role`s to grant those privileges to.
 
-You can also pass in a `Sequence[GrantTo]` when you define any grantable entity via the `__init__` method,
+You can also pass in a `Sequence[GrantTo]` when you declare any grantable entity via the `__init__` method,
 if it is more convenient to do so.
 
 ### How grants are stored
@@ -68,7 +68,7 @@ As always, I encourage you to peek at the source code and read the docstrings fo
 
 ## Example
 
-Let's add grants to our example. We have defined all the entities we want to create, so now we can
+Let's add grants to our example. We have declared all the entities we want to create, so now we can
 run some `grant` statements.
 
 ```Python
@@ -86,7 +86,7 @@ import `GrantOn` but not `GrantTo`.
 # omitted code below
 ```
 
-Here, we grab our references for `etl_writer`, `ml_writer`, and `reader`, and define grants for each of them.
+Here, we grab our references for `etl_writer`, `ml_writer`, and `reader`, and declare grants for each of them.
 We allow `etl_writer` to insert and update on the `article` and `keyword` table, we allow `ml_writer`
 to insert and update on the `cluster` table, and we allow `reader` to select from all three of those tables.
 Note that we don't have to grant usage of the default schema as (typically) usage is granted to all users
@@ -103,7 +103,7 @@ by default. Depending on your set up, you _may_ need to grant connect on the rol
 We also need to grant insert, select, and update privileges to `log_role` on both tables in the `log` schema.
 Since this is a non-default schema, we first grant usage on the schema, then we grant the desired privileges
 on both tables. Note that this is done in the creation of the role, in contrast to the previous examples that
-call `grant` on the roles _after_ they were defined. Do whatever makes more sense for you.
+call `grant` on the roles _after_ they were declared. Do whatever makes more sense for you.
 
 Here is the entire file now:
 
@@ -111,5 +111,5 @@ Here is the entire file now:
 {!./docs_src/guide/grants.py!}
 ```
 
-We have defined everything we set out to define. Nice! All that's left is to actually create all
+We have declared everything we set out to declare. Nice! All that's left is to actually create all
 of this in the database. Let's [run it](/guide/controller)!

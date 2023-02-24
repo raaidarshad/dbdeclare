@@ -34,7 +34,7 @@ class GoodRequest(ExampleBase):
     id: Mapped[int] = mapped_column(primary_key=True)
 
 
-def define_stage(stage: str) -> None:
+def declare_stage(stage: str) -> None:
     db = Database(name=stage)
 
     # "groups" aka non-login roles
@@ -61,7 +61,7 @@ def define_stage(stage: str) -> None:
 def main() -> None:
     stages = ["test", "dev", "prod"]
     for stage in stages:
-        define_stage(stage)
+        declare_stage(stage)
 
 
 if __name__ == "__main__":

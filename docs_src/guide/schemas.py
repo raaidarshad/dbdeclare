@@ -1,7 +1,7 @@
 from dbdeclare.entities import Database, Role, Schema
 
 
-def define_stage(stage: str) -> None:
+def declare_stage(stage: str) -> None:
     db = Database(name=stage)
 
     # "groups" aka non-login roles
@@ -25,7 +25,7 @@ def define_stage(stage: str) -> None:
 def main() -> None:
     stages = ["test", "dev", "prod"]
     for stage in stages:
-        define_stage(stage)
+        declare_stage(stage)
 
 
 if __name__ == "__main__":
