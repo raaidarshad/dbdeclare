@@ -26,6 +26,7 @@ class Grantable(ABC):
         :param grants: Sequence of grant definitions in the form of :class:`dbdeclare.data_structures.GrantTo`.
         """
         self.name = name
+        self._grant_name = name
         if grants:
             self.grant(grants=grants)
 
@@ -121,7 +122,7 @@ class Grantable(ABC):
         """
         return [
             text(
-                f"GRANT {self._format_privileges(privileges)} ON {self.__class__.__name__} {self.name} TO {grantee.name}"
+                f"GRANT {self._format_privileges(privileges)} ON {self.__class__.__name__} {self._grant_name} TO {grantee.name}"
             )
         ]
 
@@ -134,7 +135,7 @@ class Grantable(ABC):
         """
         return [
             text(
-                f"REVOKE {self._format_privileges(privileges)} ON {self.__class__.__name__} {self.name} FROM {grantee.name}"
+                f"REVOKE {self._format_privileges(privileges)} ON {self.__class__.__name__} {self._grant_name} FROM {grantee.name}"
             )
         ]
 

@@ -76,6 +76,10 @@ class Table(SQLBase, Grantable):
         :param schema: The string name of the schema this belongs to.
         """
         super().__init__(name=name)
+
+        if schema:
+            self._grant_name = f"{schema}.{name}"
+
         self.database_content = database_content
         self.schema = schema
 

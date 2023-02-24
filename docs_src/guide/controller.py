@@ -1,5 +1,7 @@
-from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy import create_engine
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
+from dbdeclare.controller import Controller
 from dbdeclare.data_structures import GrantOn, Privilege
 from dbdeclare.entities import Database, DatabaseContent, Role, Schema
 
@@ -10,41 +12,40 @@ class ExampleBase(DeclarativeBase):
 
 class Article(ExampleBase):
     __tablename__ = "article"
-    pass
+    id: Mapped[int] = mapped_column(primary_key=True)
 
 
 class Keyword(ExampleBase):
     __tablename__ = "keyword"
-    pass
+    id: Mapped[int] = mapped_column(primary_key=True)
 
 
 class Cluster(ExampleBase):
     __tablename__ = "cluster"
-    pass
+    id: Mapped[int] = mapped_column(primary_key=True)
 
 
 class BadRequest(ExampleBase):
     __tablename__ = "bad_request"
     __table_args__ = {"schema": "log"}
-    pass
+    id: Mapped[int] = mapped_column(primary_key=True)
 
 
 class GoodRequest(ExampleBase):
     __tablename__ = "good_request"
     __table_args__ = {"schema": "log"}
-    pass
+    id: Mapped[int] = mapped_column(primary_key=True)
 
 
 def define_stage(stage: str) -> None:
-    # database
     db = Database(name=stage)
 
-    # roles
+    # "groups" aka non-login roles
     etl_writer = Role(name=f"{stage}_etl_writer")
     ml_writer = Role(name=f"{stage}_ml_writer")
     reader = Role(name=f"{stage}_reader")
 
-    # users
+    # "users" aka login roles
     Role(name=f"{stage}_etl", login=True, password="fake", in_role=[etl_writer, reader])
     Role(name=f"{stage}_ml", login=True, password="fake", in_role=[ml_writer, reader])
 
@@ -84,19 +85,26 @@ def define_stage(stage: str) -> None:
         log_role = Role(
             name=f"{stage}_logger",
             grants=[
+                GrantOn(privileges=[Privilege.USAGE], on=[log_schema]),
                 GrantOn(
                     privileges=[Privilege.INSERT, Privilege.SELECT, Privilege.UPDATE],
                     on=[content.tables[BadRequest.__tablename__], content.tables[GoodRequest.__tablename__]],
-                )
+                ),
             ],
         )
         Role(name=f"{stage}_api", login=True, password="fake", in_role=[log_role, reader])
 
 
 def main() -> None:
+    # define stages
     stages = ["test", "dev", "prod"]
     for stage in stages:
         define_stage(stage)
+
+    # create engine with admin user and default database
+    engine = create_engine(url="postgresql+psycopg://postgres:postgres@127.0.0.1:5432/postgres")
+    # create all entities and grant all privileges
+    Controller.run_all(engine=engine)
 
 
 if __name__ == "__main__":

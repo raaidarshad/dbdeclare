@@ -1,4 +1,5 @@
 from dbdeclare.entities.entity import Entity
+from docs_src.guide.controller import main as controller_main
 from docs_src.guide.databases import main as databases_main
 from docs_src.guide.grants import main as grants_main
 from docs_src.guide.roles import main as roles_main
@@ -32,4 +33,5 @@ def test_grants_main() -> None:
 
 
 def test_controller_main() -> None:
-    pass
+    controller_main()
+    Entity.entities = []
