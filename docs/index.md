@@ -43,18 +43,19 @@ tool likely makes more sense for you.
 
 ## Requirements
 
-This requires a recent version of Python. Works with Python 3.11 or higher.
+This requires a recent version of Python. Works with Python 3.11 or higher. We recommend [pyenv](todo) to
+install any versions of Python you need and don't currently have installed.
 
 This also requires a compatible driver/package for your database of choice, like
-[psycopg](https://www.psycopg.org/) for Postgres.
+[psycopg](https://www.psycopg.org/) for Postgres. You'll also need a functioning cluster
+to interact with (the example below shows a way to do so via Docker).
 
 SQLAlchemy is a dependency and will be installed when you install DbDeclare. DbDeclare
 works with SQLAlchemy 2.0.0 or higher.
 
-
 ## Installation
 
-DbDeclare is published on [PyPi](TODO). You can install it with `pip` or any tool
+DbDeclare is published on [PyPi](https://pypi.org/project/dbdeclare/). You can install it with `pip` or any tool
 that uses `pip` under the hood. This is typically installed in a [virtual environment](https://docs.python.org/3/library/venv.html).
 
 ```
