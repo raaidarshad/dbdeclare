@@ -10,7 +10,7 @@ A declarative layer for your database, built on [SQLAlchemy](https://github.com/
 
 The code is [on GitHub](https://github.com/raaidarshad/postgres-declare).
 
-The docs are [hosted on my website](https://dbdeclare.raaid.xyz).
+The docs are [hosted on GitHub pages](https://raaidarshad.github.io/dbdeclare/).
 
 ## Overview
 
@@ -130,11 +130,11 @@ password for user hungry_user: ***
 falafel=>
 ```
 
-Voila! Check out the [user guide](https://dbdeclare.raaid.xyz/guide) for more involved use cases.
+Voila! Check out the [user guide](https://raaidarshad.github.io/dbdeclare/guide) for more involved use cases.
 
 ## Contributing
 
-Check out development, testing, and contributing guidance [here](https://dbdeclare.raaid.xyz/contributing).
+Check out development, testing, and contributing guidance [here](https://raaidarshad.github.io/dbdeclare/contributing).
 
 ## License
 
