@@ -4,7 +4,7 @@ from typing import Any, Sequence
 
 from sqlalchemy import Engine
 
-from postgres_declare.exceptions import EntityExistsError, NoEngineError
+from dbdeclare.exceptions import EntityExistsError, NoEngineError
 
 
 class Entity(ABC):
@@ -139,5 +139,7 @@ class Entity(ABC):
         return {
             k: v
             for k, v in vars(self).items()
-            if (k not in signature(self.__class__.__bases__[0].__init__).parameters) and (v is not None)  # type: ignore
+            if (k not in signature(self.__class__.__bases__[0].__init__).parameters)  # type: ignore
+            and (v is not None)
+            and (k != "_grant_name")
         }

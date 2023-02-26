@@ -2,13 +2,13 @@ from typing import Sequence
 
 from sqlalchemy import TextClause, text
 
-from postgres_declare.data_structures.grant_to import GrantTo
-from postgres_declare.data_structures.privileges import Privilege
-from postgres_declare.entities.database import Database
-from postgres_declare.entities.database_entity import DatabaseSqlEntity
-from postgres_declare.entities.entity import Entity
-from postgres_declare.entities.role import Role
-from postgres_declare.mixins.grantable import Grantable
+from dbdeclare.data_structures.grant_to import GrantTo
+from dbdeclare.data_structures.privileges import Privilege
+from dbdeclare.entities.database import Database
+from dbdeclare.entities.database_entity import DatabaseSqlEntity
+from dbdeclare.entities.entity import Entity
+from dbdeclare.entities.role import Role
+from dbdeclare.mixins.grantable import Grantable
 
 
 class Schema(DatabaseSqlEntity, Grantable):
@@ -31,11 +31,11 @@ class Schema(DatabaseSqlEntity, Grantable):
 
 
         :param name: Unique name of the entity. Must be unique within a database.
-        :param database: The :class:`postgres_declare.entities.Database` that this entity belongs to.
+        :param database: The :class:`dbdeclare.entities.Database` that this entity belongs to.
         :param depends_on: Any entities that should be created before this one.
         :param check_if_exists: Flag to set existence check behavior. If `True`, will raise an exception during _safe_create if the entity already exists, and will raise an exception during _safe_drop if the entity does not exist.
-        :param owner: The :class:`postgres_declare.entitites.Role` who will own this database. Postgres defaults to the user executing the command.
-        :param grants: Sequence of :class:`postgres_declare.data_structures.GrantTo` to specify privileges this database has in relation to specified roles.
+        :param owner: The :class:`dbdeclare.entitites.Role` who will own this database. Postgres defaults to the user executing the command.
+        :param grants: Sequence of :class:`dbdeclare.data_structures.GrantTo` to specify privileges this database has in relation to specified roles.
         """
         self.owner = owner
 

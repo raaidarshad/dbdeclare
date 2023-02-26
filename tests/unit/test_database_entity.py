@@ -1,6 +1,6 @@
-from postgres_declare.entities.database import Database
-from postgres_declare.entities.database_entity import DatabaseEntity
-from postgres_declare.entities.entity import Entity
+from dbdeclare.entities.database import Database
+from dbdeclare.entities.database_entity import DatabaseEntity
+from dbdeclare.entities.entity import Entity
 
 
 class MockDatabaseEntity(DatabaseEntity):

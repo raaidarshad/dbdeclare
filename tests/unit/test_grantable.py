@@ -3,13 +3,13 @@ from typing import Sequence
 import pytest
 from sqlalchemy import Engine
 
-from postgres_declare.controller import Controller
-from postgres_declare.data_structures.grant_to import GrantTo
-from postgres_declare.data_structures.privileges import Privilege
-from postgres_declare.entities.entity import Entity
-from postgres_declare.entities.role import Role
-from postgres_declare.exceptions import EntityExistsError, InvalidPrivilegeError
-from postgres_declare.mixins.grantable import Grantable
+from dbdeclare.controller import Controller
+from dbdeclare.data_structures.grant_to import GrantTo
+from dbdeclare.data_structures.privileges import Privilege
+from dbdeclare.entities.entity import Entity
+from dbdeclare.entities.role import Role
+from dbdeclare.exceptions import EntityExistsError, InvalidPrivilegeError
+from dbdeclare.mixins.grantable import Grantable
 from tests.helpers import YieldFixture
 
 

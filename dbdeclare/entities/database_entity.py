@@ -1,8 +1,8 @@
 from typing import Sequence
 
-from postgres_declare.entities.database import Database
-from postgres_declare.entities.entity import Entity
-from postgres_declare.mixins.sql import SQLCreatable
+from dbdeclare.entities.database import Database
+from dbdeclare.entities.entity import Entity
+from dbdeclare.mixins.sql import SQLCreatable
 
 
 class DatabaseEntity(Entity):
@@ -19,7 +19,7 @@ class DatabaseEntity(Entity):
     ):
         """
         :param name: Unique name of the entity. Cluster-level entities must be unique, database-level entities must be unique within a database.
-        :param database: The :class:`postgres_declare.entities.Database` that this entity belongs to.
+        :param database: The :class:`dbdeclare.entities.Database` that this entity belongs to.
         :param depends_on: Any entities that should be created before this one.
         :param check_if_exists: Flag to set existence check behavior. If `True`, will raise an exception during _safe_create if the entity already exists, and will raise an exception during _safe_drop if the entity does not exist.
         """

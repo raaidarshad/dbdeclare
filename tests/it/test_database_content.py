@@ -1,11 +1,11 @@
 import pytest
 
-from postgres_declare.data_structures.grant_to import GrantTo
-from postgres_declare.data_structures.privileges import Privilege
-from postgres_declare.entities.database import Database
-from postgres_declare.entities.database_content import DatabaseContent
-from postgres_declare.entities.role import Role
-from postgres_declare.entities.schema import Schema
+from dbdeclare.data_structures.grant_to import GrantTo
+from dbdeclare.data_structures.privileges import Privilege
+from dbdeclare.entities.database import Database
+from dbdeclare.entities.database_content import DatabaseContent
+from dbdeclare.entities.role import Role
+from dbdeclare.entities.schema import Schema
 from tests.conftest import SimpleTable
 
 

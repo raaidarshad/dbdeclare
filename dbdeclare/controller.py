@@ -1,19 +1,19 @@
 from sqlalchemy import Engine
 
-from postgres_declare.entities.entity import Entity
-from postgres_declare.entities.role import Role
+from dbdeclare.entities.entity import Entity
+from dbdeclare.entities.role import Role
 
 
 class Controller:
     """
     Entrypoint for creating/dropping database entities and granting/revoking privileges once they are
-    defined in code. This is a wrapper of sorts around :class:`postgres_declare.entities.entity.Entity`.
+    declared in code. This is a wrapper of sorts around :class:`dbdeclare.entities.entity.Entity`.
     """
 
     @classmethod
     def create_all(cls, engine: Engine | None = None) -> None:
         """
-        Attempts to create all defined entities. Typically run via `run_all`.
+        Attempts to create all declared entities. Typically run via `run_all`.
         :param engine: A :class:`sqlalchemy.Engine` that defines the connection to a Postgres instance/cluster.
         """
         cls._handle_engine(engine)
@@ -23,7 +23,7 @@ class Controller:
     @classmethod
     def grant_all(cls, engine: Engine | None = None) -> None:
         """
-        Attempts to grant all defined privileges. Requires entities to exist, typically run via `run_all` or after
+        Attempts to grant all declared privileges. Requires entities to exist, typically run via `run_all` or after
         `create_all`.
         :param engine: A :class:`sqlalchemy.Engine` that defines the connection to a Postgres instance/cluster.
         """
@@ -35,7 +35,7 @@ class Controller:
     @classmethod
     def run_all(cls, engine: Engine | None = None) -> None:
         """
-        Attempts to create all defined entities then grant all defined privileges. Main way to do so.
+        Attempts to create all declared entities then grant all declared privileges. Main way to do so.
         :param engine: A :class:`sqlalchemy.Engine` that defines the connection to a Postgres instance/cluster.
         """
         cls._handle_engine(engine)
@@ -45,7 +45,7 @@ class Controller:
     @classmethod
     def drop_all(cls, engine: Engine | None = None) -> None:
         """
-        Attempts to drop all defined entities. Typically run via `remove_all`.
+        Attempts to drop all declared entities. Typically run via `remove_all`.
         :param engine: A :class:`sqlalchemy.Engine` that defines the connection to a Postgres instance/cluster.
         """
         cls._handle_engine(engine)
@@ -55,7 +55,7 @@ class Controller:
     @classmethod
     def revoke_all(cls, engine: Engine | None = None) -> None:
         """
-        Attempts to revoke all defined privileges. Requires entities to exist, typically run via `remove_all` or before
+        Attempts to revoke all declared privileges. Requires entities to exist, typically run via `remove_all` or before
         `drop_all`.
         :param engine: A :class:`sqlalchemy.Engine` that defines the connection to a Postgres instance/cluster.
         """
@@ -67,7 +67,7 @@ class Controller:
     @classmethod
     def remove_all(cls, engine: Engine | None = None) -> None:
         """
-        Attempts to revoke all defined privileges then drop all defined entities. Main way to do so.
+        Attempts to revoke all declared privileges then drop all declared entities. Main way to do so.
         :param engine: A :class:`sqlalchemy.Engine` that defines the connection to a Postgres instance/cluster.
         """
         cls._handle_engine(engine)
@@ -77,7 +77,7 @@ class Controller:
     @classmethod
     def _all_entities_exist(cls, engine: Engine | None = None) -> bool:
         """
-        Checks if all defined entities exist in the cluster.
+        Checks if all declared entities exist in the cluster.
         :param engine:  A :class:`sqlalchemy.Engine` that defines the connection to a Postgres instance/cluster.
         """
         cls._handle_engine(engine)
@@ -86,7 +86,7 @@ class Controller:
     @classmethod
     def _all_grants_exist(cls, engine: Engine | None = None) -> bool:
         """
-        Checks if all defined grants exist in the cluster.
+        Checks if all declared grants exist in the cluster.
         :param engine:  A :class:`sqlalchemy.Engine` that defines the connection to a Postgres instance/cluster.
         """
         cls._handle_engine(engine)
@@ -95,7 +95,7 @@ class Controller:
     @classmethod
     def _all_exist(cls, engine: Engine | None = None) -> bool:
         """
-        Checks if all defined entities and grants exist in the cluster.
+        Checks if all declared entities and grants exist in the cluster.
         :param engine:  A :class:`sqlalchemy.Engine` that defines the connection to a Postgres instance/cluster.
         """
         cls._handle_engine(engine)

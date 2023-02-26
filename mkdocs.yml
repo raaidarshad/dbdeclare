@@ -1,0 +1,112 @@
+site_name: DbDeclare
+site_description: DbDeclare, a declarative layer for your database.
+site_url: https://dbdeclare.raaid.xyz
+theme:
+  name: material
+  palette:
+  - scheme: default
+    primary: purple
+    accent: white
+    toggle:
+      icon: material/lightbulb
+      name: Switch to dark mode
+  - scheme: slate
+    primary: purple
+    accent: gray
+    toggle:
+      icon: material/lightbulb-outline
+      name: Switch to light mode
+  features:
+  - content.tabs.link
+  - content.action.edit
+  - content.action.view
+  - content.code.annotate
+  - content.code.copy
+  - content.tooltips
+  - navigation.footer
+  - navigation.indexes
+  - navigation.sections
+#  - navigation.tabs
+#  - navigation.top
+  - navigation.tracking
+  - search.highlight
+  - search.share
+  - search.suggest
+  - toc.follow
+  icon:
+    repo: fontawesome/brands/github-alt
+  logo: img/icon-white.svg
+  favicon: img/favicon.png
+  language: en
+repo_name: raaidarshad/dbdeclare
+repo_url: https://github.com/raaidarshad/dbdeclare
+edit_uri: ''
+nav:
+  - DbDeclare: index.md
+  - Postgres guide:
+    - guide/index.md
+    - guide/databases.md
+    - guide/roles.md
+    - guide/schemas.md
+    - guide/tables.md
+    - guide/grants.md
+    - guide/controller.md
+  - contributing.md
+
+markdown_extensions:
+- toc:
+    permalink: true
+- markdown.extensions.codehilite:
+    guess_lang: false
+- admonition
+- codehilite
+- extra
+- pymdownx.superfences:
+    custom_fences:
+    - name: mermaid
+      class: mermaid
+      format: !!python/name:pymdownx.superfences.fence_code_format ''
+- pymdownx.tabbed:
+    alternate_style: true
+- abbr
+- admonition
+- attr_list
+- def_list
+- footnotes
+- md_in_html
+- toc:
+    permalink: true
+- pymdownx.arithmatex:
+    generic: true
+- pymdownx.betterem:
+    smart_enable: all
+- pymdownx.caret
+- pymdownx.details
+- pymdownx.emoji:
+    emoji_generator: !!python/name:materialx.emoji.to_svg
+    emoji_index: !!python/name:materialx.emoji.twemoji
+- pymdownx.highlight:
+    anchor_linenums: true
+- pymdownx.inlinehilite
+- pymdownx.keys
+- pymdownx.magiclink:
+    repo_url_shorthand: true
+    user: squidfunk
+    repo: mkdocs-material
+- pymdownx.mark
+- pymdownx.smartsymbols
+- pymdownx.tasklist:
+    custom_checkbox: true
+- pymdownx.tilde
+- mdx_include
+
+extra:
+  social:
+  - icon: fontawesome/brands/github-alt
+    link: https://github.com/raaidarshad/dbdeclare
+  - icon: fontawesome/brands/twitter
+    link: https://twitter.com/RaaidNajeeb
+  - icon: fontawesome/brands/linkedin
+    link: https://www.linkedin.com/in/raaid-arshad
+  - icon: fontawesome/solid/globe
+    link: https://www.raaid.xyz

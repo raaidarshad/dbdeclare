@@ -1,17 +1,15 @@
 [tool.poetry]
-name = "postgres-declare"
+name = "dbdeclare"
 version = "0.0.1"
-description = "Declarative layer for everything Postgres."
+description = "Declarative layer for your database."
 license = "MIT"
 authors = ["Raaid Arshad <raaid@protonmail.com>"]
 #maintainers = []
 readme = "README.md"
-# TODO fill in when docs are up
-#homepage = ""
-repository = "https://github.com/raaidarshad/postgres-declare"
-# TODO fill in when docs are up
-#documentation = ""
-keywords = ["sql", "alchemy", "postgres"]
+homepage = "https://dbdeclare.raaid.xyz"
+repository = "https://github.com/raaidarshad/dbdeclare"
+documentation = "https://dbdeclare.raaid.xyz"
+keywords = ["sql", "sqlalchemy", "postgres"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -39,9 +37,12 @@ psycopg = "3.1.4"
 pytest = "^7.1.2"
 pytest-order = "1.0.1"
 
-# TODO fill out when adding docs tools
-#[tool.poetry.group.docs.dependencies]
-#optional = true
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.docs.dependencies]
+mkdocs-material = "^9.0.1"
+mdx-include = "^1.4.2"
 
 
 [build-system]

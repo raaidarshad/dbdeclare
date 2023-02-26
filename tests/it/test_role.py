@@ -5,9 +5,9 @@ from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 from sqlalchemy import Engine
 
-from postgres_declare.controller import Controller
-from postgres_declare.entities.entity import Entity
-from postgres_declare.entities.role import Role
+from dbdeclare.controller import Controller
+from dbdeclare.entities.entity import Entity
+from dbdeclare.entities.role import Role
 
 
 def test_does_not_exist(simple_role: Role) -> None:

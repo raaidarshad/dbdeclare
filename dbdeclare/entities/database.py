@@ -2,12 +2,12 @@ from typing import Sequence
 
 from sqlalchemy import Engine, TextClause, create_engine, text
 
-from postgres_declare.data_structures.grant_to import GrantTo
-from postgres_declare.data_structures.privileges import Privilege
-from postgres_declare.entities.cluster_entity import ClusterEntity
-from postgres_declare.entities.entity import Entity
-from postgres_declare.entities.role import Role
-from postgres_declare.mixins.grantable import Grantable
+from dbdeclare.data_structures.grant_to import GrantTo
+from dbdeclare.data_structures.privileges import Privilege
+from dbdeclare.entities.cluster_entity import ClusterEntity
+from dbdeclare.entities.entity import Entity
+from dbdeclare.entities.role import Role
+from dbdeclare.mixins.grantable import Grantable
 
 
 class Database(ClusterEntity, Grantable):
@@ -45,12 +45,12 @@ class Database(ClusterEntity, Grantable):
         :param name: Unique name of the Database. Must be unique across the cluster.
         :param depends_on: Any entities that should be created before this one.
         :param check_if_exists: Flag to set existence check behavior. If `True`, will raise an exception during _safe_create if the entity already exists, and will raise an exception during _safe_drop if the entity does not exist.
-        :param owner: The :class:`postgres_declare.entitites.Role` who will own this database. Postgres defaults to the user executing the command.
+        :param owner: The :class:`dbdeclare.entitites.Role` who will own this database. Postgres defaults to the user executing the command.
         :param template: The name of the template from which to create the new database. Postgres defaults to template1.
         :param allow_connections: Flag to allow connections to this database. Postgres defaults to `True`.
         :param connection_limit: Number of concurrent connections that can be made to this database. Postgres defaults to -1, which means no limit.
         :param is_template: Flag to allow this database to be cloned by any user with CREATEDB privileges; if `False` (the default), then only superusers or the owner of the database can clone it.
-        :param grants: Sequence of :class:`postgres_declare.data_structures.GrantTo` to specify privileges this database has in relation to specified roles.
+        :param grants: Sequence of :class:`dbdeclare.data_structures.GrantTo` to specify privileges this database has in relation to specified roles.
         """
         self.owner = owner
         self.template = template
@@ -123,7 +123,7 @@ class Database(ClusterEntity, Grantable):
         The SQL statement that checks to see what grants exist.
         :return: A single :class:`sqlalchemy.TextClause` containing the SQL to check what grants exist on this entity.
         """
-        return text("SELECT unnest(datacl) as acl FROM pg_catalog.pg_database WHERE datname=:db_name").bindparams(
+        return text("SELECT unnest(datacl) AS acl FROM pg_catalog.pg_database WHERE datname=:db_name").bindparams(
             db_name=self.name
         )
 
