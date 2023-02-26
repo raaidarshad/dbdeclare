@@ -1,6 +1,6 @@
 site_name: DbDeclare
 site_description: DbDeclare, a declarative layer for your database.
-site_url: https://dbdeclare.raaid.xyz
+site_url: https://raaidarshad.github.io/dbdeclare/
 theme:
   name: material
   palette:

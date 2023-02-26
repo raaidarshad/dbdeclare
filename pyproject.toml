@@ -6,9 +6,9 @@ license = "MIT"
 authors = ["Raaid Arshad <raaid@protonmail.com>"]
 #maintainers = []
 readme = "README.md"
-homepage = "https://dbdeclare.raaid.xyz"
+homepage = "https://raaidarshad.github.io/dbdeclare/"
 repository = "https://github.com/raaidarshad/dbdeclare"
-documentation = "https://dbdeclare.raaid.xyz"
+documentation = "https://raaidarshad.github.io/dbdeclare/"
 keywords = ["sql", "sqlalchemy", "postgres"]
 classifiers = [
     "Development Status :: 3 - Alpha",
