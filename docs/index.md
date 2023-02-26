@@ -1,10 +1,10 @@
 # DbDeclare
 
-<make simple logo and put it here?>
-link to GH repo
-maybe this should be the same as the readme
-
 A declarative layer for your database, built on [SQLAlchemy](https://github.com/sqlalchemy/sqlalchemy).
+
+The code is [on GitHub](https://github.com/raaidarshad/postgres-declare).
+
+The docs are [hosted on my website](https://dbdeclare.raaid.xyz).
 
 ## Overview
 
@@ -13,8 +13,6 @@ A declarative layer for your database, built on [SQLAlchemy](https://github.com/
 DbDeclare is a Python package that helps you create and manage entities in your database cluster,
 like databases, roles, access control, and (eventually) more. It aims to fill the gap between
 SQLAlchemy (SQLA) and infrastructure as code (IaC).
-
-TODO image of what sqlalchemy covers, what this covers, what IaC covers
 
 ### Why use it?
 
@@ -43,8 +41,8 @@ tool likely makes more sense for you.
 
 ## Requirements
 
-This requires a recent version of Python. Works with Python 3.11 or higher. We recommend [pyenv](todo) to
-install any versions of Python you need and don't currently have installed.
+This requires a recent version of Python. Works with Python 3.11 or higher. We recommend
+[pyenv](https://github.com/pyenv/pyenv) to install any versions of Python you need and don't currently have installed.
 
 This also requires a compatible driver/package for your database of choice, like
 [psycopg](https://www.psycopg.org/) for Postgres. You'll also need a functioning cluster
@@ -106,10 +104,6 @@ Voila! Check out the [user guide](/guide) for more involved use cases.
 ## Contributing
 
 Check out development, testing, and contributing guidance [here](/contributing).
-
-## Help or get help
-
-Need help, or want to help out? Find out how [here](/help).
 
 ## License
 

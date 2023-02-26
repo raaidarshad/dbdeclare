@@ -51,7 +51,6 @@ nav:
     - guide/tables.md
     - guide/grants.md
     - guide/controller.md
-  - help.md
   - contributing.md
 
 markdown_extensions:
