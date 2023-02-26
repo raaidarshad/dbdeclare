@@ -113,4 +113,4 @@ Check out development, testing, and contributing guidance [here](/contributing).
 
 ## License
 
-This project is licensed under the terms of the [MIT license](https://github.com/raaid/db-declare/blob/main/LICENSE).
+This project is licensed under the terms of the [MIT license](https://github.com/raaid/dbdeclare/blob/main/LICENSE).
