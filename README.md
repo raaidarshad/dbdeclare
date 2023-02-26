@@ -85,7 +85,32 @@ Assuming you have a Python environment set up, DbDeclare installed, and psycopg 
 you can create a database and a user that can connect to it like this:
 
 ```Python
-{!./docs_src/index.py!}
+from sqlalchemy import create_engine
+
+from dbdeclare.controller import Controller
+from dbdeclare.data_structures import GrantOn, Privilege
+from dbdeclare.entities import Database, Role
+
+
+def main() -> None:
+    # declare the database
+    falafel_db = Database(name="falafel")
+    # declare the user
+    Role(
+        name="hungry_user",
+        login=True,  # (1)!
+        password="fakepassword",  # (2)!
+        grants=[GrantOn(privileges=[Privilege.CONNECT], on=[falafel_db])],  # (3)!
+    )
+
+    # create engine with admin user and default database
+    engine = create_engine(url="postgresql+psycopg://postgres:postgres@127.0.0.1:5432/postgres")  # (4)!
+    # create all entities and grant all privileges
+    Controller.run_all(engine=engine)
+
+
+if __name__ == "__main__":
+    main()
 ```
 
 1. Make sure this role can log in (make it a user)
