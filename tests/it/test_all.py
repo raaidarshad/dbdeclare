@@ -30,8 +30,8 @@ def test_all(engine: Engine) -> None:
     for stage in ["dev", "prod"]:
 
         db = Database(name=stage)
-        reader = Role(name=f"{stage}_reader", grants=[GrantOn(privileges=[Privilege.CONNECT], on=[db])])
-        writer = Role(name=f"{stage}_writer", grants=[GrantOn(privileges=[Privilege.CONNECT], on=[db])])
+        reader = Role(name=f"{stage}_read", grants=[GrantOn(privileges=[Privilege.CONNECT], on=[db])])
+        writer = Role(name=f"{stage}_write", grants=[GrantOn(privileges=[Privilege.CONNECT], on=[db])])
         # declare schemas
         logs_schema = Schema(name=schema_name, database=db)
         # declare db content with grants
