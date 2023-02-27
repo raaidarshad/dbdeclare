@@ -100,13 +100,13 @@ def main() -> None:
     # declare the user
     Role(
         name="hungry_user",
-        login=True,  # (1)!
-        password="fakepassword",  # (2)!
-        grants=[GrantOn(privileges=[Privilege.CONNECT], on=[falafel_db])],  # (3)!
+        login=True,
+        password="fakepassword",
+        grants=[GrantOn(privileges=[Privilege.CONNECT], on=[falafel_db])],
     )
 
     # create engine with admin user and default database
-    engine = create_engine(url="postgresql+psycopg://postgres:postgres@127.0.0.1:5432/postgres")  # (4)!
+    engine = create_engine(url="postgresql+psycopg://postgres:postgres@127.0.0.1:5432/postgres")
     # create all entities and grant all privileges
     Controller.run_all(engine=engine)
 
@@ -114,11 +114,6 @@ def main() -> None:
 if __name__ == "__main__":
     main()
 ```
-
-1. Make sure this role can log in (make it a user)
-2. Provide a password for the user to log in with
-3. Specify that this user can connect to the `falafel` database
-4. The engine to run DbDeclare must have admin privileges, so we use the `postgres` user here
 
 After running this script, you should be able to access the `falafel` database as `hungry_user`. You can try it out with
 `psql` (if you don't have it installed, find it [here](https://www.timescale.com/blog/how-to-install-psql-on-mac-ubuntu-debian-windows/)).
