@@ -12,6 +12,8 @@ The code is [on GitHub](https://github.com/raaidarshad/postgres-declare).
 
 The docs are [hosted on GitHub pages](https://raaidarshad.github.io/dbdeclare/).
 
+The project is published on [PyPI](https://pypi.org/project/dbdeclare/).
+
 ## Overview
 
 ### What is it?
