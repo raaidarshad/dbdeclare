@@ -1,16 +1,18 @@
 # DbDeclare
 
 <!-- [![Release](https://img.shields.io/github/v/release/raaidarshad/dbdeclare)](https://img.shields.io/github/v/release/raaidarshad/dbdeclare) -->
-<!-- [![Build status](https://img.shields.io/github/workflow/status/raaidarshad/dbdeclare/merge-to-main)](https://img.shields.io/github/workflow/status/raaidarshad/dbdeclare/merge-to-main) -->
 
 [![Python version](https://img.shields.io/badge/python_version-3.11-blue)](https://github.com/psf/black)
 [![License](https://img.shields.io/github/license/raaidarshad/dbdeclare)](https://img.shields.io/github/license/raaidarshad/dbdeclare)
+[![PyPI](https://img.shields.io/pypi/v/dbdeclare?color=%2334D058&label=pypi%20package)](https://pypi.org/project/dbdeclare/)
 
 A declarative layer for your database, built on [SQLAlchemy](https://github.com/sqlalchemy/sqlalchemy).
 
 The code is [on GitHub](https://github.com/raaidarshad/postgres-declare).
 
 The docs are [hosted on GitHub pages](https://raaidarshad.github.io/dbdeclare/).
+
+The project is published on [PyPI](https://pypi.org/project/dbdeclare/).
 
 ## Overview
 
@@ -59,7 +61,7 @@ works with SQLAlchemy 2.0.0 or higher.
 
 ## Installation
 
-DbDeclare is published on [PyPi](https://pypi.org/project/dbdeclare/). You can install it with `pip` or any tool
+DbDeclare is published on [PyPI](https://pypi.org/project/dbdeclare/). You can install it with `pip` or any tool
 that uses `pip` under the hood. This is typically installed in a [virtual environment](https://docs.python.org/3/library/venv.html).
 
 ```

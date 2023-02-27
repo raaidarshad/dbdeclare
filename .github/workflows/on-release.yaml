@@ -19,17 +19,17 @@ jobs:
           path: .cache
       - run: pip install mkdocs-material
       - run: mkdocs gh-deploy --force
-#  publish-package:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v3
-#      - name: Set up Python
-#        uses: actions/setup-python@v4
-#        with:
-#          python-version: 3.11.0
-#      - name: Set up Poetry
-#        uses: abatilo/actions-poetry@v2.0.0
-#        with:
-#          poetry-version: 1.2.2
-#      - name: Publish package
-#        run: poetry publish --build -u __token__ -p ${% raw %}{{ secrets.PYPI_TOKEN }}{% endraw %}
+  publish-package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11.0
+      - name: Set up Poetry
+        uses: abatilo/actions-poetry@v2.0.0
+        with:
+          poetry-version: 1.2.2
+      - name: Publish package
+        run: poetry publish --build -u __token__ -p ${% raw %}{{ secrets.PYPI_TOKEN }}{% endraw %}
