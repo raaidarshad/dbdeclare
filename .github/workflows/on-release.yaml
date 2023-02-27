@@ -1,10 +1,7 @@
 name: publish release
 on:
   release:
-    types:
-      - created
-permissions:
-  contents: write
+    types: [published]
 jobs:
   publish-docs:
     runs-on: ubuntu-latest
