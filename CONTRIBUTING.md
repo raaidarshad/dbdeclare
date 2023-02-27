@@ -1,0 +1,1 @@
+Please read the [Contributing guidelines](https://raaidarshad.github.io/dbdeclare/contributing/) in the documentation site.

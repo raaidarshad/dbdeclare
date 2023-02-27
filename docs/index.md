@@ -1,10 +1,10 @@
 # DbDeclare
 
 <!-- [![Release](https://img.shields.io/github/v/release/raaidarshad/dbdeclare)](https://img.shields.io/github/v/release/raaidarshad/dbdeclare) -->
-<!-- [![Build status](https://img.shields.io/github/workflow/status/raaidarshad/dbdeclare/merge-to-main)](https://img.shields.io/github/workflow/status/raaidarshad/dbdeclare/merge-to-main) -->
 
 [![Python version](https://img.shields.io/badge/python_version-3.11-blue)](https://github.com/psf/black)
 [![License](https://img.shields.io/github/license/raaidarshad/dbdeclare)](https://img.shields.io/github/license/raaidarshad/dbdeclare)
+[![PyPI](https://img.shields.io/pypi/v/dbdeclare?color=%2334D058&label=pypi%20package)](https://pypi.org/project/dbdeclare/)
 
 A declarative layer for your database, built on [SQLAlchemy](https://github.com/sqlalchemy/sqlalchemy).
 

@@ -6,7 +6,7 @@ We'd love to see folks contribute! Below you will find instructions to:
 - Run type checking and tests
 - Develop DbDeclare
 - Develop documentation
-- Git flow
+- Contribute via the Git workflow
 
 ## Prerequisites
 
